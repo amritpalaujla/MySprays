@@ -1,0 +1,60 @@
+{
+  "Cherries": {
+    "Fruit Flies": [
+      { "name": "Delegate WG", "rate": "170 g/acre" },
+      { "name": "Success", "rate": "240 ml/acre" }
+    ],
+    "Brown Rot": [
+      { "name": "Pristine WG", "rate": "0.6 kg/acre" },
+      { "name": "Scholar", "rate": "1 L/acre" }
+    ],
+    "Aphids": [
+      { "name": "Movento", "rate": "365 ml/acre" },
+      { "name": "Assail", "rate": "80 g/acre" }
+    ],
+    "Leaf Spot": [
+      { "name": "Echo 720", "rate": "1.5 L/acre" },
+      { "name": "Bravo ZN", "rate": "2.2 L/acre" }
+    ],
+    "Mildew": [
+      { "name": "Sirocco", "rate": "0.5 L/acre" },
+      { "name": "Topas", "rate": "200 ml/acre" }
+    ]
+  },
+  "Grapes": {
+    "Mildew": [
+      { "name": "Luna Experience", "rate": "200 ml/acre" },
+      { "name": "Vivando", "rate": "0.8 L/acre" }
+    ],
+    "Black Rot": [
+      { "name": "Ziram", "rate": "3 kg/acre" },
+      { "name": "Captan", "rate": "2.5 kg/acre" }
+    ],
+    "Mold": [
+      { "name": "Switch", "rate": "1 kg/acre" },
+      { "name": "Scala", "rate": "0.5 L/acre" }
+    ],
+    "Anthracnose": [
+      { "name": "Abound", "rate": "1 L/acre" },
+      { "name": "Mettle", "rate": "250 ml/acre" }
+    ]
+  },
+  "Peaches": {
+    "Brown Rot": [
+      { "name": "Elevate", "rate": "1.1 kg/acre" },
+      { "name": "Indar", "rate": "500 ml/acre" }
+    ],
+    "Leaf Curl": [
+      { "name": "Kocide", "rate": "2 kg/acre" },
+      { "name": "Copper Spray", "rate": "4 L/acre" }
+    ],
+    "Peach Scab": [
+      { "name": "Bravo", "rate": "2.5 L/acre" },
+      { "name": "Captan", "rate": "2.2 kg/acre" }
+    ],
+    "Mildew": [
+      { "name": "Systhane", "rate": "240 ml/acre" },
+      { "name": "Nova", "rate": "300 ml/acre" }
+    ]
+  }
+}
