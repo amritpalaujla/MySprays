@@ -14,7 +14,7 @@ function SprayFinder() {
               console.log("you just clicked", crop.name);
               setSelectedCrop(crop.name);
             }}
-            className="crop-card"
+            className={`crop-card ${selectedCrop === crop.name ? "spin" : ""}`}
           >
             <img src={crop.image} alt={crop.name}></img>
             <p>{crop.name}</p>

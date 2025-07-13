@@ -4,16 +4,18 @@
 }
 
 .crop-card {
-  max-width: 400px;
+  width: 300px;
+  height: 300px;
   margin: 30px;
 }
 
 .crop-card:hover {
-  border: 2px solid black;
+  outline: 2px solid black;
 }
 
 .crop-grid {
   display: grid;
+  place-items: center;
 }
 
 /*these are the breakpoints for the panel of crops */
@@ -35,5 +37,18 @@
   /* anything below 767px get this setting */
   .crop-grid {
     grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.spin {
+  animation: spin 0.7s ease;
+}
+
+@keyframes spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
   }
 }
