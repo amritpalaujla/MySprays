@@ -110,5 +110,23 @@
       { "name": "Movento", "rate": "0.25 L/acre" },
       { "name": "Assail", "rate": "80 g/acre" }
     ]
+  },
+  "Apples": {
+    "Apple Scab": [
+      { "name": "Captan 80 WDG", "rate": "1.5 kg/acre" },
+      { "name": "Flint", "rate": "0.14 kg/acre" }
+    ],
+    "Codling Moth": [
+      { "name": "Altacor", "rate": "120 g/acre" },
+      { "name": "Delegate WG", "rate": "170 g/acre" }
+    ],
+    "Powdery Mildew": [
+      { "name": "Topas 250E", "rate": "250 ml/acre" },
+      { "name": "Sirocco", "rate": "0.5 L/acre" }
+    ],
+    "Fire Blight": [
+      { "name": "Kasumin", "rate": "1.2 L/acre" },
+      { "name": "Streptomycin 17", "rate": "500 g/acre" }
+    ]
   }
 }
