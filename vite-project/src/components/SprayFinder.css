@@ -4,6 +4,36 @@
 }
 
 .crop-card {
-  border-radius: 25%;
   max-width: 400px;
+  margin: 30px;
+}
+
+.crop-card:hover {
+  border: 2px solid black;
+}
+
+.crop-grid {
+  display: grid;
+}
+
+/*these are the breakpoints for the panel of crops */
+@media only screen and (min-width: 1080px) {
+  /*anything above 1080 px gets this setting */
+  .crop-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1079px) {
+  /* anything above 768 and below 1079px gets this */
+  .crop-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  /* anything below 767px get this setting */
+  .crop-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
 }

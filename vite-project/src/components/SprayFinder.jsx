@@ -5,7 +5,7 @@ function SprayFinder() {
   const [selectedCrop, setSelectedCrop] = useState(null);
 
   return (
-    <div>
+    <div className="crop-grid">
       {cropList.map((crop) => {
         return (
           <div
