@@ -31,6 +31,7 @@ function SprayFinder() {
       </div>
     );
   }
+  //console.log("selected crop goint to dropdown: ", selectedCrop);
   return <IssueDropDown crop={selectedCrop} />;
 }
 
