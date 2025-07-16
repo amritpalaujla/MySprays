@@ -13,6 +13,7 @@ function IssueDropDown({ crop }) {
         placeholder="select an issue"
         value={selectedIssue}
         onChange={(e) => setSelectedIssue(e.target.value)}
+        className="w-full"
       >
         <option value="" disabled>
           -- Select an issue --
