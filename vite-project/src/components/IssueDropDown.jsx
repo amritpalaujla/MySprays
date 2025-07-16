@@ -1,5 +1,6 @@
 import { useState } from "react";
 import sprayData from "../assets/sprayData.json";
+import blankImage from "../assets/blank.jpg";
 function IssueDropDown({ crop }) {
   const issues = Object.keys(sprayData[crop]); // this extracts the issues and puts them in an array
   const [selectedIssue, setSelectedIssue] = useState("");
@@ -25,13 +26,16 @@ function IssueDropDown({ crop }) {
         ))}
       </select>
 
-      {selectedIssue &&
-        sprays.map((spray) => (
-          <div key={spray.name}>
-            <h4>{spray.name}</h4>
-            <p>{spray.rate}</p>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {selectedIssue &&
+          sprays.map((spray) => (
+            <div key={spray.name} className="m-4">
+              <img className="w-sm" src={blankImage}></img>
+              <h4>{spray.name}</h4>
+              <p>{spray.rate}</p>
+            </div>
+          ))}
+      </div>
     </div>
   );
 }
