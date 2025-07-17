@@ -1,6 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import sprayData from "../assets/sprayData.json";
 
 function Calculator() {
+  const [allSprays, setAllSprays] = useState([]);
+  let collectedSprays = [];
+
+  useEffect(() => {
+    //looping through each crop
+    for (const crop in sprayData) {
+      //looping through each issue
+      for (const issue in sprayData[crop]) {
+        //looping through each spray
+        for (const spray of sprayData[crop][issue]) collectedSprays.push(spray); //pushing in each spray to a flat array
+      }
+    }
+
+    setAllSprays(collectedSprays);
+  }, []);
+
   return (
     <div className="grid grid-rows-4 gap-4 p-4 max-w-md mx-auto">
       {/* Spray Dropdown */}
@@ -10,8 +27,11 @@ function Calculator() {
         </label>
         <select className="w-full border border-gray-300 rounded-md p-2">
           <option value="">Choose...</option>
-          <option value="1">Spray 1</option>
-          <option value="2">Spray 2</option>
+          {allSprays.map((spray) => (
+            <option key={spray.name} value={spray.name}>
+              {spray.name}
+            </option>
+          ))}
         </select>
       </div>
 
