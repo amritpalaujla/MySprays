@@ -14,7 +14,7 @@ function IssueDropDown({ crop }) {
         placeholder="select an issue"
         value={selectedIssue}
         onChange={(e) => setSelectedIssue(e.target.value)}
-        className="w-full"
+        className="w-full md:w-md lg:w-lg"
       >
         <option value="" disabled>
           -- Select an issue --
@@ -29,10 +29,15 @@ function IssueDropDown({ crop }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {selectedIssue &&
           sprays.map((spray) => (
-            <div key={spray.name} className="m-4">
-              <img className="w-sm" src={blankImage}></img>
-              <h4>{spray.name}</h4>
-              <p>{spray.rate}</p>
+            <div key={spray.name} className="m-4 outline rounded-xl">
+              <img
+                className="w-sm border-b rounded-t-xl"
+                src={blankImage}
+              ></img>
+              <div className="m-4">
+                <h4>{spray.name}</h4>
+                <p>{spray.rate}</p>
+              </div>
             </div>
           ))}
       </div>
