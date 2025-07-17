@@ -33,9 +33,9 @@ function Calculator() {
         </label>
         <select className="w-full border border-gray-300 rounded-md p-2">
           <option value="">Choose...</option>
-          {allSprays.map((spray) => (
+          {allSprays.map((spray, index) => (
             <option
-              key={`${spray.crop}-${spray.issue}-${spray.name}`}
+              key={`${spray.crop}-${spray.issue}-${spray.name}-${index}`}
               value={`${spray.crop}-${spray.issue}-${spray.name}`}
             >
               {`${spray.name} (${spray.crop} - ${spray.issue})`}
