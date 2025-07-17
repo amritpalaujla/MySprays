@@ -11,10 +11,16 @@ function Calculator() {
       //looping through each issue
       for (const issue in sprayData[crop]) {
         //looping through each spray
-        for (const spray of sprayData[crop][issue]) collectedSprays.push(spray); //pushing in each spray to a flat array
+        for (const spray of sprayData[crop][issue])
+          collectedSprays.push({
+            crop: crop,
+            issue: issue,
+            name: spray.name,
+            rate: spray.rate,
+          }); //pushing data to a flat array
       }
     }
-
+    //console.log("collectedSprays : ", collectedSprays);
     setAllSprays(collectedSprays);
   }, []);
 
@@ -28,8 +34,11 @@ function Calculator() {
         <select className="w-full border border-gray-300 rounded-md p-2">
           <option value="">Choose...</option>
           {allSprays.map((spray) => (
-            <option key={spray.name} value={spray.name}>
-              {spray.name}
+            <option
+              key={`${spray.crop}-${spray.issue}-${spray.name}`}
+              value={`${spray.crop}-${spray.issue}-${spray.name}`}
+            >
+              {`${spray.name} (${spray.crop} - ${spray.issue})`}
             </option>
           ))}
         </select>
