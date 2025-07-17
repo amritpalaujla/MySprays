@@ -3,6 +3,7 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import SprayFinder from "./components/SprayFinder";
+import Calculator from "./components/Calculator";
 
 function App() {
   const [tab, setTab] = useState("");
@@ -18,7 +19,7 @@ function App() {
       </div>
 
       {tab === "Spray Finder" && <SprayFinder />}
-      {tab === "Spray Calculator" && <div>Spray Calculator conent here</div>}
+      {tab === "Spray Calculator" && <Calculator />}
       {tab === "Spray Log" && <div>Spray Log conent here</div>}
     </>
   );
