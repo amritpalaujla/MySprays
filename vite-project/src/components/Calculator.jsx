@@ -4,6 +4,13 @@ import sprayData from "../assets/sprayData.json";
 function Calculator() {
   const [allSprays, setAllSprays] = useState([]);
   let collectedSprays = [];
+  const [area, setArea] = useState(0);
+  const [waterVolume, setWaterVolume] = useState(0);
+  const [tankSize, setTankSize] = useState(0);
+  const [selectedSprayKey, setSelectedSprayKey] = useState("");
+  const selectedSpray = allSprays.find(
+    (spray) => `${spray.crop}-${spray.issue}-${spray.name}` === selectedSprayKey
+  );
 
   useEffect(() => {
     //looping through each crop
@@ -31,7 +38,10 @@ function Calculator() {
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Select Spray
         </label>
-        <select className="w-full border border-gray-300 rounded-md p-2">
+        <select
+          className="w-full border border-gray-300 rounded-md p-2"
+          onChange={(e) => setSelectedSprayKey(e.target.value)}
+        >
           <option value="">Choose...</option>
           {allSprays.map((spray, index) => (
             <option
@@ -53,6 +63,7 @@ function Calculator() {
           className="w-full border border-gray-300 rounded-md p-2"
           type="number"
           placeholder="e.g. 200"
+          onChange={(e) => setWaterVolume(e.target.value)}
         />
       </div>
 
@@ -65,6 +76,7 @@ function Calculator() {
           className="w-full border border-gray-300 rounded-md p-2"
           type="number"
           placeholder="e.g. 25"
+          onChange={(e) => setArea(e.target.value)}
         />
       </div>
 
@@ -77,7 +89,25 @@ function Calculator() {
           className="w-full border border-gray-300 rounded-md p-2"
           type="number"
           placeholder="e.g. 400"
+          onChange={(e) => setTankSize(e.target.value)}
         />
+
+        {selectedSpray && (
+          <div className=" border rounded bg-gray-50">
+            <p>
+              <strong>Spray Selected:</strong> {selectedSpray.name}
+            </p>
+            <p>
+              <strong>Crop:</strong> {selectedSpray.crop}
+            </p>
+            <p>
+              <strong>Issue:</strong> {selectedSpray.issue}
+            </p>
+            <p>
+              <strong>Rate:</strong> {selectedSpray.rate} per acre
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
