@@ -91,24 +91,24 @@ function Calculator() {
           placeholder="e.g. 400"
           onChange={(e) => setTankSize(e.target.value)}
         />
-
-        {selectedSpray && (
-          <div className=" border rounded bg-gray-50">
-            <p>
-              <strong>Spray Selected:</strong> {selectedSpray.name}
-            </p>
-            <p>
-              <strong>Crop:</strong> {selectedSpray.crop}
-            </p>
-            <p>
-              <strong>Issue:</strong> {selectedSpray.issue}
-            </p>
-            <p>
-              <strong>Rate:</strong> {selectedSpray.rate} per acre
-            </p>
-          </div>
-        )}
       </div>
+
+      {selectedSpray && (
+        <div className=" border rounded bg-gray-50">
+          <p>
+            <strong>Spray Selected:</strong> {selectedSpray.name}
+          </p>
+          <p>
+            <strong>Crop:</strong> {selectedSpray.crop}
+          </p>
+          <p>
+            <strong>Issue:</strong> {selectedSpray.issue}
+          </p>
+          <p>
+            <strong>Rate:</strong> {selectedSpray.rate} per acre
+          </p>
+        </div>
+      )}
     </div>
   );
 }
