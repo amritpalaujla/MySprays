@@ -105,7 +105,7 @@ function Calculator() {
             <strong>Issue:</strong> {selectedSpray.issue}
           </p>
           <p>
-            <strong>Rate:</strong> {selectedSpray.rate} per acre
+            <strong>Rate:</strong> {selectedSpray.rate}
           </p>
         </div>
       )}
