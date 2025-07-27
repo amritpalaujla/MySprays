@@ -24,10 +24,11 @@ function Calculator() {
             issue: issue,
             name: spray.name,
             rate: spray.rate,
+            unit: spray.unit,
           }); //pushing data to a flat array
       }
     }
-    //console.log("collectedSprays : ", collectedSprays);
+    console.log("collectedSprays : ", collectedSprays);
     setAllSprays(collectedSprays);
   }, []);
 
@@ -63,7 +64,7 @@ function Calculator() {
           className="w-full border border-gray-300 rounded-md p-2"
           type="number"
           placeholder="e.g. 200"
-          onChange={(e) => setWaterVolume(e.target.value)}
+          onChange={(e) => setWaterVolume(parseFloat(e.target.value))}
         />
       </div>
 
@@ -76,7 +77,7 @@ function Calculator() {
           className="w-full border border-gray-300 rounded-md p-2"
           type="number"
           placeholder="e.g. 25"
-          onChange={(e) => setArea(e.target.value)}
+          onChange={(e) => setArea(parseFloat(e.target.value))}
         />
       </div>
 
@@ -89,12 +90,12 @@ function Calculator() {
           className="w-full border border-gray-300 rounded-md p-2"
           type="number"
           placeholder="e.g. 400"
-          onChange={(e) => setTankSize(e.target.value)}
+          onChange={(e) => setTankSize(parseFloat(e.target.value))}
         />
       </div>
 
       {selectedSpray && (
-        <div className=" border rounded bg-gray-50">
+        <div className=" border rounded bg-gray-50 mt-18">
           <p>
             <strong>Spray Selected:</strong> {selectedSpray.name}
           </p>
@@ -105,7 +106,28 @@ function Calculator() {
             <strong>Issue:</strong> {selectedSpray.issue}
           </p>
           <p>
-            <strong>Rate:</strong> {selectedSpray.rate}
+            <strong>Rate:</strong>{" "}
+            {`${selectedSpray.rate} ${selectedSpray.unit} per acre`}
+          </p>
+        </div>
+      )}
+
+      {selectedSpray && area > 0 && waterVolume > 0 && tankSize > 0 && (
+        <div className="mt-4 p-4 border rounded bg-green-50 space-y-2">
+          <p>
+            <strong>Total Water Needed:</strong> {waterVolume * area} L
+          </p>
+          <p>
+            <strong>Total Spray Needed:</strong>{" "}
+            {(
+              (parseFloat(selectedSpray.rate) * (waterVolume * area)) /
+              100
+            ).toFixed(2)}{" "}
+            {selectedSpray.unit}
+          </p>
+          <p>
+            <strong>Number of Tank Refills:</strong>{" "}
+            {((waterVolume * area) / tankSize).toFixed(2)}
           </p>
         </div>
       )}

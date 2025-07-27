@@ -1,132 +1,132 @@
 {
   "Cherries": {
     "Fruit Flies": [
-      { "name": "Delegate WG", "rate": "170 g/acre" },
-      { "name": "Success", "rate": "240 ml/acre" }
+      { "name": "Delegate WG", "rate": 170, "unit": "g" },
+      { "name": "Success", "rate": 240, "unit": "ml" }
     ],
     "Brown Rot": [
-      { "name": "Pristine WG", "rate": "0.6 kg/acre" },
-      { "name": "Scholar", "rate": "1 L/acre" }
+      { "name": "Pristine WG", "rate": 0.6, "unit": "kg" },
+      { "name": "Scholar", "rate": 1, "unit": "L" }
     ],
     "Aphids": [
-      { "name": "Movento", "rate": "365 ml/acre" },
-      { "name": "Assail", "rate": "80 g/acre" }
+      { "name": "Movento", "rate": 365, "unit": "ml" },
+      { "name": "Assail", "rate": 80, "unit": "g" }
     ],
     "Leaf Spot": [
-      { "name": "Echo 720", "rate": "1.5 L/acre" },
-      { "name": "Bravo ZN", "rate": "2.2 L/acre" }
+      { "name": "Echo 720", "rate": 1.5, "unit": "L" },
+      { "name": "Bravo ZN", "rate": 2.2, "unit": "L" }
     ],
     "Mildew": [
-      { "name": "Sirocco", "rate": "0.5 L/acre" },
-      { "name": "Topas", "rate": "200 ml/acre" }
+      { "name": "Sirocco", "rate": 0.5, "unit": "L" },
+      { "name": "Topas", "rate": 200, "unit": "ml" }
     ]
   },
   "Grapes": {
     "Mildew": [
-      { "name": "Luna Experience", "rate": "200 ml/acre" },
-      { "name": "Vivando", "rate": "0.8 L/acre" }
+      { "name": "Luna Experience", "rate": 200, "unit": "ml" },
+      { "name": "Vivando", "rate": 0.8, "unit": "L" }
     ],
     "Black Rot": [
-      { "name": "Ziram", "rate": "3 kg/acre" },
-      { "name": "Captan", "rate": "2.5 kg/acre" }
+      { "name": "Ziram", "rate": 3, "unit": "kg" },
+      { "name": "Captan", "rate": 2.5, "unit": "kg" }
     ],
     "Mold": [
-      { "name": "Switch", "rate": "1 kg/acre" },
-      { "name": "Scala", "rate": "0.5 L/acre" }
+      { "name": "Switch", "rate": 1, "unit": "kg" },
+      { "name": "Scala", "rate": 0.5, "unit": "L" }
     ],
     "Anthracnose": [
-      { "name": "Abound", "rate": "1 L/acre" },
-      { "name": "Mettle", "rate": "250 ml/acre" }
+      { "name": "Abound", "rate": 1, "unit": "L" },
+      { "name": "Mettle", "rate": 250, "unit": "ml" }
     ]
   },
   "Peaches": {
     "Brown Rot": [
-      { "name": "Elevate", "rate": "1.1 kg/acre" },
-      { "name": "Indar", "rate": "500 ml/acre" }
+      { "name": "Elevate", "rate": 1.1, "unit": "kg" },
+      { "name": "Indar", "rate": 500, "unit": "ml" }
     ],
     "Leaf Curl": [
-      { "name": "Kocide", "rate": "2 kg/acre" },
-      { "name": "Copper Spray", "rate": "4 L/acre" }
+      { "name": "Kocide", "rate": 2, "unit": "kg" },
+      { "name": "Copper Spray", "rate": 4, "unit": "L" }
     ],
     "Peach Scab": [
-      { "name": "Bravo", "rate": "2.5 L/acre" },
-      { "name": "Captan", "rate": "2.2 kg/acre" }
+      { "name": "Bravo", "rate": 2.5, "unit": "L" },
+      { "name": "Captan", "rate": 2.2, "unit": "kg" }
     ],
     "Mildew": [
-      { "name": "Systhane", "rate": "240 ml/acre" },
-      { "name": "Nova", "rate": "300 ml/acre" }
+      { "name": "Systhane", "rate": 240, "unit": "ml" },
+      { "name": "Nova", "rate": 300, "unit": "ml" }
     ]
   },
   "Plums": {
     "Plum Curculio": [
-      { "name": "Imidan 70-W", "rate": "1.34 kg/acre" },
-      { "name": "Malathion", "rate": "1.5 L/acre" }
+      { "name": "Imidan 70-W", "rate": 1.34, "unit": "kg" },
+      { "name": "Malathion", "rate": 1.5, "unit": "L" }
     ],
     "Brown Rot": [
-      { "name": "Pristine", "rate": "0.75 kg/acre" },
-      { "name": "Elevate", "rate": "1.1 kg/acre" }
+      { "name": "Pristine", "rate": 0.75, "unit": "kg" },
+      { "name": "Elevate", "rate": 1.1, "unit": "kg" }
     ],
     "Aphids": [
-      { "name": "Assail 70WP", "rate": "80 g/acre" },
-      { "name": "Beleaf", "rate": "200 ml/acre" }
+      { "name": "Assail 70WP", "rate": 80, "unit": "g" },
+      { "name": "Beleaf", "rate": 200, "unit": "ml" }
     ],
     "Black Knot": [
-      { "name": "Daconil WeatherStik", "rate": "1.6 L/acre" },
-      { "name": "Bravo ZN", "rate": "2.0 L/acre" }
+      { "name": "Daconil WeatherStik", "rate": 1.6, "unit": "L" },
+      { "name": "Bravo ZN", "rate": 2.0, "unit": "L" }
     ]
   },
   "Apricots": {
     "Bacterial Spot": [
-      { "name": "Copper 53W", "rate": "2.5 kg/acre" },
-      { "name": "Nordox", "rate": "2.25 kg/acre" }
+      { "name": "Copper 53W", "rate": 2.5, "unit": "kg" },
+      { "name": "Nordox", "rate": 2.25, "unit": "kg" }
     ],
     "Brown Rot": [
-      { "name": "Scala SC", "rate": "0.5 L/acre" },
-      { "name": "Merivon", "rate": "0.5 L/acre" }
+      { "name": "Scala SC", "rate": 0.5, "unit": "L" },
+      { "name": "Merivon", "rate": 0.5, "unit": "L" }
     ],
     "Shot Hole": [
-      { "name": "Captan 80 WDG", "rate": "1.5 kg/acre" },
-      { "name": "Ziram", "rate": "3 kg/acre" }
+      { "name": "Captan 80 WDG", "rate": 1.5, "unit": "kg" },
+      { "name": "Ziram", "rate": 3, "unit": "kg" }
     ],
     "Leaf Curl": [
-      { "name": "Syllit 400 FL", "rate": "1.25 L/acre" },
-      { "name": "Kocide", "rate": "2 kg/acre" }
+      { "name": "Syllit 400 FL", "rate": 1.25, "unit": "L" },
+      { "name": "Kocide", "rate": 2, "unit": "kg" }
     ]
   },
   "Nectarines": {
     "Peach Twig Borer": [
-      { "name": "Success 480 SC", "rate": "0.2 L/acre" },
-      { "name": "Altacor", "rate": "120 g/acre" }
+      { "name": "Success 480 SC", "rate": 0.2, "unit": "L" },
+      { "name": "Altacor", "rate": 120, "unit": "g" }
     ],
     "Leaf Curl": [
-      { "name": "Copper Spray", "rate": "2.5 kg/acre" },
-      { "name": "Kocide", "rate": "2 kg/acre" }
+      { "name": "Copper Spray", "rate": 2.5, "unit": "kg" },
+      { "name": "Kocide", "rate": 2, "unit": "kg" }
     ],
     "Brown Rot": [
-      { "name": "Merivon", "rate": "0.5 L/acre" },
-      { "name": "Elevate", "rate": "1.1 kg/acre" }
+      { "name": "Merivon", "rate": 0.5, "unit": "L" },
+      { "name": "Elevate", "rate": 1.1, "unit": "kg" }
     ],
     "Aphids": [
-      { "name": "Movento", "rate": "0.25 L/acre" },
-      { "name": "Assail", "rate": "80 g/acre" }
+      { "name": "Movento", "rate": 0.25, "unit": "L" },
+      { "name": "Assail", "rate": 80, "unit": "g" }
     ]
   },
   "Apples": {
     "Apple Scab": [
-      { "name": "Captan 80 WDG", "rate": "1.5 kg/acre" },
-      { "name": "Flint", "rate": "0.14 kg/acre" }
+      { "name": "Captan 80 WDG", "rate": 1.5, "unit": "kg" },
+      { "name": "Flint", "rate": 0.14, "unit": "kg" }
     ],
     "Codling Moth": [
-      { "name": "Altacor", "rate": "120 g/acre" },
-      { "name": "Delegate WG", "rate": "170 g/acre" }
+      { "name": "Altacor", "rate": 120, "unit": "g" },
+      { "name": "Delegate WG", "rate": 170, "unit": "g" }
     ],
     "Powdery Mildew": [
-      { "name": "Topas 250E", "rate": "250 ml/acre" },
-      { "name": "Sirocco", "rate": "0.5 L/acre" }
+      { "name": "Topas 250E", "rate": 250, "unit": "ml" },
+      { "name": "Sirocco", "rate": 0.5, "unit": "L" }
     ],
     "Fire Blight": [
-      { "name": "Kasumin", "rate": "1.2 L/acre" },
-      { "name": "Streptomycin 17", "rate": "500 g/acre" }
+      { "name": "Kasumin", "rate": 1.2, "unit": "L" },
+      { "name": "Streptomycin 17", "rate": 500, "unit": "g" }
     ]
   }
 }
