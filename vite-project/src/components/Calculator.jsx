@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import sprayData from "../assets/sprayData.json";
+import sprayTank from "../assets/tanker.png";
+import partialSprayTank from "../assets/partialTanker.png";
 
 function Calculator() {
   const [allSprays, setAllSprays] = useState([]);
@@ -163,7 +165,9 @@ function Calculator() {
                     key={i}
                     className="border rounded p-2 w-32 text-center bg-white shadow m-auto"
                   >
-                    <div className="text-3xl">🧴</div>
+                    <div className="text-3xl">
+                      <img src={sprayTank} alt="sprayer"></img>
+                    </div>
                     <div className="text-sm">Water: {tankSize}L</div>
                     <div className="text-sm">
                       Product: {productPerFullTank.toFixed(2)}{" "}
@@ -173,7 +177,9 @@ function Calculator() {
                 ))}
                 {remainingLitres > 0 && (
                   <div className="border rounded p-2 w-32 text-center bg-white shadow m-auto">
-                    <div className="text-3xl">🧴</div>
+                    <div className="text-3xl">
+                      <img src={partialSprayTank} alt="sprayer"></img>
+                    </div>
                     <div className="text-sm">Water: {remainingLitres}L</div>
                     <div className="text-sm">
                       Product: {productForPartialTank.toFixed(2)}{" "}
