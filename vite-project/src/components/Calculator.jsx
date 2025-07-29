@@ -8,6 +8,7 @@ function Calculator() {
   const [waterVolume, setWaterVolume] = useState(0);
   const [tankSize, setTankSize] = useState(0);
   const [selectedSprayKey, setSelectedSprayKey] = useState("");
+
   const selectedSpray = allSprays.find(
     (spray) => `${spray.crop}-${spray.issue}-${spray.name}` === selectedSprayKey
   );
@@ -112,25 +113,78 @@ function Calculator() {
         </div>
       )}
 
-      {selectedSpray && area > 0 && waterVolume > 0 && tankSize > 0 && (
-        <div className="mt-4 p-4 border rounded bg-green-50 space-y-2">
-          <p>
-            <strong>Total Water Needed:</strong> {waterVolume * area} L
-          </p>
-          <p>
-            <strong>Total Spray Needed:</strong>{" "}
-            {(
-              (parseFloat(selectedSpray.rate) * (waterVolume * area)) /
-              100
-            ).toFixed(2)}{" "}
-            {selectedSpray.unit}
-          </p>
-          <p>
-            <strong>Number of Tank Refills:</strong>{" "}
-            {((waterVolume * area) / tankSize).toFixed(2)}
-          </p>
-        </div>
-      )}
+      {selectedSpray &&
+        area > 0 &&
+        waterVolume > 0 &&
+        tankSize > 0 &&
+        (() => {
+          const totalWater = waterVolume * area;
+          const totalProduct = parseFloat(selectedSpray.rate) * area;
+          const productPerLitre = totalProduct / totalWater;
+
+          const fullTankCount = Math.floor(totalWater / tankSize);
+          const remainingLitres = totalWater % tankSize;
+
+          const productPerFullTank = productPerLitre * tankSize;
+          const productForPartialTank = productPerLitre * remainingLitres;
+
+          return (
+            /*<div className="mt-4 p-4 border rounded bg-green-50 space-y-2">
+              <p>
+                <strong>Total Water Needed:</strong> {waterVolume * area} L
+              </p>
+              <p>
+                <strong>Total Spray Needed:</strong>{" "}
+                {(parseFloat(selectedSpray.rate) * area).toFixed(2)}{" "}
+                {selectedSpray.unit}
+              </p>
+              <p>
+                <strong>Number of Tank Refills:</strong>{" "}
+                {((waterVolume * area) / tankSize).toFixed(2)}
+              </p>
+            </div>*/
+            <div className="mt-4 p-4 border rounded bg-green-50 space-y-2">
+              <p>
+                <strong>Total Water Needed:</strong> {totalWater} L
+              </p>
+              <p>
+                <strong>Total Product Needed:</strong> {totalProduct.toFixed(2)}{" "}
+                {selectedSpray.unit}
+              </p>
+              <p>
+                <strong>Tank Refills:</strong>{" "}
+                {fullTankCount + (remainingLitres > 0 ? 1 : 0)}
+              </p>
+
+              {/* Tank visuals */}
+              <div className="flex flex-wrap gap-4 mt-4">
+                {[...Array(fullTankCount)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="border rounded p-2 w-32 text-center bg-white shadow m-auto"
+                  >
+                    <div className="text-3xl">🧴</div>
+                    <div className="text-sm">Water: {tankSize}L</div>
+                    <div className="text-sm">
+                      Product: {productPerFullTank.toFixed(2)}{" "}
+                      {selectedSpray.unit}
+                    </div>
+                  </div>
+                ))}
+                {remainingLitres > 0 && (
+                  <div className="border rounded p-2 w-32 text-center bg-white shadow m-auto">
+                    <div className="text-3xl">🧴</div>
+                    <div className="text-sm">Water: {remainingLitres}L</div>
+                    <div className="text-sm">
+                      Product: {productForPartialTank.toFixed(2)}{" "}
+                      {selectedSpray.unit}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
     </div>
   );
 }
