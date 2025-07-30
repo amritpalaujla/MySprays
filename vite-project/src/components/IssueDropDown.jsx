@@ -36,7 +36,11 @@ function IssueDropDown({ crop }) {
               ></img>
               <div className="m-4">
                 <h4>{spray.name}</h4>
-                <p>{spray.rate}</p>
+                <p>
+                  {spray.rate} {spray.unit} per acre
+                </p>
+                <p>PHI: {spray.phi}</p>
+                <p>{spray.pcp}</p>
               </div>
             </div>
           ))}
