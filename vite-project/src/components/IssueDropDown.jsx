@@ -1,11 +1,17 @@
 import { useState } from "react";
 import sprayData from "../assets/sprayData.json";
 import blankImage from "../assets/blank.jpg";
-function IssueDropDown({ crop }) {
+
+function IssueDropDown({ setTab, crop }) {
   const issues = Object.keys(sprayData[crop]); // this extracts the issues and puts them in an array
   const [selectedIssue, setSelectedIssue] = useState("");
 
   const sprays = sprayData[crop][selectedIssue];
+
+  const handleCalcClick = (spray) => {
+    console.log("The spray you clicked is ", spray);
+    setTab("Spray Calculator");
+  };
   return (
     <div>
       <h3>select issue for {crop}</h3>
@@ -42,6 +48,9 @@ function IssueDropDown({ crop }) {
                 <p>PHI: {spray.phi}</p>
                 <p>{spray.pcp}</p>
               </div>
+              <button className="mb-2" onClick={() => handleCalcClick(spray)}>
+                Calculate
+              </button>
             </div>
           ))}
       </div>

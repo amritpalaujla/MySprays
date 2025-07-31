@@ -18,7 +18,7 @@ function App() {
         <button onClick={() => setTab("Spray Log")}>Spray Log</button>
       </div>
 
-      {tab === "Spray Finder" && <SprayFinder />}
+      {tab === "Spray Finder" && <SprayFinder setTab={setTab} />}
       {tab === "Spray Calculator" && <Calculator />}
       {tab === "Spray Log" && <div>Spray Log conent here</div>}
     </>
