@@ -3,9 +3,8 @@ import sprayData from "../assets/sprayData.json";
 import sprayTank from "../assets/tanker.png";
 import partialSprayTank from "../assets/partialTanker.png";
 
-function Calculator() {
+function Calculator({ chosenSpray }) {
   const [allSprays, setAllSprays] = useState([]);
-  let collectedSprays = [];
   const [area, setArea] = useState(0);
   const [waterVolume, setWaterVolume] = useState(0);
   const [tankSize, setTankSize] = useState(0);
@@ -16,6 +15,7 @@ function Calculator() {
   );
 
   useEffect(() => {
+    const collectedSprays = []; // ✅ Moved inside useEffect
     //looping through each crop
     for (const crop in sprayData) {
       //looping through each issue
@@ -33,7 +33,13 @@ function Calculator() {
     }
     console.log("collectedSprays : ", collectedSprays);
     setAllSprays(collectedSprays);
-  }, []);
+
+    // ✅ Set chosen spray as selected if it exists
+    if (chosenSpray) {
+      const sprayKey = `${chosenSpray.crop}-${chosenSpray.issue}-${chosenSpray.name}`;
+      setSelectedSprayKey(sprayKey);
+    }
+  }, [chosenSpray]); // ✅ Added chosenSpray to dependency array
 
   return (
     <div className="grid grid-rows-4 gap-4 p-4 max-w-md mx-auto">
@@ -44,9 +50,10 @@ function Calculator() {
         </label>
         <select
           className="w-full border border-gray-300 rounded-md p-2"
+          value={selectedSprayKey} // ✅ Added value prop
           onChange={(e) => setSelectedSprayKey(e.target.value)}
         >
-          <option value="">Choose...</option>
+          {!chosenSpray && <option value="">Choose...</option>}
           {allSprays.map((spray, index) => (
             <option
               key={`${spray.crop}-${spray.issue}-${spray.name}-${index}`}
@@ -66,8 +73,9 @@ function Calculator() {
         <input
           className="w-full border border-gray-300 rounded-md p-2"
           type="number"
+          value={waterVolume || ""} // ✅ Added value prop
           placeholder="e.g. 200"
-          onChange={(e) => setWaterVolume(parseFloat(e.target.value))}
+          onChange={(e) => setWaterVolume(parseFloat(e.target.value) || 0)} // ✅ Handle NaN
         />
       </div>
 
@@ -79,8 +87,9 @@ function Calculator() {
         <input
           className="w-full border border-gray-300 rounded-md p-2"
           type="number"
+          value={area || ""} // ✅ Added value prop
           placeholder="e.g. 25"
-          onChange={(e) => setArea(parseFloat(e.target.value))}
+          onChange={(e) => setArea(parseFloat(e.target.value) || 0)} // ✅ Handle NaN
         />
       </div>
 
@@ -92,8 +101,9 @@ function Calculator() {
         <input
           className="w-full border border-gray-300 rounded-md p-2"
           type="number"
+          value={tankSize || ""} // ✅ Added value prop
           placeholder="e.g. 400"
-          onChange={(e) => setTankSize(parseFloat(e.target.value))}
+          onChange={(e) => setTankSize(parseFloat(e.target.value) || 0)} // ✅ Handle NaN
         />
       </div>
 
@@ -131,20 +141,6 @@ function Calculator() {
           const productForPartialTank = productPerLitre * remainingLitres;
 
           return (
-            /*<div className="mt-4 p-4 border rounded bg-green-50 space-y-2">
-              <p>
-                <strong>Total Water Needed:</strong> {waterVolume * area} L
-              </p>
-              <p>
-                <strong>Total Spray Needed:</strong>{" "}
-                {(parseFloat(selectedSpray.rate) * area).toFixed(2)}{" "}
-                {selectedSpray.unit}
-              </p>
-              <p>
-                <strong>Number of Tank Refills:</strong>{" "}
-                {((waterVolume * area) / tankSize).toFixed(2)}
-              </p>
-            </div>*/
             <div className="mt-4 p-4 border rounded bg-green-50 space-y-2">
               <p>
                 <strong>Total Water Needed:</strong> {totalWater} L

@@ -2,16 +2,31 @@ import { useState } from "react";
 import sprayData from "../assets/sprayData.json";
 import blankImage from "../assets/blank.jpg";
 
-function IssueDropDown({ setTab, crop }) {
+function IssueDropDown({ crop, setTab, setChosenSpray }) {
+  // ✅ Added setTab and setChosenSpray props
   const issues = Object.keys(sprayData[crop]); // this extracts the issues and puts them in an array
   const [selectedIssue, setSelectedIssue] = useState("");
 
   const sprays = sprayData[crop][selectedIssue];
 
-  const handleCalcClick = (spray) => {
-    console.log("The spray you clicked is ", spray);
+  const handleCalculateClick = (spray) => {
+    console.log("The spray you clicked", { spray });
+
+    // ✅ Set the spray object
+    setChosenSpray({
+      crop: crop,
+      issue: selectedIssue,
+      name: spray.name,
+      rate: spray.rate,
+      unit: spray.unit,
+      phi: spray.phi,
+      pcp: spray.pcp,
+    });
+
+    // ✅ Switch to calculator tab
     setTab("Spray Calculator");
   };
+
   return (
     <div>
       <h3>select issue for {crop}</h3>
@@ -39,6 +54,7 @@ function IssueDropDown({ setTab, crop }) {
               <img
                 className="w-sm border-b rounded-t-xl"
                 src={blankImage}
+                alt={`${spray.name} spray`}
               ></img>
               <div className="m-4">
                 <h4>{spray.name}</h4>
@@ -48,9 +64,11 @@ function IssueDropDown({ setTab, crop }) {
                 <p>PHI: {spray.phi}</p>
                 <p>{spray.pcp}</p>
               </div>
-              <button className="mb-2" onClick={() => handleCalcClick(spray)}>
-                Calculate
-              </button>
+              <div className="justify-self-end m-2">
+                <button onClick={() => handleCalculateClick(spray)}>
+                  Calculate
+                </button>
+              </div>
             </div>
           ))}
       </div>

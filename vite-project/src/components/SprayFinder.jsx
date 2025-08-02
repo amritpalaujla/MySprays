@@ -2,7 +2,9 @@ import { useState } from "react";
 import { cropList } from "../assets/cropList";
 import "./SprayFinder.css";
 import IssueDropDown from "./IssueDropDown";
-function SprayFinder({ setTab }) {
+
+function SprayFinder({ setTab, setChosenSpray }) {
+  // ✅ Added props
   const [selectedCrop, setSelectedCrop] = useState(null);
   const [isSpinning, setIsSpinning] = useState(false);
 
@@ -32,7 +34,16 @@ function SprayFinder({ setTab }) {
     );
   }
   //console.log("selected crop goint to dropdown: ", selectedCrop);
-  return <IssueDropDown setTab={setTab} crop={selectedCrop} />;
+  return (
+    <IssueDropDown
+      crop={selectedCrop}
+      setTab={setTab}
+      setChosenSpray={setChosenSpray}
+    />
+  );
+  {
+    /* ✅ Pass props down */
+  }
 }
 
 export default SprayFinder;
