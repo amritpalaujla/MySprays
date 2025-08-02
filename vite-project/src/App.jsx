@@ -4,9 +4,10 @@ import viteLogo from "/vite.svg";
 import "./App.css";
 import SprayFinder from "./components/SprayFinder";
 import Calculator from "./components/Calculator";
+import LandingPage from "./components/LandingPage";
 
 function App() {
-  const [tab, setTab] = useState("Spray Finder"); // ✅ Set default tab
+  const [tab, setTab] = useState("LandingPage"); // ✅ Set default tab
   const [chosenSpray, setChosenSpray] = useState(null); // ✅ Use null instead of ""
 
   // ✅ Clear chosenSpray when switching away from calculator
@@ -34,6 +35,7 @@ function App() {
       )}
       {tab === "Spray Calculator" && <Calculator chosenSpray={chosenSpray} />}
       {tab === "Spray Log" && <div>Spray Log content here</div>}
+      {tab === "LandingPage" && <LandingPage />}
     </>
   );
 }

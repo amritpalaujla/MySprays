@@ -28,6 +28,8 @@ function Calculator({ chosenSpray }) {
             name: spray.name,
             rate: spray.rate,
             unit: spray.unit,
+            phi: spray.phi,
+            pcp: spray.pcp,
           }); //pushing data to a flat array
       }
     }
@@ -121,6 +123,12 @@ function Calculator({ chosenSpray }) {
           <p>
             <strong>Rate:</strong>{" "}
             {`${selectedSpray.rate} ${selectedSpray.unit} per acre`}
+          </p>
+          <p>
+            <strong>PHI:</strong> {selectedSpray.phi}
+          </p>
+          <p>
+            <strong>PCP #:</strong> {selectedSpray.pcp}
           </p>
         </div>
       )}
