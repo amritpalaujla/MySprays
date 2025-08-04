@@ -5,6 +5,7 @@ import "./App.css";
 import SprayFinder from "./components/SprayFinder";
 import Calculator from "./components/Calculator";
 import LandingPage from "./components/LandingPage";
+import Tracking from "./components/Tracking";
 
 function App() {
   const [tab, setTab] = useState("LandingPage"); // ✅ Set default tab
@@ -27,14 +28,14 @@ function App() {
         <button onClick={() => handleTabChange("Spray Calculator")}>
           Spray Calculator
         </button>
-        <button onClick={() => handleTabChange("Spray Log")}>Spray Log</button>
+        <button onClick={() => handleTabChange("Tracking")}>Tracking</button>
       </div>
 
       {tab === "Spray Finder" && (
         <SprayFinder setTab={setTab} setChosenSpray={setChosenSpray} />
       )}
       {tab === "Spray Calculator" && <Calculator chosenSpray={chosenSpray} />}
-      {tab === "Spray Log" && <div>Spray Log content here</div>}
+      {tab === "Tracking" && <Tracking />}
       {tab === "LandingPage" && <LandingPage />}
     </>
   );
