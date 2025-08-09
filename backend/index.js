@@ -2,6 +2,14 @@ const express = require("express"); //importing express framework
 const app = express(); // creating an instance, aka server
 const cors = require("cors"); // cross origin resource sharing
 
+const mongoose = require("mongoose");
+require("dotenv").config();
+
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("connected to MongoDB"))
+  .catch((err) => console.error("MongoDB connection error:", err));
+
 const PORT = 3000; // the port where our server will run
 
 app.use(cors()); // allow frontend requests
