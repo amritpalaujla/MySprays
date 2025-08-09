@@ -1,6 +1,8 @@
 const express = require("express"); //importing express framework
 const app = express(); // creating an instance, aka server
 const cors = require("cors"); // cross origin resource sharing
+const User = require("./models/User");
+const bcrypt = require("bcrypt");
 
 const mongoose = require("mongoose");
 require("dotenv").config();
@@ -14,6 +16,27 @@ const PORT = 3000; // the port where our server will run
 
 app.use(cors()); // allow frontend requests
 app.use(express.json()); // parses incoming json to a object
+
+app.post("/register", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const newUser = new User({ email, passwordHash });
+    await newUser.save();
+
+    res.json({ message: "User registered successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
