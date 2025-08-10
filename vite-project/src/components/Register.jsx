@@ -1,41 +1,33 @@
-import Register from "./Register";
-import { useState } from "react";
-
-function Login({ setNewAcc }) {
+function Register({ setNewAcc }) {
   async function handleSubmit(e) {
     e.preventDefault();
 
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    const res = await fetch("http://localhost:3000/login", {
+    const res = await fetch("http://localhost:3000/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
 
     const data = await res.json();
-    console.log(data); // handle success/error
+    console.log(data);
   }
-
   const handleClick = () => {
-    setNewAcc(true);
+    setNewAcc(false);
   };
+
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-          Sign in to your account
+          Create An Account
         </h2>
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form
-          action="#"
-          method="POST"
-          className="space-y-6"
-          onSubmit={handleSubmit}
-        >
+        <form action="#" method="POST" className="space-y-6">
           <div>
             <label
               htmlFor="email"
@@ -46,8 +38,8 @@ function Login({ setNewAcc }) {
             <div className="mt-2">
               <input
                 id="email"
-                type="email"
                 name="email"
+                type="email"
                 required
                 autoComplete="email"
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -75,8 +67,8 @@ function Login({ setNewAcc }) {
             <div className="mt-2">
               <input
                 id="password"
-                type="password"
                 name="password"
+                type="password"
                 required
                 autoComplete="current-password"
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -98,7 +90,7 @@ function Login({ setNewAcc }) {
               onClick={() => handleClick()}
               className="font-semibold text-indigo-600 hover:text-indigo-500"
             >
-              Don't have an account?
+              I have an Account
             </a>
           </div>
         </form>
@@ -107,4 +99,4 @@ function Login({ setNewAcc }) {
   );
 }
 
-export default Login;
+export default Register;
