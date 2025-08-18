@@ -27,7 +27,12 @@ function Register({ setNewAcc }) {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form action="#" method="POST" className="space-y-6">
+        <form
+          action="#"
+          method="POST"
+          className="space-y-6"
+          onSubmit={handleSubmit}
+        >
           <div>
             <label
               htmlFor="email"
@@ -81,12 +86,12 @@ function Register({ setNewAcc }) {
               type="submit"
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              Sign in
+              Sign up
             </button>
           </div>
           <div className="text-sm">
             <a
-              href="#"
+              href=""
               onClick={() => handleClick()}
               className="font-semibold text-indigo-600 hover:text-indigo-500"
             >
