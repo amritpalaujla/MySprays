@@ -93,13 +93,12 @@ function Login({ setNewAcc }) {
             </button>
           </div>
           <div className="text-sm">
-            <a
-              href="#"
+            <p
               onClick={() => handleClick()}
               className="font-semibold text-indigo-600 hover:text-indigo-500"
             >
               Don't have an account?
-            </a>
+            </p>
           </div>
         </form>
       </div>

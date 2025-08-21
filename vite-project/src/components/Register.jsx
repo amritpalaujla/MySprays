@@ -13,6 +13,7 @@ function Register({ setNewAcc }) {
 
     const data = await res.json();
     console.log(data);
+    alert(data.message);
   }
   const handleClick = () => {
     setNewAcc(false);
@@ -90,13 +91,12 @@ function Register({ setNewAcc }) {
             </button>
           </div>
           <div className="text-sm">
-            <a
-              href=""
+            <p
               onClick={() => handleClick()}
               className="font-semibold text-indigo-600 hover:text-indigo-500"
             >
               I have an Account
-            </a>
+            </p>
           </div>
         </form>
       </div>
