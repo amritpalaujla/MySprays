@@ -1,19 +1,36 @@
+import { useState } from "react";
+
 function Register({ setNewAcc }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
   async function handleSubmit(e) {
     e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    const res = await fetch("http://localhost:3000/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch("http://localhost:3000/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
-    console.log(data);
-    alert(data.message);
+      const data = await res.json();
+      if (res.ok) {
+        alert("account created! please login");
+        setNewAcc(false); // Switch to login form
+      } else {
+        setError(data.message || "Registration failed");
+      }
+    } catch (error) {
+      setError("Network error. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   }
   const handleClick = () => {
     setNewAcc(false);
