@@ -110,7 +110,7 @@ function Register({ setNewAcc }) {
           <div className="text-sm">
             <p
               onClick={() => handleClick()}
-              className="font-semibold text-indigo-600 hover:text-indigo-500"
+              className="font-semibold text-indigo-600 hover:text-indigo-500 cursor-pointer"
             >
               I have an Account
             </p>
