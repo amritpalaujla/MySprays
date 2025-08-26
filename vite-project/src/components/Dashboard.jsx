@@ -55,7 +55,7 @@ function Dashboard({ token, onLogout }) {
   }
 
   return (
-    <div className="flex h-3/4 w-100 sm:w-150 md:w-200 lg:w-300">
+    <div className="flex h-3/4 max-w-screen-xl mx-auto">
       <div className="bg-gray-200 rounded w-1/4 p-4">
         <ul>
           <li>Sprays</li>

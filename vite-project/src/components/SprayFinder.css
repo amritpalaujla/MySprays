@@ -16,6 +16,8 @@
 .crop-grid {
   display: grid;
   place-items: center;
+  max-width: 1200px;
+  margin: auto;
 }
 
 /*these are the breakpoints for the panel of crops */
