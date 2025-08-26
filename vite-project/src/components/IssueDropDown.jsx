@@ -47,7 +47,7 @@ function IssueDropDown({ crop, setTab, setChosenSpray }) {
         ))}
       </select>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-self-center">
         {selectedIssue &&
           sprays.map((spray) => (
             <div key={spray.name} className="m-4 outline rounded-xl">
