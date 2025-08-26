@@ -4,6 +4,7 @@ function Dashboard({ token, onLogout }) {
   const [message, setMessage] = useState("Loading...");
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
+  const [sideBarOpen, setSideBarOpen] = useState(false);
 
   useEffect(() => {
     async function fetchDashboard() {
@@ -55,14 +56,33 @@ function Dashboard({ token, onLogout }) {
   }
 
   return (
-    <div className="flex h-3/4 max-w-screen-xl mx-auto">
-      <div className="bg-gray-200 rounded w-1/4 p-4">
+    <div className="flex flex-col md:flex-row h-3/4 max-w-screen-xl mx-auto">
+      <div className="hidden md:flex bg-gray-200 rounded md:w-1/4 p-4 w-100%">
         <ul>
           <li>Sprays</li>
           <li>Irrigation Timers</li>
           <li>Ask Ai</li>
         </ul>
       </div>
+
+      <div className="md:hidden w-full bg-gray-200 p-2 relative">
+        <button
+          className=" p-2 border rounded"
+          onClick={() => setSideBarOpen(!sideBarOpen)}
+        >
+          {sideBarOpen ? "X" : "☰"}
+        </button>
+        {sideBarOpen && (
+          <div className="absolute top-full left-0 w-full bg-gray-200 shadow-md rounded mt-2 z-50">
+            <ul>
+              <li className="p-2 border-b">Sprays</li>
+              <li className="p-2 border-b">Irrigation Timers</li>
+              <li className="p-2">Ask Ai</li>
+            </ul>
+          </div>
+        )}
+      </div>
+
       <div className="flex-1 bg-white p-6">
         <h1>Main Content</h1>
         <button
