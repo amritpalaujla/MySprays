@@ -58,10 +58,16 @@ function Dashboard({ token, onLogout }) {
   return (
     <div className="flex flex-col md:flex-row h-3/4 max-w-screen-xl mx-auto">
       <div className="hidden md:flex bg-gray-200 rounded md:w-1/4 p-4 w-100%">
-        <ul>
+        <ul className="m-auto">
           <li>Sprays</li>
           <li>Irrigation Timers</li>
           <li>Ask Ai</li>
+          <button
+            onClick={onLogout}
+            className="w-half bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
+          >
+            Logout
+          </button>
         </ul>
       </div>
 
@@ -79,18 +85,18 @@ function Dashboard({ token, onLogout }) {
               <li className="p-2 border-b">Irrigation Timers</li>
               <li className="p-2">Ask Ai</li>
             </ul>
+            <button
+              onClick={onLogout}
+              className="w-1/2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
+            >
+              Logout
+            </button>
           </div>
         )}
       </div>
 
       <div className="flex-1 bg-white p-6">
         <h1>Main Content</h1>
-        <button
-          onClick={onLogout}
-          className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
-        >
-          Logout
-        </button>
       </div>
     </div>
   );
