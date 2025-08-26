@@ -55,14 +55,23 @@ function Dashboard({ token, onLogout }) {
   }
 
   return (
-    <div>
-      <p>This is the dashboard</p>
-      <button
-        onClick={onLogout}
-        className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
-      >
-        Logout
-      </button>
+    <div className="flex h-3/4 w-100 sm:w-150 md:w-200 lg:w-300">
+      <div className="bg-gray-200 rounded w-1/4 p-4">
+        <ul>
+          <li>Sprays</li>
+          <li>Irrigation Timers</li>
+          <li>Ask Ai</li>
+        </ul>
+      </div>
+      <div className="flex-1 bg-white p-6">
+        <h1>Main Content</h1>
+        <button
+          onClick={onLogout}
+          className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 }
