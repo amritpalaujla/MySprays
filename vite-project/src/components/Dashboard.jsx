@@ -1,10 +1,19 @@
 import { useState, useEffect } from "react";
+import SprayInfo from "./SprayInfo";
+import IrrigationInfo from "./IrrigationInfo";
 
 function Dashboard({ token, onLogout }) {
   const [message, setMessage] = useState("Loading...");
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [sideBarOpen, setSideBarOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("sprays");
+
+  const tabs = [
+    { id: "sprays", label: "Sprays" },
+    { id: "irrigation", label: "Irrigation Timers" },
+    { id: "askAi", label: "Ask Ai" },
+  ];
 
   useEffect(() => {
     async function fetchDashboard() {
@@ -21,10 +30,8 @@ function Dashboard({ token, onLogout }) {
           setError("");
         } else {
           if (res.status === 401) {
-            setError("Session expired log in again");
-            setTimeout(() => {
-              onLogout();
-            }, 3000);
+            setError("Session expired, log in again");
+            setTimeout(() => onLogout(), 3000);
           } else {
             setError(data.error || "Failed to load dashboard");
           }
@@ -35,9 +42,7 @@ function Dashboard({ token, onLogout }) {
       }
     }
 
-    if (token) {
-      fetchDashboard();
-    }
+    if (token) fetchDashboard();
   }, [token, onLogout]);
 
   if (error) {
@@ -57,37 +62,60 @@ function Dashboard({ token, onLogout }) {
 
   return (
     <div className="flex flex-col md:flex-row h-3/4 max-w-screen-xl mx-auto">
-      <div className="hidden md:flex bg-gray-200 rounded md:w-1/4 p-4 w-100%">
-        <ul className="m-auto">
-          <li>Sprays</li>
-          <li>Irrigation Timers</li>
-          <li>Ask Ai</li>
-          <button
-            onClick={onLogout}
-            className="w-half bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
-          >
-            Logout
-          </button>
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex flex-col bg-gray-200 rounded md:w-1/4 p-4 h-full">
+        <ul className="flex flex-col space-y-2">
+          {tabs.map((tab) => (
+            <li
+              key={tab.id}
+              className={`p-2 cursor-pointer rounded transition-all ${
+                selectedTab === tab.id
+                  ? "font-bold bg-gray-300"
+                  : "font-normal hover:font-bold hover:bg-gray-100"
+              }`}
+              onClick={() => setSelectedTab(tab.id)}
+            >
+              {tab.label}
+            </li>
+          ))}
         </ul>
+        <button
+          onClick={onLogout}
+          className="mt-auto bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
+        >
+          Logout
+        </button>
       </div>
 
-      <div className="md:hidden w-full bg-gray-200 p-2 relative">
+      {/* Mobile Sidebar */}
+      <div className="md:hidden w-full bg-gray-200 p-2">
         <button
-          className=" p-2 border rounded"
+          className="p-2 border rounded w-full text-left"
           onClick={() => setSideBarOpen(!sideBarOpen)}
         >
-          {sideBarOpen ? "X" : "☰"}
+          {sideBarOpen ? "Close Menu" : "Open Menu"}
         </button>
+
         {sideBarOpen && (
-          <div className="absolute top-full left-0 w-full bg-gray-200 shadow-md rounded mt-2 z-50">
-            <ul>
-              <li className="p-2 border-b">Sprays</li>
-              <li className="p-2 border-b">Irrigation Timers</li>
-              <li className="p-2">Ask Ai</li>
+          <div className="mt-2 bg-gray-200 rounded shadow-md">
+            <ul className="flex flex-col space-y-2 p-2">
+              {tabs.map((tab) => (
+                <li
+                  key={tab.id}
+                  className={`p-2 cursor-pointer rounded transition-all ${
+                    selectedTab === tab.id
+                      ? "font-bold bg-gray-300"
+                      : "font-normal hover:font-bold hover:bg-gray-100"
+                  }`}
+                  onClick={() => setSelectedTab(tab.id)}
+                >
+                  {tab.label}
+                </li>
+              ))}
             </ul>
             <button
               onClick={onLogout}
-              className="w-1/2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
+              className="w-1/2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors m-2"
             >
               Logout
             </button>
@@ -95,10 +123,16 @@ function Dashboard({ token, onLogout }) {
         )}
       </div>
 
+      {/* Content */}
       <div className="flex-1 bg-white p-6">
-        <h1>Main Content</h1>
+        {selectedTab === "sprays" && <SprayInfo />}
+        {selectedTab === "irrigation" && <IrrigationInfo />}
+        {selectedTab === "askAi" && (
+          <div className="text-gray-500">Ask Ai content coming soon...</div>
+        )}
       </div>
     </div>
   );
 }
+
 export default Dashboard;
