@@ -4,6 +4,7 @@ const cors = require("cors"); // cross origin resource sharing
 const User = require("./models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Sprays = require("./models/Sprays");
 
 const mongoose = require("mongoose");
 require("dotenv").config();
@@ -46,6 +47,27 @@ function verifyToken(req, res, next) {
     next();
   });
 }
+
+app.post("/sprays", verifyToken, async (req, res) => {
+  try {
+    const { sprayName, date, crop, rate, amount, location, PCP } = req.body;
+    const newSpray = new Sprays({
+      userId: req.user._id,
+      sprayName,
+      date,
+      crop,
+      rate,
+      amount,
+      location,
+      PCP,
+    });
+
+    const savedSpray = await newSpray.save();
+    res.json(savedSpray);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 app.post("/register", async (req, res) => {
   const { email, password } = req.body;

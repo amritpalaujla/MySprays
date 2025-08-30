@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 const spraySchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   sprayName: { type: String, required: true },
-  date: { type: Date, default: Date.now },
-  crop: { type: String },
-  rate: { type: String },
-  amount: { type: String },
-  location: { type: String },
-  notes: { type: String },
+  date: { type: Date, required: true },
+  crop: { type: String, required: true },
+  rate: { type: String, required: true },
+  amount: { type: String, required: true },
+  location: { type: String, required: true },
+  PCP: { type: String, required: true },
 });
 
 module.exports = mongoose.model("Sprays", spraySchema);
