@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function SprayInfo({ token }) {
   const [formData, setFormData] = useState({
@@ -12,11 +12,34 @@ function SprayInfo({ token }) {
     PCP: "",
   });
 
+  const [sprays, setSprays] = useState([]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const fetchSprays = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/sprays", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setSprays(data);
+      } else {
+        console.error("Failed to fetch sprays");
+      }
+    } catch (err) {
+      console.error("Error Fetching sprays:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchSprays();
+  }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,6 +70,7 @@ function SprayInfo({ token }) {
           PCP: "",
         });
         setIsModalOpen(false);
+        fetchSprays();
       }
     } catch (err) {
       console.error("Error saving spray:", err);
@@ -63,6 +87,57 @@ function SprayInfo({ token }) {
         >
           + Log Spray
         </button>
+      </div>
+
+      <div className="mt-4">
+        <h3 className="text-lg font-bold mb-2">My Spray Logs</h3>
+        {sprays.length > 0 ? (
+          <ul className="space-y-2">
+            {sprays.map((spray) => (
+              <li
+                key={spray._id}
+                className="p-3 border rounded shadow-sm bg-gray-50"
+              >
+                <p>
+                  <strong>Spray Name: </strong>
+                  {spray.sprayName}
+                </p>
+                <p>
+                  <strong>Date: </strong>
+                  {new Date(spray.date).toLocaleDateString()}
+                </p>
+                <p>
+                  <strong>Crop: </strong>
+                  {spray.crop}
+                </p>
+                <p>
+                  <strong>Location: </strong>
+                  {spray.location}
+                </p>
+                <p>
+                  <strong>Rate: </strong>
+                  {spray.rate}
+                </p>
+                <p>
+                  <strong>Amount: </strong>
+                  {spray.amount}
+                </p>
+                <p>
+                  <strong>PHI: </strong>
+                  {spray.PHI}
+                </p>
+                <p>
+                  <strong>PCP: </strong>
+                  {spray.PCP}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-500">
+            No spray logs found. Log a new spray to see it here!
+          </p>
+        )}
       </div>
 
       {/* Modal */}

@@ -152,6 +152,15 @@ app.get("/verify-token", verifyToken, (req, res) => {
   });
 });
 
+app.get("/sprays", verifyToken, async (req, res) => {
+  try {
+    const sprays = await Sprays.find({ userId: req.user.id });
+    res.json(sprays);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get("/dashboard", verifyToken, (req, res) => {
   res.json({
     message: `Welcome to your dashboard`,
