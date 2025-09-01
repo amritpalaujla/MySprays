@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
@@ -10,6 +10,8 @@ import Tracking from "./components/Tracking";
 function App() {
   const [tab, setTab] = useState("LandingPage"); // ✅ Set default tab
   const [chosenSpray, setChosenSpray] = useState(null); // ✅ Use null instead of ""
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
+  const [isValidating, setIsValidating] = useState(true);
 
   // ✅ Clear chosenSpray when switching away from calculator
   const handleTabChange = (tabName) => {
@@ -18,6 +20,52 @@ function App() {
       setChosenSpray(null);
     }
   };
+
+  const handleLogout = () => {
+    setToken(null);
+    localStorage.removeItem("token");
+  };
+
+  // validating token on mount
+  useEffect(() => {
+    const validateInitialToken = async () => {
+      const storedToken = localStorage.getItem("token");
+
+      if (!storedToken) {
+        setIsValidating(false);
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:3000/verify-token", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (res.ok) {
+          setToken(storedToken);
+        } else {
+          setToken(null);
+          localStorage.removeItem("token");
+        }
+      } catch (error) {
+        console.error("Token validation error:", error);
+        setToken(null);
+        localStorage.removeItem("token");
+      } finally {
+        setIsValidating(false);
+      }
+    };
+
+    validateInitialToken();
+  }, []);
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
 
   return (
     <>
@@ -34,8 +82,17 @@ function App() {
       {tab === "Spray Finder" && (
         <SprayFinder setTab={setTab} setChosenSpray={setChosenSpray} />
       )}
-      {tab === "Spray Calculator" && <Calculator chosenSpray={chosenSpray} />}
-      {tab === "Tracking" && <Tracking />}
+      {tab === "Spray Calculator" && (
+        <Calculator chosenSpray={chosenSpray} token={token} />
+      )}
+      {tab === "Tracking" &&
+        (isValidating ? (
+          <div className="flex justify-center items-center min-h-screen">
+            <p>Validating session...</p>
+          </div>
+        ) : (
+          <Tracking token={token} setToken={setToken} onLogout={handleLogout} />
+        ))}
       {tab === "LandingPage" && <LandingPage />}
     </>
   );
