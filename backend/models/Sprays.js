@@ -8,6 +8,7 @@ const spraySchema = new mongoose.Schema({
   rate: { type: String, required: true },
   amount: { type: String, required: true },
   location: { type: String, required: true },
+  PHI: { type: String, required: true },
   PCP: { type: String, required: true },
 });
 

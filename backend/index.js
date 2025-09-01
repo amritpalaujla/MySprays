@@ -50,15 +50,17 @@ function verifyToken(req, res, next) {
 
 app.post("/sprays", verifyToken, async (req, res) => {
   try {
-    const { sprayName, date, crop, rate, amount, location, PCP } = req.body;
+    const { sprayName, date, crop, rate, amount, location, PHI, PCP } =
+      req.body;
     const newSpray = new Sprays({
-      userId: req.user._id,
+      userId: req.user.id,
       sprayName,
       date,
       crop,
       rate,
       amount,
       location,
+      PHI,
       PCP,
     });
 

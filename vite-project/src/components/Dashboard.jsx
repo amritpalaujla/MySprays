@@ -125,7 +125,7 @@ function Dashboard({ token, onLogout }) {
 
       {/* Content */}
       <div className="flex-1 bg-white p-6">
-        {selectedTab === "sprays" && <SprayInfo />}
+        {selectedTab === "sprays" && <SprayInfo token={token} />}
         {selectedTab === "irrigation" && <IrrigationInfo />}
         {selectedTab === "askAi" && (
           <div className="text-gray-500">Ask Ai content coming soon...</div>
