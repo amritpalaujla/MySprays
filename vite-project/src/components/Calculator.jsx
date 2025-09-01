@@ -164,25 +164,23 @@ function Calculator({ chosenSpray }) {
 
               {/* Tank visuals */}
               <div className="flex flex-wrap gap-4 mt-4">
-                {[...Array(fullTankCount)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="border rounded p-2 w-32 text-center bg-white shadow m-auto"
-                  >
-                    <div className="text-3xl">
-                      <img src={sprayTank} alt="sprayer"></img>
-                    </div>
-                    <div className="text-sm">Water: {tankSize}L</div>
-                    <div className="text-sm">
-                      Product: {productPerFullTank.toFixed(2)}{" "}
-                      {selectedSpray.unit}
-                    </div>
+                <div className="border rounded p-2 w-32 text-center bg-white shadow m-auto">
+                  <div className="text-3xl">
+                    <img src={sprayTank} alt="sprayer"></img>{" "}
+                    <b>x {fullTankCount}</b>
                   </div>
-                ))}
+                  <div className="text-sm">Water: {tankSize}L</div>
+                  <div className="text-sm">
+                    Product: {productPerFullTank.toFixed(2)}{" "}
+                    {selectedSpray.unit}
+                  </div>
+                </div>
+
                 {remainingLitres > 0 && (
                   <div className="border rounded p-2 w-32 text-center bg-white shadow m-auto">
                     <div className="text-3xl">
                       <img src={partialSprayTank} alt="sprayer"></img>
+                      <b>partial</b>
                     </div>
                     <div className="text-sm">Water: {remainingLitres}L</div>
                     <div className="text-sm">
