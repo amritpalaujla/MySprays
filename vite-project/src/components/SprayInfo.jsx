@@ -15,6 +15,9 @@ function SprayInfo({ token }) {
   const [sprays, setSprays] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState(null);
+
+  const [editingSprayId, setEditingSprayId] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -43,10 +46,15 @@ function SprayInfo({ token }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const isEditing = !!editingSprayId; // assigns boolean to this variable
+    const url = isEditing
+      ? `http://localhost:3000/sprays/${editingSprayId}`
+      : `http://localhost:3000/sprays`;
+    const method = isEditing ? "PUT" : "POST";
 
     try {
-      const res = await fetch("http://localhost:3000/sprays", {
-        method: "POST",
+      const res = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -70,11 +78,40 @@ function SprayInfo({ token }) {
           PCP: "",
         });
         setIsModalOpen(false);
+        setEditingSprayId(null);
         fetchSprays();
       }
     } catch (err) {
       console.error("Error saving spray:", err);
     }
+  };
+
+  const handleDeleteClick = async (id) => {
+    if (window.confirm("Are you sure you want to delete this spray log?")) {
+      try {
+        const res = await fetch(`http://localhost:3000/sprays/${id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.ok) {
+          fetchSprays();
+        } else {
+          alert("Failed to delete spray log.");
+        }
+      } catch (err) {
+        console.error("Error deleting spray:", err);
+        alert("Error deleting spray log");
+      }
+    }
+  };
+
+  const handleEditClick = (spray) => {
+    setEditingSprayId(spray._id);
+    setFormData(spray);
+    setIsModalOpen(true);
   };
 
   return (
@@ -96,40 +133,67 @@ function SprayInfo({ token }) {
             {sprays.map((spray) => (
               <li
                 key={spray._id}
-                className="p-3 border rounded shadow-sm bg-gray-50"
+                className="relative p-3 border rounded shadow-sm bg-gray-50"
               >
-                <p>
-                  <strong>Spray Name: </strong>
-                  {spray.sprayName}
-                </p>
-                <p>
-                  <strong>Date: </strong>
-                  {new Date(spray.date).toLocaleDateString()}
-                </p>
-                <p>
-                  <strong>Crop: </strong>
-                  {spray.crop}
-                </p>
-                <p>
-                  <strong>Location: </strong>
-                  {spray.location}
-                </p>
-                <p>
-                  <strong>Rate: </strong>
-                  {spray.rate}
-                </p>
-                <p>
-                  <strong>Amount: </strong>
-                  {spray.amount}
-                </p>
-                <p>
-                  <strong>PHI: </strong>
-                  {spray.PHI}
-                </p>
-                <p>
-                  <strong>PCP: </strong>
-                  {spray.PCP}
-                </p>
+                <button
+                  onClick={() =>
+                    setOpenMenuId(openMenuId === spray._id ? null : spray._id)
+                  }
+                  className="absolute top-1 right-1 font-bold p-1 rounded text-xl hover:bg-gray-200"
+                >
+                  ...
+                </button>
+
+                {openMenuId === spray._id && (
+                  <div className="absolute top-12 right-1 flex flex-col space-y-1 bg-white border rounded shadow-md z-10">
+                    <button
+                      onClick={() => handleEditClick(spray)}
+                      className="px-4 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(spray._id)}
+                      className="px-4 py-1 text-sm text-red-500 hover:bg-gray-100"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
+                <div className="flex-1 ml-10 mr-10">
+                  <p>
+                    <strong>Spray Name: </strong>
+                    {spray.sprayName}
+                  </p>
+                  <p>
+                    <strong>Date: </strong>
+                    {new Date(spray.date).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <strong>Crop: </strong>
+                    {spray.crop}
+                  </p>
+                  <p>
+                    <strong>Location: </strong>
+                    {spray.location}
+                  </p>
+                  <p>
+                    <strong>Rate: </strong>
+                    {spray.rate}
+                  </p>
+                  <p>
+                    <strong>Amount: </strong>
+                    {spray.amount}
+                  </p>
+                  <p>
+                    <strong>PHI: </strong>
+                    {spray.PHI}
+                  </p>
+                  <p>
+                    <strong>PCP: </strong>
+                    {spray.PCP}
+                  </p>
+                </div>
               </li>
             ))}
           </ul>

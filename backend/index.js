@@ -152,6 +152,60 @@ app.get("/verify-token", verifyToken, (req, res) => {
   });
 });
 
+//deleting a spray log
+app.delete("/sprays/:id", verifyToken, async (req, res) => {
+  try {
+    const sprayId = req.params.id;
+    const deletedSpray = await Sprays.findOneAndDelete({
+      _id: sprayId,
+      userId: req.user.id,
+    });
+    if (!deletedSpray) {
+      return res
+        .status(404)
+        .json({ error: "Spray not found or user not authorized" });
+    }
+    res.json({ message: "Spray deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//updating a spray log
+app.put("/sprays/:id", verifyToken, async (req, res) => {
+  try {
+    const sprayId = req.params.id;
+    const { sprayName, date, crop, rate, amount, location, PHI, PCP } =
+      req.body;
+
+    const updatedSpray = await Sprays.findOneAndUpdate(
+      {
+        _id: sprayId,
+        userId: req.user.id,
+      },
+      {
+        sprayName,
+        date,
+        crop,
+        rate,
+        amount,
+        location,
+        PHI,
+        PCP,
+      },
+      { new: true } // Returns the updated document
+    );
+    if (!updatedSpray) {
+      return res
+        .status(404)
+        .json({ error: "Spray not found or user not authorized" });
+    }
+    res.json(updatedSpray);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get("/sprays", verifyToken, async (req, res) => {
   try {
     const sprays = await Sprays.find({ userId: req.user.id });
