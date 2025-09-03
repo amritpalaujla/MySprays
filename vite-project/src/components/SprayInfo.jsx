@@ -119,7 +119,19 @@ function SprayInfo({ token }) {
       {/* Top-right button */}
       <div className="flex justify-end mb-4">
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setIsModalOpen(true);
+            setFormData({
+              sprayName: "",
+              date: "",
+              crop: "",
+              rate: "",
+              amount: "",
+              location: "",
+              PHI: "",
+              PCP: "",
+            });
+          }}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           + Log Spray
@@ -209,7 +221,9 @@ function SprayInfo({ token }) {
         <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm bg-opacity-40 z-50">
           <div className="m-3 bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
             <button
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => {
+                setIsModalOpen(false);
+              }}
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
             >
               ✕
