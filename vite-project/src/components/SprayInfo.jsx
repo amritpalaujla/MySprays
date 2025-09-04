@@ -24,6 +24,28 @@ function SprayInfo({ token }) {
 
   const [editingSprayId, setEditingSprayId] = useState(null);
 
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (openMenuId !== null) {
+        const menu = document.getElementById(`menu-${openMenuId}`);
+        const menuButton = document.getElementById(`menu-button-${openMenuId}`);
+
+        if (
+          menu &&
+          menuButton &&
+          !menu.contains(event.target) &&
+          !menuButton.contains(event.target)
+        ) {
+          setOpenMenuId(null);
+        }
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [openMenuId]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -152,65 +174,80 @@ function SprayInfo({ token }) {
               PCP: "",
             });
           }}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="bg-blue-500 text-white px-6 py-3 rounded-xl shadow-md hover:bg-blue-600 transition-colors duration-200 text-lg"
         >
           + Log Spray
         </button>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-6 items-center justify-between p-4 bg-gray-100 rounded shadow-sm">
-        {/* Filter by Location */}
-        <div className="flex flex-col w-full sm:w-auto">
-          <label htmlFor="location" className="text-sm text-gray-600 mb-1">
-            Filter by Location
-          </label>
-          <input
-            type="text"
-            id="location"
-            value={filterLocation}
-            onChange={(e) => setFilterLocation(e.target.value)}
-            placeholder="e.g. Field 1"
-            className="p-2 border rounded text-sm w-full"
-          />
-        </div>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-start gap-6 p-6 bg-gray-100 rounded-xl shadow-lg mb-8 border border-gray-200">
+        {/* Filters Container */}
+        <div className="flex flex-col sm:flex-row gap-4 flex-1">
+          {/* Filter by Location */}
+          <div className="flex flex-col w-full sm:w-auto">
+            <label
+              htmlFor="location"
+              className="text-sm font-medium text-gray-700 mb-1"
+            >
+              Location
+            </label>
+            <input
+              type="text"
+              id="location"
+              value={filterLocation}
+              onChange={(e) => setFilterLocation(e.target.value)}
+              placeholder="e.g. Field 1"
+              className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
 
-        {/* Filter by Date Range */}
-        <div className="flex flex-col w-full sm:w-auto">
-          <label htmlFor="startDate" className="text-sm text-gray-600 mb-1">
-            Start Date
-          </label>
-          <input
-            type="date"
-            id="startDate"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="p-2 border rounded text-sm w-full"
-          />
-        </div>
+          {/* Filter by Date Range */}
+          <div className="flex flex-col w-full sm:w-auto">
+            <label
+              htmlFor="startDate"
+              className="text-sm font-medium text-gray-700 mb-1"
+            >
+              Start Date
+            </label>
+            <input
+              type="date"
+              id="startDate"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
 
-        <div className="flex flex-col w-full sm:w-auto">
-          <label htmlFor="endDate" className="text-sm text-gray-600 mb-1">
-            End Date
-          </label>
-          <input
-            type="date"
-            id="endDate"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="p-2 border rounded text-sm w-full"
-          />
+          <div className="flex flex-col w-full sm:w-auto">
+            <label
+              htmlFor="endDate"
+              className="text-sm font-medium text-gray-700 mb-1"
+            >
+              End Date
+            </label>
+            <input
+              type="date"
+              id="endDate"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="p-3 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
         </div>
 
         {/* Sort Order */}
-        <div className="flex flex-col w-full sm:w-auto">
-          <label htmlFor="sortOrder" className="text-sm text-gray-600 mb-1">
+        <div className="flex flex-col w-full sm:w-auto md:w-1/4">
+          <label
+            htmlFor="sortOrder"
+            className="text-sm font-medium text-gray-700 mb-1"
+          >
             Sort by
           </label>
           <select
             id="sortOrder"
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="p-2 border rounded text-sm w-full"
+            className="p-3 border border-gray-300 rounded-lg text-sm w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="dateDesc">Date (Newest First)</option>
             <option value="dateAsc">Date (Oldest First)</option>
@@ -225,64 +262,73 @@ function SprayInfo({ token }) {
             {sprays.map((spray) => (
               <li
                 key={spray._id}
-                className="relative p-3 border rounded shadow-sm bg-gray-50"
+                className="relative p-6 border border-gray-200 rounded-xl shadow-md bg-white hover:shadow-lg transition-shadow duration-300"
               >
+                {/* The More-Options button remains the same */}
                 <button
+                  id={`menu-button-${spray._id}`}
                   onClick={() =>
                     setOpenMenuId(openMenuId === spray._id ? null : spray._id)
                   }
-                  className="absolute top-1 right-1 font-bold p-1 rounded text-xl hover:bg-gray-200"
+                  className="absolute top-2 right-2 text-xl font-bold p-1 rounded-full text-gray-500 hover:bg-gray-200"
                 >
                   ...
                 </button>
 
+                {/* Dropdown menu */}
                 {openMenuId === spray._id && (
-                  <div className="absolute top-12 right-1 flex flex-col space-y-1 bg-white border rounded shadow-md z-10">
+                  <div
+                    id={`menu-${spray._id}`}
+                    className="absolute top-10 right-2 flex flex-col space-y-1 bg-white border rounded shadow-lg z-10"
+                  >
                     <button
                       onClick={() => handleEditClick(spray)}
-                      className="px-4 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                      className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDeleteClick(spray._id)}
-                      className="px-4 py-1 text-sm text-red-500 hover:bg-gray-100"
+                      className="px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
                     >
                       Delete
                     </button>
                   </div>
                 )}
-                <div className="flex-1 ml-10 mr-10">
+
+                <h4 className="text-xl font-bold text-gray-800 mb-2">
+                  {spray.sprayName}
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-sm text-gray-600">
                   <p>
-                    <strong>Spray Name: </strong>
-                    {spray.sprayName}
-                  </p>
-                  <p>
-                    <strong>Date: </strong>
+                    <span className="font-semibold text-gray-800">Date:</span>{" "}
                     {new Date(spray.date).toLocaleDateString()}
                   </p>
                   <p>
-                    <strong>Crop: </strong>
+                    <span className="font-semibold text-gray-800">Crop:</span>{" "}
                     {spray.crop}
                   </p>
                   <p>
-                    <strong>Location: </strong>
+                    <span className="font-semibold text-gray-800">
+                      Location:
+                    </span>{" "}
                     {spray.location}
                   </p>
                   <p>
-                    <strong>Rate: </strong>
+                    <span className="font-semibold text-gray-800">Rate:</span>{" "}
                     {spray.rate}
                   </p>
                   <p>
-                    <strong>Amount: </strong>
+                    <span className="font-semibold text-gray-800">Amount:</span>{" "}
                     {spray.amount}
                   </p>
                   <p>
-                    <strong>PHI: </strong>
+                    <span className="font-semibold text-gray-800">PHI:</span>{" "}
                     {spray.PHI}
                   </p>
                   <p>
-                    <strong>PCP: </strong>
+                    <span className="font-semibold text-gray-800">PCP:</span>{" "}
                     {spray.PCP}
                   </p>
                 </div>

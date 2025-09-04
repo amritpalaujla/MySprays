@@ -1,7 +1,7 @@
 function IrrigationInfo() {
   return (
     <div>
-      <p>Irrigation Info goes here</p>
+      <p>Irrigation Timers coming soon...</p>
     </div>
   );
 }
