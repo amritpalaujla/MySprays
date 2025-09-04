@@ -37,98 +37,131 @@ function Login({ setNewAcc, setToken }) {
   const handleClick = () => {
     setNewAcc(true);
   };
-  return (
-    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-          Sign in to your account
-        </h2>
-      </div>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-            {error}
-          </div>
-        )}
-        <form
-          action="#"
-          method="POST"
-          className="space-y-6"
-          onSubmit={handleSubmit}
-        >
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm/6 font-medium text-gray-900"
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="bg-blue-600 w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <svg
+              className="w-8 h-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              Email address
-            </label>
-            <div className="mt-2">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+            Welcome Back
+          </h2>
+          <p className="text-gray-600">Sign in to your account to continue</p>
+        </div>
+
+        {/* Form Container */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100">
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center space-x-2">
+              <svg
+                className="w-5 h-5 text-red-500 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="email" className="form-label">
+                Email Address
+              </label>
               <input
                 id="email"
                 type="email"
                 name="email"
                 required
                 autoComplete="email"
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                className="form-input"
+                placeholder="Enter your email"
                 disabled={isLoading}
               />
             </div>
-          </div>
 
-          <div>
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="block text-sm/6 font-medium text-gray-900"
-              >
-                Password
-              </label>
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-semibold text-indigo-600 hover:text-indigo-500"
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="password" className="form-label mb-0">
+                  Password
+                </label>
+                <button
+                  type="button"
+                  className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
                 >
                   Forgot password?
-                </a>
+                </button>
               </div>
-            </div>
-            <div className="mt-2">
               <input
                 id="password"
                 type="password"
                 name="password"
                 required
                 autoComplete="current-password"
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                className="form-input"
+                placeholder="Enter your password"
                 disabled={isLoading}
               />
             </div>
-          </div>
 
-          <div>
             <button
               type="submit"
               disabled={isLoading}
-              className={`flex w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
-                isLoading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-indigo-600 hover:bg-indigo-500"
+              className={`w-full py-4 px-4 rounded-xl font-semibold text-white transition-all duration-200 ${
+                isLoading ? "bg-gray-400 cursor-not-allowed" : "btn-primary"
               }`}
             >
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="spinner w-5 h-5"></div>
+                  <span>Signing in...</span>
+                </div>
+              ) : (
+                "Sign In"
+              )}
             </button>
-          </div>
-          <div className="text-sm">
-            <p
-              onClick={() => handleClick()}
-              className="font-semibold text-indigo-600 hover:text-indigo-500 cursor-pointer"
-            >
+          </form>
+
+          {/* Divider */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <p className="text-center text-gray-600 text-sm mb-4">
               Don't have an account?
             </p>
+            <button
+              onClick={handleClick}
+              className="w-full py-3 px-4 border-2 border-blue-600 text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-colors duration-200"
+            >
+              Create New Account
+            </button>
           </div>
-        </form>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-8 text-center text-sm text-gray-500">
+          <p>© 2024 Spray Management. All rights reserved.</p>
+        </div>
       </div>
     </div>
   );

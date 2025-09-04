@@ -8,6 +8,11 @@ function SprayFinder({ setTab, setChosenSpray }) {
   const [selectedCrop, setSelectedCrop] = useState(null);
   const [isSpinning, setIsSpinning] = useState(false);
 
+  const handleBackToCrops = () => {
+    setSelectedCrop(null);
+    setIsSpinning(false);
+  };
+
   if (!selectedCrop || isSpinning) {
     return (
       <div className="crop-grid">
@@ -39,6 +44,7 @@ function SprayFinder({ setTab, setChosenSpray }) {
       crop={selectedCrop}
       setTab={setTab}
       setChosenSpray={setChosenSpray}
+      onBackToCrops={handleBackToCrops}
     />
   );
   {

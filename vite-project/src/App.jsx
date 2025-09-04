@@ -93,7 +93,7 @@ function App() {
         ) : (
           <Tracking token={token} setToken={setToken} onLogout={handleLogout} />
         ))}
-      {tab === "LandingPage" && <LandingPage />}
+      {tab === "LandingPage" && <LandingPage setTab={setTab} />}
     </>
   );
 }
