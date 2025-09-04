@@ -415,7 +415,7 @@ function Calculator({ chosenSpray, token }) {
                         Partial Tank
                       </div>
                       <div className="text-gray-600">
-                        Water: {remainingLitres}L
+                        Water: {remainingLitres.toFixed(2)}L
                       </div>
                       <div className="text-gray-600">
                         Product: {productForPartialTank.toFixed(2)}{" "}
