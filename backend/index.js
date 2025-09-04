@@ -208,7 +208,39 @@ app.put("/sprays/:id", verifyToken, async (req, res) => {
 
 app.get("/sprays", verifyToken, async (req, res) => {
   try {
-    const sprays = await Sprays.find({ userId: req.user.id });
+    const { sort, location, startDate, endDate } = req.query;
+
+    let query = { userId: req.user.id }; // Start with the user ID filter
+
+    // Filtering by location
+    if (location) {
+      query.location = location;
+    }
+
+    // Filtering by date range
+    if (startDate || endDate) {
+      query.date = {};
+      if (startDate) {
+        query.date.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        query.date.$lte = new Date(endDate);
+      }
+    }
+
+    let spraysQuery = Sprays.find(query);
+
+    // Sorting
+    if (sort === "dateAsc") {
+      spraysQuery = spraysQuery.sort({ date: 1 });
+    } else if (sort === "dateDesc") {
+      spraysQuery = spraysQuery.sort({ date: -1 });
+    } else {
+      spraysQuery = spraysQuery.sort({ date: -1 }); // Default sort by newest first
+    }
+
+    const sprays = await spraysQuery.exec();
+
     res.json(sprays);
   } catch (err) {
     res.status(500).json({ error: err.message });

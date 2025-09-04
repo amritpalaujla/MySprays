@@ -15,6 +15,11 @@ function SprayInfo({ token }) {
   const [sprays, setSprays] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filterLocation, setFilterLocation] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [sortOrder, setSortOrder] = useState("dateDesc");
+
   const [openMenuId, setOpenMenuId] = useState(null);
 
   const [editingSprayId, setEditingSprayId] = useState(null);
@@ -25,7 +30,22 @@ function SprayInfo({ token }) {
 
   const fetchSprays = async () => {
     try {
-      const res = await fetch("http://localhost:3000/sprays", {
+      const queryParams = new URLSearchParams();
+      if (filterLocation) {
+        queryParams.append("location", filterLocation);
+      }
+      if (startDate) {
+        queryParams.append("startDate", startDate);
+      }
+      if (endDate) {
+        queryParams.append("startDate", endDate);
+      }
+      if (sortOrder) {
+        queryParams.append("sort", sortOrder);
+      }
+
+      const url = `http://localhost:3000/sprays?${queryParams.toString()}`;
+      const res = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -42,7 +62,7 @@ function SprayInfo({ token }) {
 
   useEffect(() => {
     fetchSprays();
-  }, [token]);
+  }, [token, filterLocation, startDate, endDate, sortOrder]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -136,6 +156,66 @@ function SprayInfo({ token }) {
         >
           + Log Spray
         </button>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 items-center justify-between p-4 bg-gray-100 rounded shadow-sm">
+        {/* Filter by Location */}
+        <div className="flex flex-col w-full sm:w-auto">
+          <label htmlFor="location" className="text-sm text-gray-600 mb-1">
+            Filter by Location
+          </label>
+          <input
+            type="text"
+            id="location"
+            value={filterLocation}
+            onChange={(e) => setFilterLocation(e.target.value)}
+            placeholder="e.g. Field 1"
+            className="p-2 border rounded text-sm w-full"
+          />
+        </div>
+
+        {/* Filter by Date Range */}
+        <div className="flex flex-col w-full sm:w-auto">
+          <label htmlFor="startDate" className="text-sm text-gray-600 mb-1">
+            Start Date
+          </label>
+          <input
+            type="date"
+            id="startDate"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="p-2 border rounded text-sm w-full"
+          />
+        </div>
+
+        <div className="flex flex-col w-full sm:w-auto">
+          <label htmlFor="endDate" className="text-sm text-gray-600 mb-1">
+            End Date
+          </label>
+          <input
+            type="date"
+            id="endDate"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="p-2 border rounded text-sm w-full"
+          />
+        </div>
+
+        {/* Sort Order */}
+        <div className="flex flex-col w-full sm:w-auto">
+          <label htmlFor="sortOrder" className="text-sm text-gray-600 mb-1">
+            Sort by
+          </label>
+          <select
+            id="sortOrder"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="p-2 border rounded text-sm w-full"
+          >
+            <option value="dateDesc">Date (Newest First)</option>
+            <option value="dateAsc">Date (Oldest First)</option>
+          </select>
+        </div>
       </div>
 
       <div className="mt-4">
