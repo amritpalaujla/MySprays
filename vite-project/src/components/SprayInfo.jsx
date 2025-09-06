@@ -60,7 +60,7 @@ function SprayInfo({ token }) {
         queryParams.append("startDate", startDate);
       }
       if (endDate) {
-        queryParams.append("startDate", endDate);
+        queryParams.append("endDate", endDate);
       }
       if (sortOrder) {
         queryParams.append("sort", sortOrder);
