@@ -8,11 +8,12 @@ import LandingPage from "./components/LandingPage";
 import Tracking from "./components/Tracking";
 
 function App() {
-  const [tab, setTab] = useState("LandingPage");
-  const [chosenSpray, setChosenSpray] = useState(null);
+  const [tab, setTab] = useState("LandingPage"); // ✅ Set default tab
+  const [chosenSpray, setChosenSpray] = useState(null); // ✅ Use null instead of ""
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [isValidating, setIsValidating] = useState(true);
 
+  // ✅ Clear chosenSpray when switching away from calculator
   const handleTabChange = (tabName) => {
     setTab(tabName);
     if (tabName !== "Spray Calculator") {
@@ -78,29 +79,21 @@ function App() {
         <button onClick={() => handleTabChange("Tracking")}>Tracking</button>
       </div>
 
-      <div className="content-container">
-        {tab === "Spray Finder" && (
-          <SprayFinder setTab={setTab} setChosenSpray={setChosenSpray} />
-        )}
-        {tab === "Spray Calculator" && (
-          <Calculator chosenSpray={chosenSpray} token={token} />
-        )}
-        {tab === "Tracking" &&
-          (isValidating ? (
-            <div className="flex justify-center items-center min-h-screen">
-              <p>Validating session...</p>
-            </div>
-          ) : (
-            <div className="tracking-full-width">
-              <Tracking
-                token={token}
-                setToken={setToken}
-                onLogout={handleLogout}
-              />
-            </div>
-          ))}
-        {tab === "LandingPage" && <LandingPage setTab={setTab} />}
-      </div>
+      {tab === "Spray Finder" && (
+        <SprayFinder setTab={setTab} setChosenSpray={setChosenSpray} />
+      )}
+      {tab === "Spray Calculator" && (
+        <Calculator chosenSpray={chosenSpray} token={token} />
+      )}
+      {tab === "Tracking" &&
+        (isValidating ? (
+          <div className="flex justify-center items-center min-h-screen">
+            <p>Validating session...</p>
+          </div>
+        ) : (
+          <Tracking token={token} setToken={setToken} onLogout={handleLogout} />
+        ))}
+      {tab === "LandingPage" && <LandingPage setTab={setTab} />}
     </>
   );
 }
