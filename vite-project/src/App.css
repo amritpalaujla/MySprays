@@ -1,30 +1,38 @@
 #root {
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0;
   text-align: center;
   min-height: 100vh;
   width: 100%;
-  max-width: 1400px;
+  /* Removed max-width constraint */
+}
+
+/* Special handling for tracking component */
+.tracking-full-width {
+  margin: -1rem; /* Counteract root padding */
+  width: calc(100% + 2rem); /* Extend to full viewport width */
 }
 
 /* Mobile-first responsive padding */
 @media (min-width: 640px) {
   #root {
-    padding: 2rem;
+    padding: 0;
   }
 }
 
-/* Tab navigation styling */
+/* Tab navigation styling - now full width */
 #tabs {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 2rem;
+
   padding: 1rem;
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   justify-content: center;
+  width: 100%; /* Ensure tabs container takes full width */
+  box-sizing: border-box;
 }
 
 #tabs button {
@@ -66,6 +74,13 @@
     padding: 1rem;
     font-size: 1rem;
   }
+}
+
+/* Content container - constrain individual components instead of root */
+.content-container {
+  margin: 0 auto;
+  width: 100%;
+  margin-top: 1rem;
 }
 
 .logo {
