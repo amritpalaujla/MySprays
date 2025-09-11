@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-function SprayInfo({ token }) {
+function SprayInfo({ user }) {
   const [formData, setFormData] = useState({
     sprayName: "",
     date: "",
@@ -68,8 +68,13 @@ function SprayInfo({ token }) {
 
       const url = `http://localhost:3000/sprays?${queryParams.toString()}`;
       const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
+
+      if (res.status === 401) {
+        window.dispatchEvent(new CustomEvent("authFailure"));
+        return;
+      }
 
       if (res.ok) {
         const data = await res.json();
@@ -84,7 +89,7 @@ function SprayInfo({ token }) {
 
   useEffect(() => {
     fetchSprays();
-  }, [token, filterLocation, startDate, endDate, sortOrder]);
+  }, [user, filterLocation, startDate, endDate, sortOrder]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -99,10 +104,15 @@ function SprayInfo({ token }) {
         method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
         body: JSON.stringify(formData),
       });
+
+      if (res.status === 401) {
+        window.dispatchEvent(new CustomEvent("authFailure"));
+        return;
+      }
 
       const data = await res.json();
       console.log("Saved", data);
@@ -133,10 +143,12 @@ function SprayInfo({ token }) {
       try {
         const res = await fetch(`http://localhost:3000/sprays/${id}`, {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          credentials: "include",
         });
+        if (res.status === 401) {
+          window.dispatchEvent(new CustomEvent("authFailure"));
+          return;
+        }
 
         if (res.ok) {
           fetchSprays();

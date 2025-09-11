@@ -5,6 +5,7 @@ const User = require("./models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Sprays = require("./models/Sprays");
+const cookieParser = require("cookie-parser");
 
 const mongoose = require("mongoose");
 require("dotenv").config();
@@ -20,23 +21,32 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 ); // cors lets us choose where loading resources are allowed to come from
 app.use(express.json()); // parses incoming json to a object in req body
+app.use(cookieParser());
+
+function generateAccessToken(user) {
+  return jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
+    expiresIn: "15m",
+  });
+}
+
+function generateRefreshToken(user) {
+  return jwt.sign(
+    { id: user._id, email: user.email },
+    process.env.JWT_RERESH_SECRET,
+    { expiresIn: "7d" }
+  );
+}
 
 function verifyToken(req, res, next) {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "No valid token provided" });
-  }
-
-  const token = authHeader.split(" ")[1];
+  const token = req.cookies.accessToken;
 
   if (!token) {
-    return res.status(401).json({ error: "No token provided" });
+    return res.status(401).json({ error: "No valid token provided" });
   }
-
   // here we verify and decode the jwt
   jwt.verify(token, process.env.JWT_SECRET, (err, decodedUser) => {
     if (err) {
@@ -47,6 +57,66 @@ function verifyToken(req, res, next) {
     next();
   });
 }
+
+app.post("/refresh-token", (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(401).json({ error: "no refresh token provided" });
+  }
+
+  jwt.verify(
+    refreshToken,
+    process.env.JWT_REFRESH_SECRET,
+    async (err, decodedUser) => {
+      if (err) {
+        console.log("Refresh token error: ", err.message);
+        //clear invalid refresh token
+        res.clearCookie("refreshToken");
+        return res
+          .status(401)
+          .json({ error: "Invalid or expired refresh token" });
+      }
+
+      try {
+        const user = await User.findById(decodedUser.id);
+        if (!user) {
+          res.clearCookie("refreshToken");
+          return res.status(401).json({ error: "User not found" });
+        }
+
+        const newAccessToken = generateAccessToken(user);
+        const newRefreshToken = generateRefreshToken(user);
+
+        //new cookie
+        res.cookie("accessToken", newAccessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV == "production",
+          sameSite: "lax",
+          maxAge: 15 * 60 * 1000, // 15 min
+        });
+
+        res.cookie("refreshToken", newRefreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV == "production",
+          sameSite: "lax",
+          maxAge: 7 * 24 * 60 * 1000, // 7 days
+        });
+
+        res.json({
+          message: "Tokens refreshed successfully",
+          user: {
+            id: user._id,
+            email: user.email,
+          },
+        });
+      } catch (error) {
+        console.error("Error refreshing token: ", error);
+        res.status(500).json({ error: "Internal server error" });
+      }
+    }
+  );
+});
 
 app.post("/sprays", verifyToken, async (req, res) => {
   try {
@@ -120,16 +190,27 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    //generating a token after successful login
-    const token = jwt.sign(
-      { id: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "2h" }
-    );
-    //sending back token
+    //generating tokens
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    //setting cookies
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV == "production",
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV == "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 1000,
+    });
+
     res.json({
       message: "Login successful",
-      token: token,
       user: {
         id: user._id,
         email: user.email,
@@ -139,6 +220,12 @@ app.post("/login", async (req, res) => {
     console.log(err);
     res.status(500).json({ message: "Server error" });
   }
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+  res.json({ message: "Logged out successfully" });
 });
 
 // here we check if token is still valid and not expired

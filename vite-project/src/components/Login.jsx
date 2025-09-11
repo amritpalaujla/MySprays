@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Login({ setNewAcc, setToken }) {
+function Login({ setNewAcc, onLogin }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -15,13 +15,18 @@ function Login({ setNewAcc, setToken }) {
       const res = await fetch("http://localhost:3000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
+      if (res.status === 401) {
+        window.dispatchEvent(new CustomEvent("authFailure"));
+        return;
+      }
       const data = await res.json();
 
       if (res.ok) {
-        setToken(data.token);
+        onLogin(data.user);
         console.log("Login successful, token received");
       } else {
         setError(data.message || "Login failed");

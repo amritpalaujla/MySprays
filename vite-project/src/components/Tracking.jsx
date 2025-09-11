@@ -4,16 +4,16 @@ import Register from "./Register";
 import Dashboard from "./Dashboard";
 import { useEffect } from "react";
 
-function Tracking({ token, setToken, onLogout }) {
+function Tracking({ user, onLogin, onLogout }) {
   const [newAcc, setNewAcc] = useState(false);
 
-  if (token) {
-    return <Dashboard token={token} onLogout={onLogout} />;
+  if (user) {
+    return <Dashboard user={user} onLogout={onLogout} />;
   }
 
   return (
     <div>
-      {!newAcc && <Login setNewAcc={setNewAcc} setToken={setToken} />}
+      {!newAcc && <Login setNewAcc={setNewAcc} onLogin={onLogin} />}
       {newAcc && <Register setNewAcc={setNewAcc} />}
     </div>
   );
