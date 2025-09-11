@@ -15,7 +15,7 @@ mongoose
   .then(() => console.log("connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
-const PORT = 3000; // the port where our server will run
+const PORT = process.env.PORT || 3000; // the port where our server will run
 
 app.use(
   cors({

@@ -66,7 +66,9 @@ function SprayInfo({ user }) {
         queryParams.append("sort", sortOrder);
       }
 
-      const url = `http://localhost:3000/sprays?${queryParams.toString()}`;
+      const url = `${
+        import.meta.env.VITE_API_URL
+      }/sprays?${queryParams.toString()}`;
       const res = await fetch(url, {
         credentials: "include",
       });
@@ -95,8 +97,8 @@ function SprayInfo({ user }) {
     e.preventDefault();
     const isEditing = !!editingSprayId; // assigns boolean to this variable
     const url = isEditing
-      ? `http://localhost:3000/sprays/${editingSprayId}`
-      : `http://localhost:3000/sprays`;
+      ? `${import.meta.env.VITE_API_URL}/sprays/${editingSprayId}`
+      : `${import.meta.env.VITE_API_URL}/sprays`;
     const method = isEditing ? "PUT" : "POST";
 
     try {
@@ -141,10 +143,13 @@ function SprayInfo({ user }) {
   const handleDeleteClick = async (id) => {
     if (window.confirm("Are you sure you want to delete this spray log?")) {
       try {
-        const res = await fetch(`http://localhost:3000/sprays/${id}`, {
-          method: "DELETE",
-          credentials: "include",
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/sprays/${id}`,
+          {
+            method: "DELETE",
+            credentials: "include",
+          }
+        );
         if (res.status === 401) {
           window.dispatchEvent(new CustomEvent("authFailure"));
           return;
