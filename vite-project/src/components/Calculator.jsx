@@ -3,7 +3,7 @@ import sprayData from "../assets/sprayData.json";
 import sprayTank from "../assets/tanker.png";
 import partialSprayTank from "../assets/partialTanker.png";
 
-function Calculator({ chosenSpray, token }) {
+function Calculator({ chosenSpray, user }) {
   const [allSprays, setAllSprays] = useState([]);
   const [area, setArea] = useState(0);
   const [waterVolume, setWaterVolume] = useState(0);
@@ -36,10 +36,15 @@ function Calculator({ chosenSpray, token }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
         body: JSON.stringify(formData),
       });
+
+      if (res.status === 401) {
+        window.dispatchEvent(new CustomEvent("authFailure"));
+        return;
+      }
 
       const data = await res.json();
       console.log("Saved", data);
@@ -57,7 +62,6 @@ function Calculator({ chosenSpray, token }) {
           PCP: "",
         });
         setIsModalOpen(false);
-        fetchSprays();
       }
     } catch (err) {
       console.error("Error saving spray:", err);
@@ -83,7 +87,7 @@ function Calculator({ chosenSpray, token }) {
           }); //pushing data to a flat array
       }
     }
-    console.log("collectedSprays : ", collectedSprays);
+    //console.log("collectedSprays : ", collectedSprays);
     setAllSprays(collectedSprays);
 
     // ✅ Set chosen spray as selected if it exists
@@ -159,7 +163,7 @@ function Calculator({ chosenSpray, token }) {
           </div>
 
           {/* Log Spray Button */}
-          {token && (
+          {user && (
             <div className="md:col-span-2 lg:col-span-1 flex items-end">
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -173,7 +177,7 @@ function Calculator({ chosenSpray, token }) {
       </div>
 
       {/* Log Spray Modal */}
-      {token && isModalOpen && (
+      {user && isModalOpen && (
         <div className="modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
             <button

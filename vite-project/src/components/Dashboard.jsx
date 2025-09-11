@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import SprayInfo from "./SprayInfo";
 import IrrigationInfo from "./IrrigationInfo";
 
-function Dashboard({ token, onLogout }) {
+function Dashboard({ user, onLogout }) {
   const [message, setMessage] = useState("Loading...");
-  const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [sideBarOpen, setSideBarOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("sprays");
@@ -19,14 +18,19 @@ function Dashboard({ token, onLogout }) {
     async function fetchDashboard() {
       try {
         const res = await fetch("http://localhost:3000/dashboard", {
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
         });
+
+        if (res.status === 401) {
+          window.dispatchEvent(new CustomEvent("authFailure"));
+          return;
+        }
 
         const data = await res.json();
 
         if (res.ok) {
           setMessage(data.message);
-          setUser(data.user);
+
           setError("");
         } else {
           if (res.status === 401) {
@@ -42,8 +46,8 @@ function Dashboard({ token, onLogout }) {
       }
     }
 
-    if (token) fetchDashboard();
-  }, [token, onLogout]);
+    if (user) fetchDashboard();
+  }, [user, onLogout]);
 
   if (error) {
     return (
@@ -257,7 +261,7 @@ function Dashboard({ token, onLogout }) {
 
             {/* Tab Content */}
             <div className="min-h-[300px]">
-              {selectedTab === "sprays" && <SprayInfo token={token} />}
+              {selectedTab === "sprays" && <SprayInfo user={user} />}
               {selectedTab === "irrigation" && <IrrigationInfo />}
               {selectedTab === "askAi" && (
                 <div className="flex flex-col items-center justify-center min-h-[300px] text-center">

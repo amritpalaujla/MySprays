@@ -10,8 +10,9 @@ import Tracking from "./components/Tracking";
 function App() {
   const [tab, setTab] = useState("LandingPage");
   const [chosenSpray, setChosenSpray] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
+  //const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [isValidating, setIsValidating] = useState(true);
+  const [user, setUser] = useState(null);
 
   const handleTabChange = (tabName) => {
     setTab(tabName);
@@ -20,51 +21,113 @@ function App() {
     }
   };
 
-  const handleLogout = () => {
-    setToken(null);
+  const handleLogout = async () => {
+    /*setToken(null);
     localStorage.removeItem("token");
+    */
+
+    try {
+      await fetch("http://localhost:3000/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      setUser(null);
+    } catch (error) {
+      console.error("Logout failed:", error);
+      setUser(null);
+    }
+  };
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+  };
+
+  const refreshTokenIfNeeded = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/refresh-token", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log("Token refreshed successfully");
+        // Dispatch event to notify that token was refreshed
+        window.dispatchEvent(
+          new CustomEvent("tokenRefreshed", {
+            detail: { user: data.user },
+          })
+        );
+        return true;
+      } else {
+        console.log("Token refresh failed");
+        return false;
+      }
+    } catch (error) {
+      console.error("Token refresh error:", error);
+      return false;
+    }
   };
 
   // validating token on mount
   useEffect(() => {
     const validateInitialToken = async () => {
-      const storedToken = localStorage.getItem("token");
-
-      if (!storedToken) {
-        setIsValidating(false);
-        return;
-      }
-
       try {
         const res = await fetch("http://localhost:3000/verify-token", {
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
         });
 
         if (res.ok) {
-          setToken(storedToken);
-        } else {
-          setToken(null);
-          localStorage.removeItem("token");
+          const data = await res.json();
+          setUser(data.user);
+        } else if (res.status === 401) {
+          const refreshed = await refreshTokenIfNeeded();
+          if (refreshed) {
+            const retryRes = await fetch("http://localhost:3000/verify-token", {
+              credentials: "include",
+            });
+            if (retryRes.ok) {
+              const retryData = await retryRes.json();
+              setUser(retryData.user);
+            }
+          }
         }
       } catch (error) {
         console.error("Token validation error:", error);
-        setToken(null);
-        localStorage.removeItem("token");
+        setUser(null);
       } finally {
         setIsValidating(false);
       }
     };
 
     validateInitialToken();
-  }, []);
+  }, []); // Empty dependency - runs once only
 
+  // Second useEffect: Handle refresh interval and events
   useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
-    } else {
-      localStorage.removeItem("token");
+    let refreshInterval;
+
+    if (user) {
+      refreshInterval = setInterval(refreshTokenIfNeeded, 10 * 60 * 1000);
     }
-  }, [token]);
+
+    const handleTokenRefresh = (event) => {
+      setUser(event.detail.user);
+    };
+
+    const handleAuthFailure = () => {
+      setUser(null);
+    };
+
+    window.addEventListener("tokenRefreshed", handleTokenRefresh);
+    window.addEventListener("authFailure", handleAuthFailure);
+
+    return () => {
+      if (refreshInterval) clearInterval(refreshInterval);
+      window.removeEventListener("tokenRefreshed", handleTokenRefresh);
+      window.removeEventListener("authFailure", handleAuthFailure);
+    };
+  }, [user]);
 
   return (
     <>
@@ -83,7 +146,7 @@ function App() {
           <SprayFinder setTab={setTab} setChosenSpray={setChosenSpray} />
         )}
         {tab === "Spray Calculator" && (
-          <Calculator chosenSpray={chosenSpray} token={token} />
+          <Calculator chosenSpray={chosenSpray} user={user} />
         )}
         {tab === "Tracking" &&
           (isValidating ? (
@@ -93,8 +156,8 @@ function App() {
           ) : (
             <div className="tracking-full-width">
               <Tracking
-                token={token}
-                setToken={setToken}
+                user={user}
+                onLogin={handleLogin}
                 onLogout={handleLogout}
               />
             </div>
