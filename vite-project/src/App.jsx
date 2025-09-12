@@ -13,6 +13,7 @@ function App() {
   //const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [isValidating, setIsValidating] = useState(true);
   const [user, setUser] = useState(null);
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
 
   const handleTabChange = (tabName) => {
     setTab(tabName);
@@ -32,6 +33,12 @@ function App() {
         credentials: "include",
       });
       setUser(null);
+      localStorage.clear();
+      sessionStorage.clear();
+
+      if (!isLoggedOut && res.status === 401) {
+        const refreshed = await refreshTokenIfNeeded();
+      }
     } catch (error) {
       console.error("Logout failed:", error);
       setUser(null);
