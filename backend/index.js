@@ -91,15 +91,15 @@ app.post("/refresh-token", (req, res) => {
         //new cookie
         res.cookie("accessToken", newAccessToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV == "production",
-          sameSite: "lax",
+          secure: true,
+          sameSite: "none",
           maxAge: 15 * 60 * 1000, // 15 min
         });
 
         res.cookie("refreshToken", newRefreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV == "production",
-          sameSite: "lax",
+          secure: true,
+          sameSite: "none",
           maxAge: 7 * 24 * 60 * 1000, // 7 days
         });
 
@@ -197,15 +197,15 @@ app.post("/login", async (req, res) => {
     //setting cookies
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV == "production",
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV == "production",
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 1000,
     });
 
