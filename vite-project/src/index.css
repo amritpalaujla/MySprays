@@ -68,3 +68,30 @@ button:focus-visible {
     background-color: #f9f9f9;
   }*/
 }
+
+/* Force input text to be visible on all devices */
+input,
+select,
+textarea {
+  color: #000000 !important; /* Black text */
+  background-color: #ffffff !important; /* White background */
+  -webkit-text-fill-color: #000000 !important; /* iOS Safari fix */
+  -webkit-opacity: 1 !important; /* iOS Safari fix */
+}
+
+/* Placeholder text styling */
+input::placeholder,
+select::placeholder,
+textarea::placeholder {
+  color: #666666 !important; /* Gray placeholder text */
+  opacity: 1 !important;
+}
+
+/* Autofill styling fix for mobile browsers */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #000000 !important;
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
