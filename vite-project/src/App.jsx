@@ -28,7 +28,7 @@ function App() {
     */
 
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
         method: "POST",
         credentials: "include",
       });
