@@ -42,9 +42,15 @@ function generateRefreshToken(user) {
 }
 
 function verifyToken(req, res, next) {
+  console.log("=== Token Verification Debug ===");
+  console.log("All cookies:", req.cookies);
+  console.log("Access token exists:", !!req.cookies.accessToken);
+  console.log("User agent:", req.get("User-Agent"));
+  console.log("Origin:", req.get("Origin"));
   const token = req.cookies.accessToken;
 
   if (!token) {
+    console.log("No access token found in cookies");
     return res.status(401).json({ error: "No valid token provided" });
   }
   // here we verify and decode the jwt
@@ -110,6 +116,11 @@ app.post("/refresh-token", (req, res) => {
             email: user.email,
           },
         });
+
+        // After setting cookies in login route:
+        console.log("Cookies set successfully");
+        console.log("Access token:", accessToken ? "SET" : "NOT SET");
+        console.log("Refresh token:", refreshToken ? "SET" : "NOT SET");
       } catch (error) {
         console.error("Error refreshing token: ", error);
         res.status(500).json({ error: "Internal server error" });
