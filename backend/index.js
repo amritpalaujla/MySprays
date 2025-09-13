@@ -98,17 +98,15 @@ app.post("/refresh-token", (req, res) => {
         res.cookie("accessToken", newAccessToken, {
           httpOnly: true,
           secure: true,
-          sameSite: "none",
+          sameSite: "lax",
           maxAge: 15 * 60 * 1000, // 15 min
-          partitioned: true,
         });
 
         res.cookie("refreshToken", newRefreshToken, {
           httpOnly: true,
           secure: true,
-          sameSite: "none",
+          sameSite: "lax",
           maxAge: 7 * 24 * 60 * 1000, // 7 days
-          partitioned: true,
         });
 
         res.json({
@@ -211,17 +209,15 @@ app.post("/login", async (req, res) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "lax",
       maxAge: 15 * 60 * 1000,
-      partitioned: true,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 1000,
-      partitioned: true,
     });
 
     res.json({
