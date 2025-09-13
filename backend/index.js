@@ -100,6 +100,7 @@ app.post("/refresh-token", (req, res) => {
           secure: true,
           sameSite: "none",
           maxAge: 15 * 60 * 1000, // 15 min
+          partitioned: true,
         });
 
         res.cookie("refreshToken", newRefreshToken, {
@@ -107,6 +108,7 @@ app.post("/refresh-token", (req, res) => {
           secure: true,
           sameSite: "none",
           maxAge: 7 * 24 * 60 * 1000, // 7 days
+          partitioned: true,
         });
 
         res.json({
@@ -211,6 +213,7 @@ app.post("/login", async (req, res) => {
       secure: true,
       sameSite: "none",
       maxAge: 15 * 60 * 1000,
+      partitioned: true,
     });
 
     res.cookie("refreshToken", refreshToken, {
@@ -218,6 +221,7 @@ app.post("/login", async (req, res) => {
       secure: true,
       sameSite: "none",
       maxAge: 7 * 24 * 60 * 1000,
+      partitioned: true,
     });
 
     res.json({
