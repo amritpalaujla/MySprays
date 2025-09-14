@@ -176,7 +176,17 @@ function SprayInfo({ user }) {
 
   const handleEditClick = (spray) => {
     setEditingSprayId(spray._id);
-    setFormData(spray);
+    const formatDateForInput = (dateString) => {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+    setFormData({
+      ...spray,
+      date: formatDateForInput(spray.date), // formatted date
+    });
     setIsModalOpen(true);
   };
 
@@ -337,7 +347,7 @@ function SprayInfo({ user }) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-sm text-gray-600">
                   <p>
                     <span className="font-semibold text-gray-800">Date:</span>{" "}
-                    {new Date(spray.date).toLocaleDateString()}
+                    {new Date(spray.date).toLocaleDateString("en-CA")}
                   </p>
                   <p>
                     <span className="font-semibold text-gray-800">Crop:</span>{" "}
