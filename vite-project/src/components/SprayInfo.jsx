@@ -337,7 +337,7 @@ function SprayInfo({ user }) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-sm text-gray-600">
                   <p>
                     <span className="font-semibold text-gray-800">Date:</span>{" "}
-                    {new Date(spray.date).toLocaleDateString("en-CA")}
+                    {spray.date.split("T")[0]}
                   </p>
                   <p>
                     <span className="font-semibold text-gray-800">Crop:</span>{" "}
