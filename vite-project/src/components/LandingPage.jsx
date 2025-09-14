@@ -2,6 +2,7 @@ import jug from "../assets/jug.png";
 import calculator from "../assets/calculator.png";
 import folder from "../assets/folder.png";
 import SprayFinder from "./SprayFinder";
+import { useEffect } from "react";
 
 function LandingPage({ setTab }) {
   //notice to users
