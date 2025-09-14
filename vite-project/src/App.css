@@ -203,35 +203,34 @@
   }
 }
 
-/* Date input specific styling */
-input[type="date"] {
+/* Force all input text to be visible on mobile */
+input,
+select,
+textarea {
   color: #000000 !important;
   background-color: #ffffff !important;
   -webkit-text-fill-color: #000000 !important;
+  -webkit-opacity: 1 !important;
 }
 
-/* Date input placeholder/empty state */
-input[type="date"]:invalid {
-  color: #666666 !important;
-}
-
-/* WebKit date picker styling */
-input[type="date"]::-webkit-datetime-edit {
+/* Specific fixes for date inputs */
+input[type="date"] {
   color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
 }
 
-input[type="date"]::-webkit-datetime-edit-text {
-  color: #000000 !important;
-}
-
-input[type="date"]::-webkit-datetime-edit-month-field {
-  color: #000000 !important;
-}
-
-input[type="date"]::-webkit-datetime-edit-day-field {
-  color: #000000 !important;
-}
-
+input[type="date"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
 input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #000000 !important;
+}
+
+/* Fix for general text visibility */
+p,
+div,
+span,
+label {
   color: #000000 !important;
 }
