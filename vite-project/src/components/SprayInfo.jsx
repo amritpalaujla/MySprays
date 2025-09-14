@@ -50,6 +50,13 @@ function SprayInfo({ user }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const clearFilters = () => {
+    setFilterLocation("");
+    setStartDate("");
+    setEndDate("");
+    setSortOrder("dateDesc");
+  };
+
   const fetchSprays = async () => {
     try {
       const queryParams = new URLSearchParams();
@@ -269,6 +276,16 @@ function SprayInfo({ user }) {
             <option value="dateDesc">Date (Newest First)</option>
             <option value="dateAsc">Date (Oldest First)</option>
           </select>
+        </div>
+
+        <div className="flex flex-col w-full sm:w-auto justify-end">
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="p-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm font-medium"
+          >
+            Clear Filters
+          </button>
         </div>
       </div>
 
