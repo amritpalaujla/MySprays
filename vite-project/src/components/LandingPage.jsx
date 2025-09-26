@@ -2,14 +2,18 @@ import jug from "../assets/jug.png";
 import calculator from "../assets/calculator.png";
 import folder from "../assets/folder.png";
 import SprayFinder from "./SprayFinder";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 function LandingPage({ setTab }) {
+  const hasShownAlert = useRef(false);
   //notice to users
   useEffect(() => {
-    alert(
-      "This application is in testing phase. The accuracy of any information is not verified, and should not be trusted blindly. Feel free to test/explore the application, and kindly provide feedback to the author in areas you believe can be improved. Thank you!"
-    );
+    if (!hasShownAlert.current) {
+      alert(
+        "This application is in testing phase. The accuracy of any information is not verified, and should not be trusted blindly. Feel free to test/explore the application, and kindly provide feedback to the author in areas you believe can be improved. Thank you!"
+      );
+      hasShownAlert.current = true;
+    }
   }, []);
 
   return (
