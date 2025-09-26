@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 3000; // the port where our server will run
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://mysprays.netlify.app"],
+    origin: ["http://localhost:5173", "http://localhost:3000"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
@@ -97,14 +97,14 @@ app.post("/refresh-token", (req, res) => {
         //new cookie
         res.cookie("accessToken", newAccessToken, {
           httpOnly: true,
-          secure: true,
+          secure: false,
           sameSite: "lax",
           maxAge: 15 * 60 * 1000, // 15 min
         });
 
         res.cookie("refreshToken", newRefreshToken, {
           httpOnly: true,
-          secure: true,
+          secure: false,
           sameSite: "lax",
           maxAge: 7 * 24 * 60 * 1000, // 7 days
         });
@@ -236,13 +236,13 @@ app.post("/login", async (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("accessToken", {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: false,
+    sameSite: "lax",
   });
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: false,
+    sameSite: "lax",
   });
   res.json({ message: "Logged out successfully" });
 });
