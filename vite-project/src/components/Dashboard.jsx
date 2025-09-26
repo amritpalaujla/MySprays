@@ -17,7 +17,7 @@ function Dashboard({ user, onLogout }) {
   useEffect(() => {
     async function fetchDashboard() {
       try {
-        const res = await fetch("http://localhost:3000/dashboard", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/dashboard`, {
           credentials: "include",
         });
 

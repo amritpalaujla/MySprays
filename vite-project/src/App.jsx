@@ -13,6 +13,7 @@ function App() {
   //const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [isValidating, setIsValidating] = useState(true);
   const [user, setUser] = useState(null);
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
 
   const handleTabChange = (tabName) => {
     setTab(tabName);
@@ -27,11 +28,17 @@ function App() {
     */
 
     try {
-      await fetch("http://localhost:3000/logout", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
         method: "POST",
         credentials: "include",
       });
       setUser(null);
+      localStorage.clear();
+      sessionStorage.clear();
+
+      if (!isLoggedOut && res.status === 401) {
+        const refreshed = await refreshTokenIfNeeded();
+      }
     } catch (error) {
       console.error("Logout failed:", error);
       setUser(null);
@@ -44,7 +51,7 @@ function App() {
 
   const refreshTokenIfNeeded = async () => {
     try {
-      const res = await fetch("http://localhost:3000/refresh-token", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/refresh-token`, {
         method: "POST",
         credentials: "include",
       });
@@ -73,9 +80,12 @@ function App() {
   useEffect(() => {
     const validateInitialToken = async () => {
       try {
-        const res = await fetch("http://localhost:3000/verify-token", {
-          credentials: "include",
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/verify-token`,
+          {
+            credentials: "include",
+          }
+        );
 
         if (res.ok) {
           const data = await res.json();
@@ -83,9 +93,12 @@ function App() {
         } else if (res.status === 401) {
           const refreshed = await refreshTokenIfNeeded();
           if (refreshed) {
-            const retryRes = await fetch("http://localhost:3000/verify-token", {
-              credentials: "include",
-            });
+            const retryRes = await fetch(
+              `${import.meta.env.VITE_API_URL}/verify-token`,
+              {
+                credentials: "include",
+              }
+            );
             if (retryRes.ok) {
               const retryData = await retryRes.json();
               setUser(retryData.user);

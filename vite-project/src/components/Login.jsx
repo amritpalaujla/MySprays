@@ -12,7 +12,7 @@ function Login({ setNewAcc, onLogin }) {
     const email = e.target.email.value;
     const password = e.target.password.value;
     try {
-      const res = await fetch("http://localhost:3000/login", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

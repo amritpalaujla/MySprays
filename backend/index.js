@@ -15,11 +15,11 @@ mongoose
   .then(() => console.log("connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
-const PORT = 3000; // the port where our server will run
+const PORT = process.env.PORT || 3000; // the port where our server will run
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://mysprays.netlify.app"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
@@ -36,15 +36,21 @@ function generateAccessToken(user) {
 function generateRefreshToken(user) {
   return jwt.sign(
     { id: user._id, email: user.email },
-    process.env.JWT_RERESH_SECRET,
+    process.env.JWT_REFRESH_SECRET,
     { expiresIn: "7d" }
   );
 }
 
 function verifyToken(req, res, next) {
+  console.log("=== Token Verification Debug ===");
+  console.log("All cookies:", req.cookies);
+  console.log("Access token exists:", !!req.cookies.accessToken);
+  console.log("User agent:", req.get("User-Agent"));
+  console.log("Origin:", req.get("Origin"));
   const token = req.cookies.accessToken;
 
   if (!token) {
+    console.log("No access token found in cookies");
     return res.status(401).json({ error: "No valid token provided" });
   }
   // here we verify and decode the jwt
@@ -91,14 +97,14 @@ app.post("/refresh-token", (req, res) => {
         //new cookie
         res.cookie("accessToken", newAccessToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV == "production",
+          secure: true,
           sameSite: "lax",
           maxAge: 15 * 60 * 1000, // 15 min
         });
 
         res.cookie("refreshToken", newRefreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV == "production",
+          secure: true,
           sameSite: "lax",
           maxAge: 7 * 24 * 60 * 1000, // 7 days
         });
@@ -110,6 +116,11 @@ app.post("/refresh-token", (req, res) => {
             email: user.email,
           },
         });
+
+        // After setting cookies in login route:
+        console.log("Cookies set successfully");
+        console.log("Access token:", accessToken ? "SET" : "NOT SET");
+        console.log("Refresh token:", refreshToken ? "SET" : "NOT SET");
       } catch (error) {
         console.error("Error refreshing token: ", error);
         res.status(500).json({ error: "Internal server error" });
@@ -197,14 +208,14 @@ app.post("/login", async (req, res) => {
     //setting cookies
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV == "production",
+      secure: true,
       sameSite: "lax",
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV == "production",
+      secure: true,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 1000,
     });
@@ -223,8 +234,16 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
   res.json({ message: "Logged out successfully" });
 });
 

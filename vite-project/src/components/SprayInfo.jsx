@@ -50,6 +50,13 @@ function SprayInfo({ user }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const clearFilters = () => {
+    setFilterLocation("");
+    setStartDate("");
+    setEndDate("");
+    setSortOrder("dateDesc");
+  };
+
   const fetchSprays = async () => {
     try {
       const queryParams = new URLSearchParams();
@@ -66,7 +73,9 @@ function SprayInfo({ user }) {
         queryParams.append("sort", sortOrder);
       }
 
-      const url = `http://localhost:3000/sprays?${queryParams.toString()}`;
+      const url = `${
+        import.meta.env.VITE_API_URL
+      }/sprays?${queryParams.toString()}`;
       const res = await fetch(url, {
         credentials: "include",
       });
@@ -95,8 +104,8 @@ function SprayInfo({ user }) {
     e.preventDefault();
     const isEditing = !!editingSprayId; // assigns boolean to this variable
     const url = isEditing
-      ? `http://localhost:3000/sprays/${editingSprayId}`
-      : `http://localhost:3000/sprays`;
+      ? `${import.meta.env.VITE_API_URL}/sprays/${editingSprayId}`
+      : `${import.meta.env.VITE_API_URL}/sprays`;
     const method = isEditing ? "PUT" : "POST";
 
     try {
@@ -141,10 +150,13 @@ function SprayInfo({ user }) {
   const handleDeleteClick = async (id) => {
     if (window.confirm("Are you sure you want to delete this spray log?")) {
       try {
-        const res = await fetch(`http://localhost:3000/sprays/${id}`, {
-          method: "DELETE",
-          credentials: "include",
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/sprays/${id}`,
+          {
+            method: "DELETE",
+            credentials: "include",
+          }
+        );
         if (res.status === 401) {
           window.dispatchEvent(new CustomEvent("authFailure"));
           return;
@@ -265,6 +277,16 @@ function SprayInfo({ user }) {
             <option value="dateAsc">Date (Oldest First)</option>
           </select>
         </div>
+
+        <div className="flex flex-col w-full sm:w-auto justify-end">
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="p-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm font-medium"
+          >
+            Clear Filters
+          </button>
+        </div>
       </div>
 
       <div className="mt-4">
@@ -315,7 +337,7 @@ function SprayInfo({ user }) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-sm text-gray-600">
                   <p>
                     <span className="font-semibold text-gray-800">Date:</span>{" "}
-                    {new Date(spray.date).toLocaleDateString()}
+                    {spray.date.split("T")[0]}
                   </p>
                   <p>
                     <span className="font-semibold text-gray-800">Crop:</span>{" "}
