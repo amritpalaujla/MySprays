@@ -36,7 +36,10 @@ function LandingPage({ setTab }) {
       <div className="max-w-6xl mx-auto mb-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Step 1 */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+          <div
+            className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
+            onClick={() => setTab("Spray Finder")}
+          >
             <div className="text-blue-600 font-bold text-xl mb-4">Step 1</div>
             <h3 className="text-xl font-bold text-gray-800 mb-4">
               Find Your Spray
@@ -51,7 +54,12 @@ function LandingPage({ setTab }) {
 
           {/* Step 2 */}
           <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
-            <div className="text-green-600 font-bold text-xl mb-4">Step 2</div>
+            <div
+              className="text-green-600 font-bold text-xl mb-4"
+              onClick={() => setTab("Spray Calculator")}
+            >
+              Step 2
+            </div>
             <h3 className="text-xl font-bold text-gray-800 mb-4">
               Calculate Precisely
             </h3>
@@ -68,7 +76,10 @@ function LandingPage({ setTab }) {
           </div>
 
           {/* Step 3 */}
-          <div className="bg-purple-50 border border-purple-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+          <div
+            className="bg-purple-50 border border-purple-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
+            onClick={() => setTab("Tracking")}
+          >
             <div className="text-purple-600 font-bold text-xl mb-4">Step 3</div>
             <h3 className="text-xl font-bold text-gray-800 mb-4">
               Track & Record
