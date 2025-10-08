@@ -24,6 +24,7 @@ function Calculator({ chosenSpray, user }) {
   const selectedSpray = allSprays.find(
     (spray) => `${spray.crop}-${spray.issue}-${spray.name}` === selectedSprayKey
   );
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -68,8 +69,40 @@ function Calculator({ chosenSpray, user }) {
     }
   };
 
+  // Autofill modal fields when opening with a selected spray
+  const openModal = () => {
+    if (selectedSpray) {
+      const totalProduct = parseFloat(selectedSpray.rate) * area;
+      setFormData((prev) => ({
+        ...prev,
+        sprayName: selectedSpray.name,
+        crop: selectedSpray.crop,
+        rate: selectedSpray.rate,
+        amount: totalProduct.toFixed(2),
+        PHI: selectedSpray.phi,
+        PCP: selectedSpray.pcp,
+      }));
+    }
+    setIsModalOpen(true);
+  };
+
+  // Close modal and reset form
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setFormData({
+      sprayName: "",
+      date: "",
+      crop: "",
+      rate: "",
+      amount: "",
+      location: "",
+      PHI: "",
+      PCP: "",
+    });
+  };
+
   useEffect(() => {
-    const collectedSprays = []; // ✅ Moved inside useEffect
+    const collectedSprays = [];
     //looping through each crop
     for (const crop in sprayData) {
       //looping through each issue
@@ -90,12 +123,12 @@ function Calculator({ chosenSpray, user }) {
     //console.log("collectedSprays : ", collectedSprays);
     setAllSprays(collectedSprays);
 
-    // ✅ Set chosen spray as selected if it exists
+    // Set chosen spray as selected if it exists
     if (chosenSpray) {
       const sprayKey = `${chosenSpray.crop}-${chosenSpray.issue}-${chosenSpray.name}`;
       setSelectedSprayKey(sprayKey);
     }
-  }, [chosenSpray]); // ✅ Added chosenSpray to dependency array
+  }, [chosenSpray]);
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
@@ -166,7 +199,7 @@ function Calculator({ chosenSpray, user }) {
           {user && (
             <div className="md:col-span-2 lg:col-span-1 flex items-end">
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={openModal}
                 className="btn-primary w-full h-12 text-sm font-semibold"
               >
                 + Log Spray
@@ -181,7 +214,7 @@ function Calculator({ chosenSpray, user }) {
         <div className="modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
             <button
-              onClick={() => setIsModalOpen(false)}
+              onClick={closeModal}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
             >
               ✕
@@ -220,17 +253,21 @@ function Calculator({ chosenSpray, user }) {
                     value={formData.crop}
                     onChange={handleChange}
                     placeholder="Crop type"
-                    className="form-input"
+                    className="form-input bg-gray-50"
+                    readOnly
                   />
                 </div>
                 <div>
                   <label className="form-label">Rate</label>
                   <input
                     name="rate"
-                    value={formData.rate}
+                    value={`${formData.rate} ${
+                      selectedSpray?.unit || ""
+                    } per acre`}
                     onChange={handleChange}
                     placeholder="Application rate"
-                    className="form-input"
+                    className="form-input bg-gray-50"
+                    readOnly
                   />
                 </div>
               </div>
@@ -242,7 +279,8 @@ function Calculator({ chosenSpray, user }) {
                     value={formData.amount}
                     onChange={handleChange}
                     placeholder="Total amount"
-                    className="form-input"
+                    className="form-input bg-gray-50"
+                    readOnly
                   />
                 </div>
                 <div>
@@ -264,7 +302,8 @@ function Calculator({ chosenSpray, user }) {
                     value={formData.PHI}
                     onChange={handleChange}
                     placeholder="Pre-harvest interval"
-                    className="form-input"
+                    className="form-input bg-gray-50"
+                    readOnly
                   />
                 </div>
                 <div>
@@ -274,7 +313,8 @@ function Calculator({ chosenSpray, user }) {
                     value={formData.PCP}
                     onChange={handleChange}
                     placeholder="PCP number"
-                    className="form-input"
+                    className="form-input bg-gray-50"
+                    readOnly
                   />
                 </div>
               </div>

@@ -53,13 +53,11 @@ function LandingPage({ setTab }) {
           </div>
 
           {/* Step 2 */}
-          <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
-            <div
-              className="text-green-600 font-bold text-xl mb-4"
-              onClick={() => setTab("Spray Calculator")}
-            >
-              Step 2
-            </div>
+          <div
+            className="bg-green-50 border border-green-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
+            onClick={() => setTab("Spray Calculator")}
+          >
+            <div className="text-green-600 font-bold text-xl mb-4">Step 2</div>
             <h3 className="text-xl font-bold text-gray-800 mb-4">
               Calculate Precisely
             </h3>
