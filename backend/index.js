@@ -6,9 +6,19 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Sprays = require("./models/Sprays");
 const cookieParser = require("cookie-parser");
+const crypto = require("crypto");
+const { sendVerificationEmail } = require("./services/emailService");
+const { sendPasswordResetEmail } = require("./services/emailService");
 
 const mongoose = require("mongoose");
 require("dotenv").config();
+
+// variables test to see if loading
+
+console.log("=== Environment Variables Check ===");
+console.log("EMAIL_USER:", process.env.EMAIL_USER);
+console.log("EMAIL_PASSWORD:", process.env.EMAIL_PASSWORD ? "SET" : "NOT SET");
+console.log("===================================");
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -173,10 +183,35 @@ app.post("/register", async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const newUser = new User({ email, passwordHash });
+    // generate verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    const newUser = new User({
+      email,
+      passwordHash,
+      verificationToken,
+      verificationTokenExpires,
+      isVerified: false,
+    });
     await newUser.save();
 
-    res.json({ message: "User registered successfully" });
+    //send verification email
+    try {
+      await sendVerificationEmail(email, verificationToken);
+      res.json({
+        message:
+          "Registration successfull! Please check your email to verify your account.",
+        emailSent: true,
+      });
+    } catch (emailError) {
+      console.error("Email sending failed:", emailError);
+      res.json({
+        message:
+          "Registration successful, but verification email failed. Please contact support.",
+        emailSent: false,
+      });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -195,6 +230,16 @@ app.post("/login", async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
+
+    // check if email is verified
+    if (!user.isVerified) {
+      return res.status(403).json({
+        message:
+          "Please Verify your email before logging in. Check your inboc for the verification link.",
+        requiresVerification: true,
+      });
+    }
+
     //checking password
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
@@ -233,6 +278,243 @@ app.post("/login", async (req, res) => {
   }
 });
 
+//verify email endpoint
+app.get("/verify-email", async (req, res) => {
+  const { token } = req.query;
+
+  console.log("=== Verification Request ===");
+  console.log("Token received:", token);
+
+  if (!token) {
+    return res.status(400).json({ message: "Verification token is required" });
+  }
+
+  try {
+    // First, try to find user with this token
+    let user = await User.findOne({
+      verificationToken: token,
+      verificationTokenExpires: { $gt: Date.now() },
+    });
+
+    // If not found with valid token, check if already verified
+    if (!user) {
+      // Check if this token was used (user exists but token is cleared)
+      user = await User.findOne({
+        verificationToken: undefined,
+        isVerified: true,
+      });
+
+      // If we find a verified user, they might have already verified
+      if (user) {
+        console.log("⚠️ User already verified");
+        return res.json({
+          message: "Email already verified! You can log in.",
+          success: true,
+          alreadyVerified: true,
+        });
+      }
+
+      console.log("❌ Invalid or expired token");
+      return res.status(400).json({
+        message: "Invalid or expired verification token",
+      });
+    }
+
+    // User found with valid token - verify them
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpires = undefined;
+    await user.save();
+
+    console.log("✅ User verified successfully:", user.email);
+
+    res.json({
+      message: "Email verified successfully! You can now log in.",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Verification error:", error);
+    res.status(500).json({ message: "Server error during verification" });
+  }
+});
+
+//resend verification email endpoint
+app.post("/resend-verification", async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ message: "User is already verified." });
+    }
+
+    //Generate new token
+
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    user.verificationToken = verificationToken;
+    user.verificationTokenExpires = verificationTokenExpires;
+
+    await user.save();
+
+    await sendVerificationEmail(email, verificationToken);
+
+    res.json({
+      message: "Verification email resent successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Resend verification error", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+
+  console.log("=== Forgot Password Request ===");
+  console.log("Email:", email);
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      console.log("❌ User not found");
+      return res.json({
+        message:
+          "If an account exists with this email, a password reset link has been sent.",
+        success: true,
+      });
+    }
+
+    console.log("✅ User found:", user.email);
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    console.log("Generated reset token:", resetToken);
+    console.log("Token expires:", resetTokenExpires);
+
+    // Save to user object
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = resetTokenExpires;
+
+    // Save to database
+    const savedUser = await user.save();
+
+    console.log("✅ Token saved to database");
+    console.log("Saved token:", savedUser.resetPasswordToken);
+    console.log("Saved expiry:", savedUser.resetPasswordExpires);
+
+    // Verify it was actually saved by querying again
+    const verifyUser = await User.findOne({ email });
+    console.log("Verification - Token in DB:", verifyUser.resetPasswordToken);
+
+    // Send email
+    const { sendPasswordResetEmail } = require("./services/emailService");
+    await sendPasswordResetEmail(email, resetToken);
+
+    console.log("✅ Password reset email sent");
+
+    res.json({
+      message:
+        "If an account exists with this email, a password reset link has been sent.",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+//reset password with token
+app.post("/reset-password", async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  console.log("=== Reset Password Request ===");
+  console.log("Token received:", token);
+  console.log("New password received:", newPassword ? "YES" : "NO");
+  console.log("Password length:", newPassword?.length);
+
+  if (!token || !newPassword) {
+    console.log("❌ Missing token or password");
+    return res
+      .status(400)
+      .json({ message: "Token and new password are required" });
+  }
+
+  if (newPassword.length < 6) {
+    console.log("❌ Password too short");
+    return res
+      .status(400)
+      .json({ message: "Password must be at least 6 characters long" });
+  }
+
+  try {
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    console.log("User found with token:", user ? "YES" : "NO");
+
+    if (!user) {
+      // Check if token exists but is expired
+      const expiredUser = await User.findOne({ resetPasswordToken: token });
+
+      if (expiredUser) {
+        console.log("❌ Token exists but is EXPIRED");
+        console.log("Token expired at:", expiredUser.resetPasswordExpires);
+        console.log("Current time:", new Date());
+        return res.status(400).json({
+          message:
+            "Reset token has expired. Please request a new password reset.",
+        });
+      }
+
+      console.log("❌ Token not found in database at all");
+      return res.status(400).json({
+        message: "Invalid or expired reset token",
+      });
+    }
+
+    // Hash new password
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+
+    // Update password and clear reset token
+    user.passwordHash = passwordHash;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    console.log("✅ Password reset successful for:", user.email);
+
+    res.json({
+      message:
+        "Password reset successful! You can now log in with your new password.",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 app.post("/logout", (req, res) => {
   res.clearCookie("accessToken", {
     httpOnly: true,
@@ -257,6 +539,27 @@ app.get("/verify-token", verifyToken, (req, res) => {
     },
   });
 });
+
+//temporary for debugging
+/*
+app.get("/debug-user/:email", async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.params.email });
+    if (!user) {
+      return res.json({ exists: false });
+    }
+    res.json({
+      exists: true,
+      email: user.email,
+      hasResetToken: !!user.resetPasswordToken,
+      resetToken: user.resetPasswordToken,
+      tokenExpires: user.resetPasswordExpires,
+      isExpired: user.resetPasswordExpires < Date.now(),
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});*/
 
 //deleting a spray log
 app.delete("/sprays/:id", verifyToken, async (req, res) => {
@@ -358,6 +661,45 @@ app.get("/dashboard", verifyToken, (req, res) => {
     message: `Welcome to your dashboard`,
     user: req.user,
   });
+});
+
+app.get("/test-email-direct", async (req, res) => {
+  const nodemailer = require("nodemailer");
+
+  console.log("Creating transporter with:");
+  console.log("User:", process.env.EMAIL_USER);
+  console.log("Pass length:", process.env.EMAIL_PASSWORD?.length);
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  try {
+    // Test connection
+    await transporter.verify();
+    console.log("✅ SMTP connection successful!");
+
+    // Try sending
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER, // Send to yourself
+      subject: "Test Email",
+      text: "If you see this, email is working!",
+    });
+
+    res.json({ success: true, message: "Email sent successfully!" });
+  } catch (error) {
+    console.error("❌ Email test failed:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      code: error.code,
+    });
+  }
 });
 
 app.get("/", (req, res) => {

@@ -1,19 +1,27 @@
 import { useState, useEffect } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { Routes, Route, useLocation } from "react-router-dom";
 import "./App.css";
 import SprayFinder from "./components/SprayFinder";
 import Calculator from "./components/Calculator";
 import LandingPage from "./components/LandingPage";
 import Tracking from "./components/Tracking";
+import VerifyEmail from "./components/VerifyEmail";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
 
 function App() {
   const [tab, setTab] = useState("LandingPage");
   const [chosenSpray, setChosenSpray] = useState(null);
-  //const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [isValidating, setIsValidating] = useState(true);
   const [user, setUser] = useState(null);
-  const [isLoggedOut, setIsLoggedOut] = useState(false);
+  const location = useLocation();
+
+  // Check if current page is an auth page (no token validation needed)
+  const isAuthPage = [
+    "/verify-email",
+    "/forgot-password",
+    "/reset-password",
+  ].includes(location.pathname);
 
   const handleTabChange = (tabName) => {
     setTab(tabName);
@@ -23,10 +31,6 @@ function App() {
   };
 
   const handleLogout = async () => {
-    /*setToken(null);
-    localStorage.removeItem("token");
-    */
-
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
         method: "POST",
@@ -36,8 +40,14 @@ function App() {
       localStorage.clear();
       sessionStorage.clear();
 
-      if (!isLoggedOut && res.status === 401) {
-        const refreshed = await refreshTokenIfNeeded();
+      // Only try to refresh if we got 401 AND we're not on an auth page
+      const authPages = [
+        "/verify-email",
+        "/forgot-password",
+        "/reset-password",
+      ];
+      if (!authPages.includes(window.location.pathname) && res.status === 401) {
+        await refreshTokenIfNeeded();
       }
     } catch (error) {
       console.error("Logout failed:", error);
@@ -50,6 +60,13 @@ function App() {
   };
 
   const refreshTokenIfNeeded = async () => {
+    // Don't try to refresh on auth pages
+    const authPages = ["/verify-email", "/forgot-password", "/reset-password"];
+    if (authPages.includes(window.location.pathname)) {
+      console.log("Skipping token refresh on auth page");
+      return false;
+    }
+
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/refresh-token`, {
         method: "POST",
@@ -59,7 +76,6 @@ function App() {
       if (res.ok) {
         const data = await res.json();
         console.log("Token refreshed successfully");
-        // Dispatch event to notify that token was refreshed
         window.dispatchEvent(
           new CustomEvent("tokenRefreshed", {
             detail: { user: data.user },
@@ -76,8 +92,14 @@ function App() {
     }
   };
 
-  // validating token on mount
+  // Validate token on mount - SKIP for auth pages
   useEffect(() => {
+    // Skip token validation for auth pages
+    if (isAuthPage) {
+      setIsValidating(false);
+      return;
+    }
+
     const validateInitialToken = async () => {
       try {
         const res = await fetch(
@@ -114,10 +136,15 @@ function App() {
     };
 
     validateInitialToken();
-  }, []); // Empty dependency - runs once only
+  }, [isAuthPage]); // Re-run when switching between auth/non-auth pages
 
-  // Second useEffect: Handle refresh interval and events
+  // Handle refresh interval and events - SKIP for auth pages
   useEffect(() => {
+    // Skip for auth pages
+    if (isAuthPage) {
+      return;
+    }
+
     let refreshInterval;
 
     if (user) {
@@ -140,44 +167,59 @@ function App() {
       window.removeEventListener("tokenRefreshed", handleTokenRefresh);
       window.removeEventListener("authFailure", handleAuthFailure);
     };
-  }, [user]);
+  }, [user, isAuthPage]); // Re-run when user or page type changes
 
   return (
-    <>
-      <div id="tabs">
-        <button onClick={() => handleTabChange("Spray Finder")}>
-          Spray Finder
-        </button>
-        <button onClick={() => handleTabChange("Spray Calculator")}>
-          Spray Calculator
-        </button>
-        <button onClick={() => handleTabChange("Tracking")}>Tracking</button>
-      </div>
+    <Routes>
+      {/* Auth routes MUST come BEFORE the catch-all route */}
+      <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
-      <div className="content-container">
-        {tab === "Spray Finder" && (
-          <SprayFinder setTab={setTab} setChosenSpray={setChosenSpray} />
-        )}
-        {tab === "Spray Calculator" && (
-          <Calculator chosenSpray={chosenSpray} user={user} />
-        )}
-        {tab === "Tracking" &&
-          (isValidating ? (
-            <div className="flex justify-center items-center min-h-screen">
-              <p>Validating session...</p>
+      {/* Main app route - catch-all, must be LAST */}
+      <Route
+        path="*"
+        element={
+          <>
+            <div id="tabs">
+              <button onClick={() => handleTabChange("Spray Finder")}>
+                Spray Finder
+              </button>
+              <button onClick={() => handleTabChange("Spray Calculator")}>
+                Spray Calculator
+              </button>
+              <button onClick={() => handleTabChange("Tracking")}>
+                Tracking
+              </button>
             </div>
-          ) : (
-            <div className="tracking-full-width">
-              <Tracking
-                user={user}
-                onLogin={handleLogin}
-                onLogout={handleLogout}
-              />
+
+            <div className="content-container">
+              {tab === "Spray Finder" && (
+                <SprayFinder setTab={setTab} setChosenSpray={setChosenSpray} />
+              )}
+              {tab === "Spray Calculator" && (
+                <Calculator chosenSpray={chosenSpray} user={user} />
+              )}
+              {tab === "Tracking" &&
+                (isValidating ? (
+                  <div className="flex justify-center items-center min-h-screen">
+                    <p>Validating session...</p>
+                  </div>
+                ) : (
+                  <div className="tracking-full-width">
+                    <Tracking
+                      user={user}
+                      onLogin={handleLogin}
+                      onLogout={handleLogout}
+                    />
+                  </div>
+                ))}
+              {tab === "LandingPage" && <LandingPage setTab={setTab} />}
             </div>
-          ))}
-        {tab === "LandingPage" && <LandingPage setTab={setTab} />}
-      </div>
-    </>
+          </>
+        }
+      />
+    </Routes>
   );
 }
 

@@ -3,6 +3,7 @@ import { useState } from "react";
 function Register({ setNewAcc }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -21,8 +22,9 @@ function Register({ setNewAcc }) {
 
       const data = await res.json();
       if (res.ok) {
-        alert("account created! please login");
-        setNewAcc(false); // Switch to login form
+        setSuccess(true);
+        // Auto-switch to login after 5 seconds
+        setTimeout(() => setNewAcc(false), 5000);
       } else {
         setError(data.message || "Registration failed");
       }
@@ -32,9 +34,57 @@ function Register({ setNewAcc }) {
       setIsLoading(false);
     }
   }
+
   const handleClick = () => {
     setNewAcc(false);
   };
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center border border-green-100">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg
+              className="w-8 h-8 text-green-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-3">
+            Check Your Email!
+          </h2>
+          <p className="text-gray-600 mb-4 leading-relaxed">
+            We've sent a verification link to your email address. Please check
+            your inbox (and spam folder) and click the link to verify your
+            account.
+          </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <p className="text-sm text-blue-800">
+              <strong>Important:</strong> You must verify your email before you
+              can log in.
+            </p>
+          </div>
+          <button
+            onClick={handleClick}
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+          >
+            Go to Login
+          </button>
+          <p className="text-sm text-gray-500 mt-4">
+            Redirecting automatically in 5 seconds...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center px-4 py-8">
@@ -169,7 +219,7 @@ function Register({ setNewAcc }) {
 
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-gray-500">
-          <p>© 2024 Spray Management. All rights reserved.</p>
+          <p>© 2025 MySprays. All rights reserved.</p>
         </div>
       </div>
     </div>
