@@ -1,6 +1,8 @@
 import { useState } from "react";
 import sprayData from "../assets/sprayData.json";
 import blankImage from "../assets/blank.jpg";
+import { getIssueImage } from "../assets/issuesList";
+import { getSprayImage } from "../assets/spraysList";
 
 function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
   const issues = Object.keys(sprayData[crop]);
@@ -22,6 +24,7 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
 
   const handleCalculateClick = (spray) => {
     console.log("The spray you clicked", { spray });
+    console.log("Spray name for image lookup:", spray.name); // Debug log
 
     setChosenSpray({
       crop: crop,
@@ -73,7 +76,7 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
           </p>
         </div>
 
-        {/* Issue Grid - Similar to crop grid */}
+        {/* Issue Grid - Now uses crop-specific images */}
         <div className="crop-grid">
           {issues.map((issue) => (
             <div
@@ -81,7 +84,10 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
               onClick={() => handleIssueClick(issue)}
               className={`crop-card ${selectedIssue === issue ? "spin" : ""}`}
             >
-              <img src={blankImage} alt={issue} />
+              <img
+                src={getIssueImage(crop, issue)}
+                alt={`${issue} on ${crop}`}
+              />
               <p>{issue}</p>
             </div>
           ))}
@@ -128,47 +134,70 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
 
       {/* Spray Options Grid */}
       <div className="sprays-grid">
-        {sprays.map((spray, index) => (
-          <div key={`${spray.name}-${index}`} className="spray-card">
-            <img
-              src={blankImage}
-              alt={`${spray.name} spray`}
-              className="w-full h-48 object-cover"
-            />
+        {sprays.map((spray, index) => {
+          const sprayImage = getSprayImage(spray.name);
+          console.log(`Looking up image for: "${spray.name}" -> ${sprayImage}`); // Debug log
 
-            <div className="spray-card-content">
-              <h4 className="text-xl font-bold text-gray-800 mb-3">
-                {spray.name}
-              </h4>
-
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold text-gray-700">Rate:</span>
-                  <span className="text-gray-600 font-medium">
-                    {spray.rate} {spray.unit} per acre
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold text-gray-700">PHI:</span>
-                  <span className="text-gray-600">{spray.phi}</span>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold text-gray-700">PCP:</span>
-                  <span className="text-gray-600">{spray.pcp}</span>
-                </div>
+          return (
+            <div key={`${spray.name}-${index}`} className="spray-card">
+              <div
+                style={{
+                  width: "100%",
+                  height: "300px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "white",
+                  padding: "1rem",
+                }}
+              >
+                <img
+                  src={sprayImage}
+                  alt={`${spray.name} spray`}
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    objectFit: "contain",
+                    width: "auto",
+                    height: "auto",
+                  }}
+                />
               </div>
 
-              <button
-                onClick={() => handleCalculateClick(spray)}
-                className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:-translate-y-1 hover:shadow-lg"
-              >
-                Calculate Application
-              </button>
+              <div className="spray-card-content">
+                <h4 className="text-xl font-bold text-gray-800 mb-3">
+                  {spray.name}
+                </h4>
+
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-gray-700">Rate:</span>
+                    <span className="text-gray-600 font-medium">
+                      {spray.rate} {spray.unit} per acre
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-gray-700">PHI:</span>
+                    <span className="text-gray-600">{spray.phi}</span>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-gray-700">PCP:</span>
+                    <span className="text-gray-600">{spray.pcp}</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => handleCalculateClick(spray)}
+                  className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:-translate-y-1 hover:shadow-lg"
+                >
+                  Calculate Application
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
