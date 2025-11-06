@@ -8,6 +8,7 @@ function Calculator({ chosenSpray, user }) {
   const [area, setArea] = useState(0);
   const [waterVolume, setWaterVolume] = useState(0);
   const [tankSize, setTankSize] = useState(0);
+  const [sprayRate, setSprayRate] = useState(0);
   const [selectedSprayKey, setSelectedSprayKey] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -72,7 +73,7 @@ function Calculator({ chosenSpray, user }) {
   // Autofill modal fields when opening with a selected spray
   const openModal = () => {
     if (selectedSpray) {
-      const totalProduct = parseFloat(selectedSpray.rate) * area;
+      const totalProduct = parseFloat(sprayRate) * area;
       setFormData((prev) => ({
         ...prev,
         sprayName: selectedSpray.name,
@@ -192,6 +193,18 @@ function Calculator({ chosenSpray, user }) {
               value={tankSize || ""}
               placeholder="e.g. 400"
               onChange={(e) => setTankSize(parseFloat(e.target.value) || 0)}
+            />
+          </div>
+
+          {/* Spray Rate */}
+          <div className="md:col-span-2 lg:col-span-1">
+            <label className="form-label">Spray Rate (units as given)</label>
+            <input
+              className="form-input"
+              type="number"
+              value={sprayRate || ""}
+              placeholder="e.g. 10"
+              onChange={(e) => setSprayRate(parseFloat(e.target.value) || 0)}
             />
           </div>
 
@@ -370,9 +383,10 @@ function Calculator({ chosenSpray, user }) {
         area > 0 &&
         waterVolume > 0 &&
         tankSize > 0 &&
+        sprayRate > 0 &&
         (() => {
           const totalWater = waterVolume * area;
-          const totalProduct = parseFloat(selectedSpray.rate) * area;
+          const totalProduct = parseFloat(sprayRate) * area;
           const productPerLitre = totalProduct / totalWater;
 
           const fullTankCount = Math.floor(totalWater / tankSize);

@@ -186,6 +186,18 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
                     <span className="font-semibold text-gray-700">PCP:</span>
                     <span className="text-gray-600">{spray.pcp}</span>
                   </div>
+
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-gray-700">Stage:</span>
+                    <span className="text-gray-600">{spray.stage}</span>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-gray-700">
+                      Description:
+                    </span>
+                    <span className="text-gray-600">{spray.description}</span>
+                  </div>
                 </div>
 
                 <button

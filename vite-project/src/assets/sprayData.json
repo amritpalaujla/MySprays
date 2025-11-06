@@ -3,10 +3,12 @@
     "Fruit Flies": [
       {
         "name": "Delegate WG",
-        "rate": 170,
+        "rate": "85-170",
         "unit": "g",
         "phi": "14 days",
-        "pcp": "PCP00123"
+        "pcp": "PCP00123",
+        "stage": "petal fall",
+        "description": ""
       },
       {
         "name": "Success",
