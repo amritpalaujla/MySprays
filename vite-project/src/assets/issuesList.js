@@ -2,8 +2,9 @@
 import blankImage from "./blank.jpg";
 import cherryFruitFly from "../assets/cherryFruitFly.jpg";
 import cherryBrownRot from "../assets/cherryBrownRot.jpg";
-
+import cherryBacterialCanker from "../assets/cherrybacterialcanker.jpg";
 import peachLeafCurl from "../assets/peachLeafCurl.jpg";
+import cherrySanJoseScale from "../assets/issueImages/cherrySanJoseScale.PNG";
 
 // TODO: Replace with actual crop-specific issue images
 // Example structure:
@@ -22,8 +23,15 @@ export const issuesList = {
     name: "Western Cherry Fruit Fly",
     image: blankImage,
   },
-  "Cherries-Bacterial Canker": { name: "Bacterial Canker", image: blankImage },
+  "Cherries-Bacterial Canker": {
+    name: "Bacterial Canker",
+    image: cherryBacterialCanker,
+  },
   "Cherries-Cherry Leaf Spot": { name: "Cherry Leaf Spot", image: blankImage },
+  "Cherries-San Jose Scale": {
+    name: "Cherry San Jose Scale",
+    image: cherrySanJoseScale,
+  },
 
   // Apples
   "Apples-Aphids": { name: "Aphids", image: blankImage },

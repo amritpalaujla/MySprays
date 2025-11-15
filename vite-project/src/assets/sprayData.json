@@ -1,5 +1,27 @@
 {
   "Cherries": {
+    "Bacterial Canker": [
+      {
+        "name": "Copper Spray",
+        "rate": "2.4-3.6",
+        "unit": "kg",
+        "phi": "na",
+        "pcp": "19146",
+        "stage": "Dormant, Post-Harvest",
+        "description": "Protects tree bark"
+      }
+    ],
+    "San Jose Scale": [
+      {
+        "name": "Guardsman",
+        "rate": "36",
+        "unit": "L",
+        "phi": "na",
+        "pcp": "23370",
+        "stage": "Dormant",
+        "description": "Do not apply just before or during freezing weather. One application/season."
+      }
+    ],
     "Fruit Flies": [
       {
         "name": "Delegate WG",

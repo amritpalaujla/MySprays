@@ -1,6 +1,8 @@
 // Import your spray product images here
 import blankImage from "./blank.jpg";
 import delegate from "../assets/delegate.png";
+import copperSpray from "../assets/sprayImages/copperSpray.PNG";
+import guardsman from "../assets/sprayImages/guardsman.png";
 
 // TODO: Replace with actual spray product images
 // Example:
@@ -52,6 +54,9 @@ export const spraysList = {
   Treflан: { name: "Treflan", image: blankImage },
 
   // Add more spray products as needed...
+
+  "Copper Spray": { name: "Copper Spray", image: copperSpray },
+  Guardsman: { name: "Guardsman", image: guardsman },
   // Make sure the key matches EXACTLY what's in your sprayData.json
 };
 
