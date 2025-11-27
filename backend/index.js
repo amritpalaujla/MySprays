@@ -74,74 +74,127 @@ function verifyToken(req, res, next) {
   });
 }
 
-app.post("/refresh-token", (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
+app.post("/refresh-token", async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
 
-  if (!refreshToken) {
-    return res.status(401).json({ error: "no refresh token provided" });
-  }
+    if (!refreshToken) {
+      return res.status(401).json({ error: "no refresh token provided" });
+    }
 
-  jwt.verify(
-    refreshToken,
-    process.env.JWT_REFRESH_SECRET,
-    async (err, decodedUser) => {
-      if (err) {
-        console.log("Refresh token error: ", err.message);
-        //clear invalid refresh token
-        res.clearCookie("refreshToken");
-        return res
-          .status(401)
-          .json({ error: "Invalid or expired refresh token" });
-      }
-
-      try {
-        const user = await User.findById(decodedUser.id);
-        if (!user) {
+    jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET,
+      async (err, decodedUser) => {
+        if (err) {
+          console.log("Refresh token error: ", err.message);
           res.clearCookie("refreshToken");
-          return res.status(401).json({ error: "User not found" });
+          return res
+            .status(401)
+            .json({ error: "Invalid or expired refresh token" });
         }
 
-        const newAccessToken = generateAccessToken(user);
-        const newRefreshToken = generateRefreshToken(user);
+        try {
+          const user = await User.findById(decodedUser.id);
+          if (!user) {
+            res.clearCookie("refreshToken");
+            return res.status(401).json({ error: "User not found" });
+          }
 
-        //new cookie
-        res.cookie("accessToken", newAccessToken, {
-          httpOnly: true,
-          secure: false,
-          sameSite: "lax",
-          maxAge: 15 * 60 * 1000, // 15 min
-        });
+          const newAccessToken = generateAccessToken(user);
+          const newRefreshToken = generateRefreshToken(user);
 
-        res.cookie("refreshToken", newRefreshToken, {
-          httpOnly: true,
-          secure: false,
-          sameSite: "lax",
-          maxAge: 7 * 24 * 60 * 1000, // 7 days
-        });
+          res.cookie("accessToken", newAccessToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            maxAge: 15 * 60 * 1000,
+          });
 
-        res.json({
-          message: "Tokens refreshed successfully",
-          user: {
-            id: user._id,
-            email: user.email,
-          },
-        });
+          res.cookie("refreshToken", newRefreshToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 1000,
+          });
 
-        // After setting cookies in login route:
-        console.log("Cookies set successfully");
-        console.log("Access token:", accessToken ? "SET" : "NOT SET");
-        console.log("Refresh token:", refreshToken ? "SET" : "NOT SET");
-      } catch (error) {
-        console.error("Error refreshing token: ", error);
-        res.status(500).json({ error: "Internal server error" });
+          res.json({
+            message: "Tokens refreshed successfully",
+            user: {
+              id: user._id,
+              email: user.email,
+              region: user.region || "CA",
+            },
+          });
+
+          // REMOVED THE PROBLEMATIC CONSOLE.LOGS HERE
+        } catch (error) {
+          console.error("Error refreshing token: ", error);
+          res.status(500).json({ error: "Internal server error" });
+        }
       }
+    );
+  } catch (error) {
+    console.error("Refresh token route error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Clear all sprays for a user
+app.delete("/sprays/clear-all", verifyToken, async (req, res) => {
+  try {
+    const result = await Sprays.deleteMany({ userId: req.user.id });
+    console.log(
+      `✅ Deleted ${result.deletedCount} spray logs for user ${req.user.id}`
+    );
+    res.json({
+      message: `Successfully deleted ${result.deletedCount} spray log(s)`,
+      deletedCount: result.deletedCount,
+    });
+  } catch (err) {
+    console.error("Error clearing sprays:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete user account
+app.delete("/user/delete-account", verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Delete all user's sprays first
+    await Sprays.deleteMany({ userId });
+
+    // Delete the user
+    const deletedUser = await User.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      return res.status(404).json({ error: "User not found" });
     }
-  );
+
+    // Clear cookies
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+
+    console.log(`✅ Deleted account for user: ${deletedUser.email}`);
+    res.json({ message: "Account deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting account:", err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.post("/sprays", verifyToken, async (req, res) => {
   try {
-    const { sprayName, date, crop, rate, amount, location, PHI, PCP } =
+    const { sprayName, date, crop, rate, amount, unit, location, PHI, PCP } =
       req.body;
     const newSpray = new Sprays({
       userId: req.user.id,
@@ -150,6 +203,7 @@ app.post("/sprays", verifyToken, async (req, res) => {
       crop,
       rate,
       amount,
+      unit, // Add this
       location,
       PHI,
       PCP,
@@ -218,9 +272,11 @@ app.post("/register", async (req, res) => {
   }
 });
 
+// Return region in login response
+// UPDATE YOUR EXISTING /login route to include region:
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  //res.json({ message: "Login endpoint hit", email, password });
+
   if (!email || !password) {
     return res.status(400).json({ message: "Email and password are required" });
   }
@@ -231,26 +287,22 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // check if email is verified
     if (!user.isVerified) {
       return res.status(403).json({
         message:
-          "Please Verify your email before logging in. Check your inboc for the verification link.",
+          "Please Verify your email before logging in. Check your inbox for the verification link.",
         requiresVerification: true,
       });
     }
 
-    //checking password
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    //generating tokens
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    //setting cookies
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: true,
@@ -270,6 +322,7 @@ app.post("/login", async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
+        region: user.region || "CA", // ← ADD THIS
       },
     });
   } catch (err) {
@@ -580,41 +633,7 @@ app.delete("/sprays/:id", verifyToken, async (req, res) => {
   }
 });
 
-//updating a spray log
-app.put("/sprays/:id", verifyToken, async (req, res) => {
-  try {
-    const sprayId = req.params.id;
-    const { sprayName, date, crop, rate, amount, location, PHI, PCP } =
-      req.body;
-
-    const updatedSpray = await Sprays.findOneAndUpdate(
-      {
-        _id: sprayId,
-        userId: req.user.id,
-      },
-      {
-        sprayName,
-        date,
-        crop,
-        rate,
-        amount,
-        location,
-        PHI,
-        PCP,
-      },
-      { new: true } // Returns the updated document
-    );
-    if (!updatedSpray) {
-      return res
-        .status(404)
-        .json({ error: "Spray not found or user not authorized" });
-    }
-    res.json(updatedSpray);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
+//get sprays
 app.get("/sprays", verifyToken, async (req, res) => {
   try {
     const { sort, location, startDate, endDate } = req.query;
@@ -651,6 +670,42 @@ app.get("/sprays", verifyToken, async (req, res) => {
     const sprays = await spraysQuery.exec();
 
     res.json(sprays);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//updating a spray log
+app.put("/sprays/:id", verifyToken, async (req, res) => {
+  try {
+    const sprayId = req.params.id;
+    const { sprayName, date, crop, rate, amount, unit, location, PHI, PCP } =
+      req.body;
+
+    const updatedSpray = await Sprays.findOneAndUpdate(
+      {
+        _id: sprayId,
+        userId: req.user.id,
+      },
+      {
+        sprayName,
+        date,
+        crop,
+        rate,
+        amount,
+        unit, // Add this
+        location,
+        PHI,
+        PCP,
+      },
+      { new: true }
+    );
+    if (!updatedSpray) {
+      return res
+        .status(404)
+        .json({ error: "Spray not found or user not authorized" });
+    }
+    res.json(updatedSpray);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -699,6 +754,50 @@ app.get("/test-email-direct", async (req, res) => {
       error: error.message,
       code: error.code,
     });
+  }
+});
+// Get user region preference (works for logged-in users)
+app.get("/user/region", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json({ region: user.region || "CA" });
+  } catch (error) {
+    console.error("Error fetching user region:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Update user region preference
+app.put("/user/region", verifyToken, async (req, res) => {
+  try {
+    const { region } = req.body;
+
+    if (!region || !["CA", "US"].includes(region)) {
+      return res
+        .status(400)
+        .json({ error: "Invalid region. Must be 'CA' or 'US'" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { region },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({
+      message: "Region updated successfully",
+      region: user.region,
+    });
+  } catch (error) {
+    console.error("Error updating user region:", error);
+    res.status(500).json({ error: "Server error" });
   }
 });
 

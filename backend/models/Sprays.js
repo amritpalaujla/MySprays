@@ -7,6 +7,7 @@ const spraySchema = new mongoose.Schema({
   crop: { type: String, required: true },
   rate: { type: String, required: true },
   amount: { type: String, required: true },
+  unit: { type: String }, // NEW: Store the unit (mL, fl oz, g, oz, etc.)
   location: { type: String, required: true },
   PHI: { type: String, required: true },
   PCP: { type: String, required: true },

@@ -3,7 +3,13 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   passwordHash: { type: String, required: true },
-  // NEW FIELDS FOR EMAIL VERIFICATION
+  // NEW FIELD FOR REGION PREFERENCE
+  region: {
+    type: String,
+    enum: ["CA", "US"],
+    default: "CA",
+  },
+  // Email verification fields
   isVerified: {
     type: Boolean,
     default: false,
@@ -14,7 +20,7 @@ const userSchema = new mongoose.Schema({
   verificationTokenExpires: {
     type: Date,
   },
-  // NEW FIELDS FOR PASSWORD RESET
+  // Password reset fields
   resetPasswordToken: {
     type: String,
   },

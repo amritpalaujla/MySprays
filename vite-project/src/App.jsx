@@ -8,6 +8,8 @@ import Tracking from "./components/Tracking";
 import VerifyEmail from "./components/VerifyEmail";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
+import { RegionProvider } from "./context/RegionContext";
+import RegionSelector from "./components/RegionSelector";
 
 function App() {
   const [tab, setTab] = useState("LandingPage");
@@ -40,7 +42,6 @@ function App() {
       localStorage.clear();
       sessionStorage.clear();
 
-      // Only try to refresh if we got 401 AND we're not on an auth page
       const authPages = [
         "/verify-email",
         "/forgot-password",
@@ -60,7 +61,6 @@ function App() {
   };
 
   const refreshTokenIfNeeded = async () => {
-    // Don't try to refresh on auth pages
     const authPages = ["/verify-email", "/forgot-password", "/reset-password"];
     if (authPages.includes(window.location.pathname)) {
       console.log("Skipping token refresh on auth page");
@@ -92,9 +92,7 @@ function App() {
     }
   };
 
-  // Validate token on mount - SKIP for auth pages
   useEffect(() => {
-    // Skip token validation for auth pages
     if (isAuthPage) {
       setIsValidating(false);
       return;
@@ -136,11 +134,9 @@ function App() {
     };
 
     validateInitialToken();
-  }, [isAuthPage]); // Re-run when switching between auth/non-auth pages
+  }, [isAuthPage]);
 
-  // Handle refresh interval and events - SKIP for auth pages
   useEffect(() => {
-    // Skip for auth pages
     if (isAuthPage) {
       return;
     }
@@ -167,59 +163,67 @@ function App() {
       window.removeEventListener("tokenRefreshed", handleTokenRefresh);
       window.removeEventListener("authFailure", handleAuthFailure);
     };
-  }, [user, isAuthPage]); // Re-run when user or page type changes
+  }, [user, isAuthPage]);
 
   return (
-    <Routes>
-      {/* Auth routes MUST come BEFORE the catch-all route */}
-      <Route path="/verify-email" element={<VerifyEmail />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
+    <RegionProvider user={user}>
+      <Routes>
+        {/* Auth routes MUST come BEFORE the catch-all route */}
+        <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
-      {/* Main app route - catch-all, must be LAST */}
-      <Route
-        path="*"
-        element={
-          <>
-            <div id="tabs">
-              <button onClick={() => handleTabChange("Spray Finder")}>
-                Spray Finder
-              </button>
-              <button onClick={() => handleTabChange("Spray Calculator")}>
-                Spray Calculator
-              </button>
-              <button onClick={() => handleTabChange("Tracking")}>
-                Tracking
-              </button>
-            </div>
+        {/* Main app route - catch-all, must be LAST */}
+        <Route
+          path="*"
+          element={
+            <>
+              <div id="tabs">
+                <button onClick={() => handleTabChange("Spray Finder")}>
+                  Spray Finder
+                </button>
+                <button onClick={() => handleTabChange("Spray Calculator")}>
+                  Spray Calculator
+                </button>
+                <button onClick={() => handleTabChange("Tracking")}>
+                  Tracking
+                </button>
 
-            <div className="content-container">
-              {tab === "Spray Finder" && (
-                <SprayFinder setTab={setTab} setChosenSpray={setChosenSpray} />
-              )}
-              {tab === "Spray Calculator" && (
-                <Calculator chosenSpray={chosenSpray} user={user} />
-              )}
-              {tab === "Tracking" &&
-                (isValidating ? (
-                  <div className="flex justify-center items-center min-h-screen">
-                    <p>Validating session...</p>
-                  </div>
-                ) : (
-                  <div className="tracking-full-width">
-                    <Tracking
-                      user={user}
-                      onLogin={handleLogin}
-                      onLogout={handleLogout}
-                    />
-                  </div>
-                ))}
-              {tab === "LandingPage" && <LandingPage setTab={setTab} />}
-            </div>
-          </>
-        }
-      />
-    </Routes>
+                {/* Region Selector in Top Bar */}
+                <RegionSelector />
+              </div>
+
+              <div className="content-container">
+                {tab === "Spray Finder" && (
+                  <SprayFinder
+                    setTab={setTab}
+                    setChosenSpray={setChosenSpray}
+                  />
+                )}
+                {tab === "Spray Calculator" && (
+                  <Calculator chosenSpray={chosenSpray} user={user} />
+                )}
+                {tab === "Tracking" &&
+                  (isValidating ? (
+                    <div className="flex justify-center items-center min-h-screen">
+                      <p>Validating session...</p>
+                    </div>
+                  ) : (
+                    <div className="tracking-full-width">
+                      <Tracking
+                        user={user}
+                        onLogin={handleLogin}
+                        onLogout={handleLogout}
+                      />
+                    </div>
+                  ))}
+                {tab === "LandingPage" && <LandingPage setTab={setTab} />}
+              </div>
+            </>
+          }
+        />
+      </Routes>
+    </RegionProvider>
   );
 }
 

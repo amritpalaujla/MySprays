@@ -1,10 +1,14 @@
 import { useState } from "react";
-import sprayData from "../assets/sprayData.json";
+import { getSprayData } from "../assets/sprayData";
+import { useRegion } from "../context/RegionContext";
 import blankImage from "../assets/blank.jpg";
 import { getIssueImage } from "../assets/issuesList";
 import { getSprayImage } from "../assets/spraysList";
 
 function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
+  const { region } = useRegion();
+  const sprayData = getSprayData(region);
+
   const issues = Object.keys(sprayData[crop]);
   const [selectedIssue, setSelectedIssue] = useState("");
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -24,7 +28,7 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
 
   const handleCalculateClick = (spray) => {
     console.log("The spray you clicked", { spray });
-    console.log("Spray name for image lookup:", spray.name); // Debug log
+    console.log("Spray name for image lookup:", spray.name);
 
     setChosenSpray({
       crop: crop,
@@ -39,11 +43,9 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
     setTab("Spray Calculator");
   };
 
-  // Show issue selection panel
   if (!selectedIssue || isTransitioning) {
     return (
       <div className="issue-container">
-        {/* Back Button */}
         <div className="mb-6">
           <button
             onClick={onBackToCrops}
@@ -66,7 +68,6 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
           </button>
         </div>
 
-        {/* Header */}
         <div className="text-center mb-8">
           <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
             Select Issue for {crop}
@@ -76,7 +77,6 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
           </p>
         </div>
 
-        {/* Issue Grid - Now uses crop-specific images */}
         <div className="crop-grid">
           {issues.map((issue) => (
             <div
@@ -96,10 +96,8 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
     );
   }
 
-  // Show spray options for selected issue
   return (
     <div className="issue-container">
-      {/* Back Button */}
       <div className="mb-6">
         <button
           onClick={handleBackToIssues}
@@ -122,7 +120,6 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
         </button>
       </div>
 
-      {/* Header */}
       <div className="text-center mb-8">
         <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
           {selectedIssue} Solutions for {crop}
@@ -132,11 +129,10 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
         </p>
       </div>
 
-      {/* Spray Options Grid */}
       <div className="sprays-grid">
         {sprays.map((spray, index) => {
           const sprayImage = getSprayImage(spray.name);
-          console.log(`Looking up image for: "${spray.name}" -> ${sprayImage}`); // Debug log
+          console.log(`Looking up image for: "${spray.name}" -> ${sprayImage}`);
 
           return (
             <div key={`${spray.name}-${index}`} className="spray-card">

@@ -351,11 +351,11 @@ function SprayInfo({ user }) {
                   </p>
                   <p>
                     <span className="font-semibold text-gray-800">Rate:</span>{" "}
-                    {spray.rate}
+                    {spray.rate} {spray.unit || ""} {"per acre"}
                   </p>
                   <p>
                     <span className="font-semibold text-gray-800">Amount:</span>{" "}
-                    {spray.amount}
+                    {spray.amount} {spray.unit || ""}
                   </p>
                   <p>
                     <span className="font-semibold text-gray-800">PHI:</span>{" "}
