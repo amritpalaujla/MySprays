@@ -302,9 +302,14 @@ function Calculator({ chosenSpray, user }) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="form-label">Amount</label>
+
                   <input
                     name="amount"
-                    value={`${formData.amount} ${formData.unit}`}
+                    value={
+                      formData.amount && formData.unit
+                        ? `${formData.amount} ${formData.unit}`
+                        : formData.amount || ""
+                    }
                     onChange={handleChange}
                     placeholder="Total amount"
                     className="form-input bg-gray-50"
@@ -393,19 +398,24 @@ function Calculator({ chosenSpray, user }) {
       )}
 
       {selectedSpray &&
-        area > 0 &&
-        waterVolume > 0 &&
-        tankSize > 0 &&
-        sprayRate > 0 &&
+        area &&
+        waterVolume &&
+        tankSize &&
+        sprayRate &&
         (() => {
-          const totalWater = waterVolume * area;
-          const totalProduct = parseFloat(sprayRate) * area;
+          const areaNum = parseFloat(area);
+          const waterVolumeNum = parseFloat(waterVolume);
+          const tankSizeNum = parseFloat(tankSize);
+          const sprayRateNum = parseFloat(sprayRate);
+
+          const totalWater = waterVolumeNum * areaNum;
+          const totalProduct = sprayRateNum * areaNum;
           const productPerLitre = totalProduct / totalWater;
 
-          const fullTankCount = Math.floor(totalWater / tankSize);
-          const remainingLitres = totalWater % tankSize;
+          const fullTankCount = Math.floor(totalWater / tankSizeNum);
+          const remainingLitres = totalWater % tankSizeNum;
 
-          const productPerFullTank = productPerLitre * tankSize;
+          const productPerFullTank = productPerLitre * tankSizeNum;
           const productForPartialTank = productPerLitre * remainingLitres;
 
           return (
@@ -459,7 +469,7 @@ function Calculator({ chosenSpray, user }) {
                         Full Tanks
                       </div>
                       <div className="text-gray-600">
-                        Water: {tankSize}
+                        Water: {tankSizeNum}
                         {units.volume} each
                       </div>
                       <div className="text-gray-600">

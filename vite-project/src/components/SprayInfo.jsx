@@ -7,6 +7,7 @@ function SprayInfo({ user }) {
     crop: "",
     rate: "",
     amount: "",
+    unit: "",
     location: "",
     PHI: "",
     PCP: "",
@@ -102,7 +103,7 @@ function SprayInfo({ user }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const isEditing = !!editingSprayId; // assigns boolean to this variable
+    const isEditing = !!editingSprayId;
     const url = isEditing
       ? `${import.meta.env.VITE_API_URL}/sprays/${editingSprayId}`
       : `${import.meta.env.VITE_API_URL}/sprays`;
@@ -126,7 +127,6 @@ function SprayInfo({ user }) {
       const data = await res.json();
       console.log("Saved", data);
 
-      // Reset form + close modal on success
       if (res.ok) {
         setFormData({
           sprayName: "",
@@ -134,6 +134,7 @@ function SprayInfo({ user }) {
           crop: "",
           rate: "",
           amount: "",
+          unit: "",
           location: "",
           PHI: "",
           PCP: "",
@@ -186,6 +187,7 @@ function SprayInfo({ user }) {
       <div className="flex justify-end mb-4">
         <button
           onClick={() => {
+            setEditingSprayId(null);
             setIsModalOpen(true);
             setFormData({
               sprayName: "",
@@ -193,6 +195,7 @@ function SprayInfo({ user }) {
               crop: "",
               rate: "",
               amount: "",
+              unit: "",
               location: "",
               PHI: "",
               PCP: "",
@@ -376,84 +379,117 @@ function SprayInfo({ user }) {
         )}
       </div>
 
-      {/* Modal */}
+      {/* Modal - Now matches Calculator.jsx style */}
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-start justify-center bg-black/30 backdrop-blur-sm bg-opacity-40 z-50 pt-20">
-          <div className="m-3 bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative max-h-[80vh] overflow-y-auto">
+        <div className="modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => {
                 setIsModalOpen(false);
+                setEditingSprayId(null);
               }}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
             >
               ✕
             </button>
 
-            <h2 className="text-xl font-bold mb-4">Log New Spray</h2>
+            <h2 className="text-xl font-bold mb-6 text-gray-800">
+              {editingSprayId ? "Edit Spray" : "Log New Spray"}
+            </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <input
-                name="sprayName"
-                value={formData.sprayName}
-                onChange={handleChange}
-                placeholder="Spray Name"
-                className="w-full border p-2 rounded"
-              />
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                className="w-full border p-2 rounded"
-              />
-              <input
-                name="crop"
-                value={formData.crop}
-                onChange={handleChange}
-                placeholder="Crop"
-                className="w-full border p-2 rounded"
-              />
-              <input
-                name="rate"
-                value={formData.rate}
-                onChange={handleChange}
-                placeholder="Rate"
-                className="w-full border p-2 rounded"
-              />
-              <input
-                name="amount"
-                value={formData.amount}
-                onChange={handleChange}
-                placeholder="Amount"
-                className="w-full border p-2 rounded"
-              />
-              <input
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                placeholder="Location"
-                className="w-full border p-2 rounded"
-              />
-              <input
-                name="PHI"
-                value={formData.PHI}
-                onChange={handleChange}
-                placeholder="PHI"
-                className="w-full border p-2 rounded"
-              />
-              <input
-                name="PCP"
-                value={formData.PCP}
-                onChange={handleChange}
-                placeholder="PCP"
-                className="w-full border p-2 rounded"
-              />
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="form-label">Spray Name</label>
+                <input
+                  name="sprayName"
+                  value={formData.sprayName}
+                  onChange={handleChange}
+                  placeholder="Enter spray name"
+                  className="form-input"
+                />
+              </div>
+              <div>
+                <label className="form-label">Date</label>
+                <input
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleChange}
+                  className="form-input"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="form-label">Crop</label>
+                  <input
+                    name="crop"
+                    value={formData.crop}
+                    onChange={handleChange}
+                    placeholder="Crop type"
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Rate</label>
+                  <input
+                    name="rate"
+                    value={formData.rate}
+                    onChange={handleChange}
+                    placeholder="Application rate"
+                    className="form-input"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="form-label">Amount</label>
+                  <input
+                    name="amount"
+                    value={formData.amount}
+                    onChange={handleChange}
+                    placeholder="Total amount"
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Location</label>
+                  <input
+                    name="location"
+                    value={formData.location}
+                    onChange={handleChange}
+                    placeholder="Field location"
+                    className="form-input"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="form-label">PHI</label>
+                  <input
+                    name="PHI"
+                    value={formData.PHI}
+                    onChange={handleChange}
+                    placeholder="Pre-harvest interval"
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="form-label">PCP</label>
+                  <input
+                    name="PCP"
+                    value={formData.PCP}
+                    onChange={handleChange}
+                    placeholder="PCP number"
+                    className="form-input"
+                  />
+                </div>
+              </div>
 
               <button
                 type="submit"
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 w-full"
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 mt-6"
               >
-                Save Spray
+                {editingSprayId ? "Update Spray Log" : "Save Spray Log"}
               </button>
             </form>
           </div>

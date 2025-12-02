@@ -84,7 +84,7 @@ function Settings({ user, onLogout }) {
           new Date(spray.date).toLocaleDateString(),
           spray.sprayName,
           spray.crop,
-          spray.rate,
+          `${spray.rate} ${spray.unit || ""} per acre`,
           `${spray.amount} ${spray.unit || ""}`,
           spray.PHI,
           spray.PCP,
