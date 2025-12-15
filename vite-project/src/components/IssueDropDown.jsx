@@ -5,6 +5,96 @@ import blankImage from "../assets/blank.jpg";
 import { getIssueImage } from "../assets/issuesList";
 import { getSprayImage } from "../assets/spraysList";
 
+// Image Carousel Component
+function ImageCarousel({ images, alt }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const goToNext = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const goToPrev = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const goToSlide = (index, e) => {
+    e.stopPropagation();
+    setCurrentIndex(index);
+  };
+
+  // Don't show navigation if only one image
+  if (images.length === 1) {
+    return <img src={images[0]} alt={alt} />;
+  }
+
+  return (
+    <div className="relative w-full h-full group">
+      <img
+        src={images[currentIndex]}
+        alt={`${alt} - Image ${currentIndex + 1}`}
+        className="w-full h-full object-cover"
+      />
+
+      {/* Previous Button */}
+      <button
+        onClick={goToPrev}
+        className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 text-gray-700 hover:text-gray-900 transition-all duration-200 px-1 py-2"
+      >
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.5}
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </button>
+
+      {/* Next Button */}
+      <button
+        onClick={goToNext}
+        className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 text-gray-700 hover:text-gray-900 transition-all duration-200 px-1 py-2"
+      >
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.5}
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </button>
+
+      {/* Dots Indicator */}
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+        {images.map((_, index) => (
+          <button
+            key={index}
+            onClick={(e) => goToSlide(index, e)}
+            className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
+              index === currentIndex
+                ? "bg-white w-4"
+                : "bg-white/60 hover:bg-white/80"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
   const { region } = useRegion();
   const sprayData = getSprayData(region);
@@ -78,19 +168,22 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
         </div>
 
         <div className="crop-grid">
-          {issues.map((issue) => (
-            <div
-              key={issue}
-              onClick={() => handleIssueClick(issue)}
-              className={`crop-card ${selectedIssue === issue ? "spin" : ""}`}
-            >
-              <img
-                src={getIssueImage(crop, issue)}
-                alt={`${issue} on ${crop}`}
-              />
-              <p>{issue}</p>
-            </div>
-          ))}
+          {issues.map((issue) => {
+            const issueImages = getIssueImage(crop, issue);
+            return (
+              <div
+                key={issue}
+                onClick={() => handleIssueClick(issue)}
+                className={`crop-card ${selectedIssue === issue ? "spin" : ""}`}
+              >
+                <ImageCarousel
+                  images={issueImages}
+                  alt={`${issue} on ${crop}`}
+                />
+                <p>{issue}</p>
+              </div>
+            );
+          })}
         </div>
       </div>
     );

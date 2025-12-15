@@ -5,75 +5,171 @@ import cherryBrownRot from "../assets/cherryBrownRot.jpg";
 import cherryBacterialCanker from "../assets/cherrybacterialcanker.jpg";
 import peachLeafCurl from "../assets/peachLeafCurl.jpg";
 import cherrySanJoseScale from "../assets/issueImages/cherrySanJoseScale.PNG";
-
-// TODO: Replace with actual crop-specific issue images
-// Example structure:
-// import cherriesAphids from "./cherries-aphids.jpg";
-// import applesAphids from "./apples-aphids.jpg";
-// import cherriesPowderyMildew from "./cherries-powdery-mildew.jpg";
+import cherryFruitFly2 from "../assets/issueImages/cherryFruitFly2.PNG";
+import cherryBrownRot2 from "../assets/issueImages/cherryBrownRot2.PNG";
+import cherryAphids from "../assets/issueImages/cherryAphids.PNG";
+import Weeds from "../assets/issueImages/Weeds.PNG";
+import cherryMildew from "../assets/issueImages/cherryMildew.PNG";
+import cherryMildew2 from "../assets/issueImages/cherryMildew2.PNG";
+import grapesMildew from "../assets/issueImages/grapesMildew.PNG";
+import grapesMildew2 from "../assets/issueImages/grapesMildew2.PNG";
+import grapesBlackRot from "../assets/issueImages/grapesBlackRot.PNG";
+import grapesBunchRot from "../assets/issueImages/grapesBunchRot.PNG";
+import grapesBunchRot2 from "../assets/issueImages/grapesBunchRot2.PNG";
+import grapesThrips from "../assets/issueImages/grapesThrips.PNG";
+import grapesThrips2 from "../assets/issueImages/grapesThrips2.PNG";
+import peachesBrownRot from "../assets/issueImages/peachesBrownRot.PNG";
+import peachesScab from "../assets/issueImages/peachesScab.PNG";
+import peachesMildew from "../assets/issueImages/peachesMildew.PNG";
+import applesScab from "../assets/issueImages/applesScab.PNG";
+import applesCodlingMoth from "../assets/issueImages/applesCodlingMoth.PNG";
+import applesPowderyMildew from "../assets/issueImages/applesPowderyMildew.PNG";
+import applesFireBlight from "../assets/issueImages/applesFireBlight.PNG";
 
 // Crop-specific issue images
 // Format: "CropName-IssueName"
 export const issuesList = {
   // Cherries
-  "Cherries-Fruit Flies": { name: "Fruit Flies", image: cherryFruitFly },
-  "Cherries-Powdery Mildew": { name: "Powdery Mildew", image: blankImage },
-  "Cherries-Brown Rot": { name: "Brown Rot", image: cherryBrownRot },
-  "Cherries-Western Cherry Fruit Fly": {
-    name: "Western Cherry Fruit Fly",
-    image: blankImage,
+  "Cherries-Fruit Flies": {
+    name: "Fruit Flies",
+    images: [cherryFruitFly, cherryFruitFly2],
+  },
+  "Cherries-Mildew": {
+    name: "Powdery Mildew",
+    images: [cherryMildew, cherryMildew2],
+  },
+  "Cherries-Brown Rot": {
+    name: "Brown Rot",
+    images: [cherryBrownRot, cherryBrownRot2],
   },
   "Cherries-Bacterial Canker": {
     name: "Bacterial Canker",
-    image: cherryBacterialCanker,
+    images: [cherryBacterialCanker],
   },
-  "Cherries-Cherry Leaf Spot": { name: "Cherry Leaf Spot", image: blankImage },
+  "Cherries-Cherry Leaf Spot": {
+    name: "Cherry Leaf Spot",
+    images: [blankImage, blankImage],
+  },
   "Cherries-San Jose Scale": {
     name: "Cherry San Jose Scale",
-    image: cherrySanJoseScale,
+    images: [cherrySanJoseScale],
+  },
+  "Cherries-Aphids": {
+    name: "Aphids",
+    images: [cherryAphids],
+  },
+  "Cherries-Weeds": {
+    name: "Weeds",
+    images: [Weeds],
   },
 
   // Apples
-  "Apples-Aphids": { name: "Aphids", image: blankImage },
-  "Apples-Powdery Mildew": { name: "Powdery Mildew", image: blankImage },
-  "Apples-Codling Moth": { name: "Codling Moth", image: blankImage },
-  "Apples-Apple Scab": { name: "Apple Scab", image: blankImage },
-  "Apples-Fire Blight": { name: "Fire Blight", image: blankImage },
+  "Apples-Aphids": {
+    name: "Aphids",
+    images: [blankImage, blankImage],
+  },
+  "Apples-Powdery Mildew": {
+    name: "Powdery Mildew",
+    images: [applesPowderyMildew],
+  },
+  "Apples-Codling Moth": {
+    name: "Codling Moth",
+    images: [applesCodlingMoth],
+  },
+  "Apples-Apple Scab": {
+    name: "Apple Scab",
+    images: [applesScab],
+  },
+  "Apples-Fire Blight": {
+    name: "Fire Blight",
+    images: [applesFireBlight],
+  },
 
   // Grapes
-  "Grapes-Aphids": { name: "Aphids", image: blankImage },
-  "Grapes-Powdery Mildew": { name: "Powdery Mildew", image: blankImage },
-  "Grapes-Downy Mildew": { name: "Downy Mildew", image: blankImage },
-  "Grapes-Botrytis": { name: "Botrytis", image: blankImage },
-  "Grapes-Spider Mites": { name: "Spider Mites", image: blankImage },
+  "Grapes-Aphids": {
+    name: "Aphids",
+    images: [blankImage, blankImage],
+  },
+  "Grapes-Mildew": {
+    name: "Mildew",
+    images: [grapesMildew, grapesMildew2],
+  },
+  "Grapes-Thrips": {
+    name: "Thrips",
+    images: [grapesThrips, grapesThrips2],
+  },
+  "Grapes-Bunch Rot": {
+    name: "Bunch Rot",
+    images: [grapesBunchRot, grapesBunchRot2],
+  },
+  "Grapes-Black Rot": {
+    name: "Black Rot",
+    images: [grapesBlackRot],
+  },
 
   // Peaches
-  "Peaches-Aphids": { name: "Aphids", image: blankImage },
-  "Peaches-Brown Rot": { name: "Brown Rot", image: blankImage },
-  "Peaches-Leaf Curl": { name: "Leaf Curl", image: peachLeafCurl },
-  "Peaches-Spider Mites": { name: "Spider Mites", image: blankImage },
+  "Peaches-Peach Scab": {
+    name: "Peach Scab",
+    images: [peachesScab],
+  },
+  "Peaches-Brown Rot": {
+    name: "Brown Rot",
+    images: [peachesBrownRot],
+  },
+  "Peaches-Leaf Curl": {
+    name: "Leaf Curl",
+    images: [peachLeafCurl],
+  },
+  "Peaches-Mildew": {
+    name: "Mildew",
+    images: [peachesMildew],
+  },
 
   // Apricots
-  "Apricots-Aphids": { name: "Aphids", image: blankImage },
-  "Apricots-Brown Rot": { name: "Brown Rot", image: blankImage },
-  "Apricots-Bacterial Canker": { name: "Bacterial Canker", image: blankImage },
+  "Apricots-Aphids": {
+    name: "Aphids",
+    images: [blankImage, blankImage],
+  },
+  "Apricots-Brown Rot": {
+    name: "Brown Rot",
+    images: [blankImage, blankImage],
+  },
+  "Apricots-Bacterial Canker": {
+    name: "Bacterial Canker",
+    images: [blankImage, blankImage],
+  },
 
   // Plums
-  "Plums-Aphids": { name: "Aphids", image: blankImage },
-  "Plums-Brown Rot": { name: "Brown Rot", image: blankImage },
-  "Plums-Bacterial Canker": { name: "Bacterial Canker", image: blankImage },
+  "Plums-Aphids": {
+    name: "Aphids",
+    images: [blankImage, blankImage],
+  },
+  "Plums-Brown Rot": {
+    name: "Brown Rot",
+    images: [blankImage, blankImage],
+  },
+  "Plums-Bacterial Canker": {
+    name: "Bacterial Canker",
+    images: [blankImage, blankImage],
+  },
 
   // Nectarines
-  "Nectarines-Aphids": { name: "Aphids", image: blankImage },
-  "Nectarines-Brown Rot": { name: "Brown Rot", image: blankImage },
-  "Nectarines-Spider Mites": { name: "Spider Mites", image: blankImage },
-
-  // Add more crop-issue combinations as needed...
+  "Nectarines-Aphids": {
+    name: "Aphids",
+    images: [blankImage, blankImage],
+  },
+  "Nectarines-Brown Rot": {
+    name: "Brown Rot",
+    images: [blankImage, blankImage],
+  },
+  "Nectarines-Spider Mites": {
+    name: "Spider Mites",
+    images: [blankImage, blankImage],
+  },
 };
 
-// Helper function to get crop-specific issue image
-// Takes crop name and issue name, returns the appropriate image
+// Helper function to get crop-specific issue images (returns array)
 export const getIssueImage = (cropName, issueName) => {
   const key = `${cropName}-${issueName}`;
-  return issuesList[key]?.image || blankImage;
+  return issuesList[key]?.images || [blankImage];
 };

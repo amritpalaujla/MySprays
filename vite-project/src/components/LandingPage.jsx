@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
 
 function LandingPage({ setTab }) {
   const hasShownAlert = useRef(false);
-  //notice to users
+  /*notice to users
   useEffect(() => {
     if (!hasShownAlert.current) {
       alert(
@@ -14,7 +14,7 @@ function LandingPage({ setTab }) {
       );
       hasShownAlert.current = true;
     }
-  }, []);
+  }, []);*/
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-8">

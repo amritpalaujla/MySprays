@@ -28,117 +28,116 @@
         "rate": "3.00",
         "unit": "oz",
         "phi": "14 days",
-        "pcp": "PCP00123",
+        "pcp": "28778",
         "stage": "petal fall",
-        "description": ""
+        "description": " Max 3 applications per year"
       },
       {
         "name": "Success",
-        "rate": 240,
-        "unit": "ml",
+        "rate": "2.50",
+        "unit": "fl oz",
         "phi": "7 days",
-        "pcp": "PCP00456"
+        "pcp": "26835",
+        "stage": "summer",
+        "description": "no more than 3 applications for the year"
       }
     ],
     "Brown Rot": [
       {
         "name": "Pristine WG",
-        "rate": "1.32",
-        "unit": "lb",
-        "phi": "21 days",
-        "pcp": "PCP00789"
+        "rate": "10.58",
+        "unit": "oz",
+        "phi": "0 days",
+        "pcp": "27985"
       },
       {
-        "name": "Scholar",
-        "rate": "0.26",
+        "name": "Mervion",
+        "rate": "0.03",
         "unit": "gal",
-        "phi": "10 days",
-        "pcp": "PCP01012"
+        "phi": "1 day",
+        "pcp": "33951",
+        "stage": "pink",
+        "description": "max 2 applications for season"
       }
     ],
     "Aphids": [
       {
         "name": "Movento",
-        "rate": 365,
-        "unit": "ml",
-        "phi": "14 days",
-        "pcp": "PCP01314"
+        "rate": "5.00",
+        "unit": "fl oz",
+        "phi": "7 days",
+        "pcp": "28953"
       },
       {
-        "name": "Assail",
-        "rate": "2.82",
-        "unit": "oz",
-        "phi": "7 days",
-        "pcp": "PCP01617"
+        "name": "Sivanto",
+        "rate": "6.83",
+        "unit": "fl oz",
+        "phi": "14 days",
+        "pcp": "31452"
       }
     ],
-    "Leaf Spot": [
+    "Weeds": [
       {
-        "name": "Echo 720",
-        "rate": "0.40",
+        "name": "Roundup",
+        "rate": "0.26",
         "unit": "gal",
-        "phi": "10 days",
-        "pcp": "PCP01819"
-      },
-      {
-        "name": "Bravo ZN",
-        "rate": "0.58",
-        "unit": "gal",
-        "phi": "14 days",
-        "pcp": "PCP02122"
+        "phi": "30 days",
+        "pcp": "28198"
       }
     ],
     "Mildew": [
       {
-        "name": "Sirocco",
-        "rate": "0.13",
+        "name": "Cevya",
+        "rate": "0.03",
         "unit": "gal",
-        "phi": "7 days",
-        "pcp": "PCP02324"
+        "phi": "0 days",
+        "pcp": "33405"
       },
       {
-        "name": "Topas",
-        "rate": 200,
-        "unit": "ml",
-        "phi": "14 days",
-        "pcp": "PCP02526"
+        "name": "Nova",
+        "rate": "4.94",
+        "unit": "oz",
+        "phi": "1 day",
+        "pcp": "22399"
       }
     ]
   },
   "Grapes": {
     "Mildew": [
       {
-        "name": "Luna Experience",
-        "rate": 200,
-        "unit": "ml",
-        "phi": "7 days",
-        "pcp": "PCP03030"
+        "name": "Kumulus DF",
+        "rate": "11.11",
+        "unit": "lb",
+        "phi": "1 day",
+        "pcp": "18836",
+        "description": "Apply on first sign of mildew and repeat after 10 days on Agawan, Seneca and Seibel variities."
       },
       {
-        "name": "Vivando",
-        "rate": "0.21",
+        "name": "PureSpray Green Oil",
+        "rate": "1.06",
         "unit": "gal",
         "phi": "14 days",
-        "pcp": "PCP03232"
+        "pcp": "27666",
+        "description": " Make the first application pre-bloom and continue every 10-21 days depending on the level of disease pressure. Use the shorter spray interval when disease conditions are severe."
       }
     ],
     "Black Rot": [
       {
-        "name": "Ziram",
-        "rate": "6.61",
+        "name": "Maestro",
+        "rate": "1.76",
         "unit": "lb",
-        "phi": "14 days",
+        "phi": "55 days",
         "pcp": "PCP03434"
       },
       {
-        "name": "Captan",
-        "rate": "5.51",
-        "unit": "lb",
-        "phi": "21 days",
-        "pcp": "PCP03636"
+        "name": "CaptanL",
+        "rate": "0.35",
+        "unit": "gal",
+        "phi": "55 days",
+        "pcp": "35343"
       }
     ],
-    "Mold": [
+    "Bunch Rot": [
       {
         "name": "Switch",
         "rate": "2.20",
@@ -154,7 +153,7 @@
         "pcp": "PCP04040"
       }
     ],
-    "Anthracnose": [
+    "Thrips": [
       {
         "name": "Abound",
         "rate": "0.26",
@@ -164,8 +163,8 @@
       },
       {
         "name": "Mettle",
-        "rate": 250,
-        "unit": "ml",
+        "rate": "8.45",
+        "unit": "fl oz",
         "phi": "7 days",
         "pcp": "PCP04444"
       }
@@ -182,8 +181,8 @@
       },
       {
         "name": "Indar",
-        "rate": 500,
-        "unit": "ml",
+        "rate": "16.91",
+        "unit": "fl oz",
         "phi": "14 days",
         "pcp": "PCP05252"
       }
@@ -223,15 +222,15 @@
     "Mildew": [
       {
         "name": "Systhane",
-        "rate": 240,
-        "unit": "ml",
+        "rate": "8.12",
+        "unit": "fl oz",
         "phi": "7 days",
         "pcp": "PCP06262"
       },
       {
         "name": "Nova",
-        "rate": 300,
-        "unit": "ml",
+        "rate": "10.14",
+        "unit": "fl oz",
         "phi": "14 days",
         "pcp": "PCP06464"
       }
@@ -280,8 +279,8 @@
       },
       {
         "name": "Beleaf",
-        "rate": 200,
-        "unit": "ml",
+        "rate": "6.76",
+        "unit": "fl oz",
         "phi": "14 days",
         "pcp": "PCP08080"
       }
@@ -471,8 +470,8 @@
     "Powdery Mildew": [
       {
         "name": "Topas 250E",
-        "rate": 250,
-        "unit": "ml",
+        "rate": "8.45",
+        "unit": "fl oz",
         "phi": "7 days",
         "pcp": "PCP13838"
       },

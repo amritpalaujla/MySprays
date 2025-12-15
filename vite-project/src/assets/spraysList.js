@@ -3,6 +3,18 @@ import blankImage from "./blank.jpg";
 import delegate from "../assets/delegate.png";
 import copperSpray from "../assets/sprayImages/copperSpray.PNG";
 import guardsman from "../assets/sprayImages/guardsman.png";
+import roundup from "../assets/sprayImages/roundup.png";
+import success from "../assets/sprayImages/success.png";
+import pristinewg from "../assets/sprayImages/pristinewg.png";
+import mervion from "../assets/sprayImages/mervion.png";
+import movento from "../assets/sprayImages/movento.png";
+import sivanto from "../assets/sprayImages/sivanto.png";
+import cevya from "../assets/sprayImages/cevya.png";
+import nova from "../assets/sprayImages/nova.png";
+import kumulusDF from "../assets/sprayImages/kumulusDF.PNG";
+import pureSprayGreenOil from "../assets/sprayImages/pureSprayGreenOil.PNG";
+import captanL from "../assets/sprayImages/captanL.PNG";
+import maestro from "../assets/sprayImages/maestro.PNG";
 
 // TODO: Replace with actual spray product images
 // Example:
@@ -17,12 +29,22 @@ export const spraysList = {
   Captan: { name: "Captan", image: blankImage },
   Indar: { name: "Indar", image: blankImage },
   "Luna Sensation": { name: "Luna Sensation", image: blankImage },
-  Pristine: { name: "Pristine", image: blankImage },
+  "Pristine WG": { name: "Pristine", image: pristinewg },
   Rally: { name: "Rally", image: blankImage },
   Sovran: { name: "Sovran", image: blankImage },
   "Inspire Super": { name: "Inspire Super", image: blankImage },
   Fontelis: { name: "Fontelis", image: blankImage },
   Flint: { name: "Flint", image: blankImage },
+  Mervion: { name: "Mervion", image: mervion },
+  Cevya: { name: "Cevya", image: cevya },
+  Nova: { name: "Nova", image: nova },
+  "Kumulus DF": { name: "Kumulus DF", image: kumulusDF },
+  "PureSpray Green Oil": {
+    name: "PureSpray Green Oil",
+    image: pureSprayGreenOil,
+  },
+  CaptanL: { name: "CaptanL", image: captanL },
+  Maestro: { name: "maestro", image: maestro },
 
   // Insecticides
   Assail: { name: "Assail", image: blankImage },
@@ -30,11 +52,12 @@ export const spraysList = {
   "Delegate WG": { name: "Delegate WG", image: delegate },
   Exirel: { name: "Exirel", image: blankImage },
   Imidan: { name: "Imidan", image: blankImage },
-  Movento: { name: "Movento", image: blankImage },
+  Movento: { name: "Movento", image: movento },
   Rimon: { name: "Rimon", image: blankImage },
-  Success: { name: "Success", image: blankImage },
+  Success: { name: "Success", image: success },
   Warrior: { name: "Warrior", image: blankImage },
   Actara: { name: "Actara", image: blankImage },
+  Sivanto: { name: "Sivanto", image: sivanto },
 
   // Miticides
   Acramite: { name: "Acramite", image: blankImage },
@@ -49,7 +72,7 @@ export const spraysList = {
   Chateau: { name: "Chateau", image: blankImage },
   Goal: { name: "Goal", image: blankImage },
   Prowl: { name: "Prowl", image: blankImage },
-  Roundup: { name: "Roundup", image: blankImage },
+  Roundup: { name: "Roundup", image: roundup },
   Surflan: { name: "Surflan", image: blankImage },
   Treflан: { name: "Treflan", image: blankImage },
 
