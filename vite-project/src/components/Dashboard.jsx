@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import SprayInfo from "./SprayInfo";
-import IrrigationInfo from "./IrrigationInfo";
+import Settings from "./Settings";
 
 function Dashboard({ user, onLogout }) {
   const [message, setMessage] = useState("Loading...");
@@ -10,14 +10,13 @@ function Dashboard({ user, onLogout }) {
 
   const tabs = [
     { id: "sprays", label: "Sprays", icon: "🌿" },
-    { id: "irrigation", label: "Irrigation Timers", icon: "💧" },
-    { id: "askAi", label: "Ask Ai", icon: "🤖" },
+    { id: "settings", label: "Settings", icon: "⚙️" },
   ];
 
   useEffect(() => {
     async function fetchDashboard() {
       try {
-        const res = await fetch("http://localhost:3000/dashboard", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/dashboard`, {
           credentials: "include",
         });
 
@@ -30,7 +29,6 @@ function Dashboard({ user, onLogout }) {
 
         if (res.ok) {
           setMessage(data.message);
-
           setError("");
         } else {
           if (res.status === 401) {
@@ -262,31 +260,8 @@ function Dashboard({ user, onLogout }) {
             {/* Tab Content */}
             <div className="min-h-[300px]">
               {selectedTab === "sprays" && <SprayInfo user={user} />}
-              {selectedTab === "irrigation" && <IrrigationInfo />}
-              {selectedTab === "askAi" && (
-                <div className="flex flex-col items-center justify-center min-h-[300px] text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mb-4">
-                    <span className="text-3xl">🤖</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                    AI Assistant Coming Soon
-                  </h3>
-                  <p className="text-gray-600 max-w-md text-sm">
-                    We're working hard to bring you an intelligent assistant to
-                    help with your agricultural needs. Stay tuned!
-                  </p>
-                  <div className="mt-4 flex space-x-1">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
-                    <div
-                      className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.1s" }}
-                    ></div>
-                    <div
-                      className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.2s" }}
-                    ></div>
-                  </div>
-                </div>
+              {selectedTab === "settings" && (
+                <Settings user={user} onLogout={onLogout} />
               )}
             </div>
           </div>

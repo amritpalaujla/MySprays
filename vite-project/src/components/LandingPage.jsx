@@ -2,8 +2,20 @@ import jug from "../assets/jug.png";
 import calculator from "../assets/calculator.png";
 import folder from "../assets/folder.png";
 import SprayFinder from "./SprayFinder";
+import { useEffect, useRef } from "react";
 
 function LandingPage({ setTab }) {
+  const hasShownAlert = useRef(false);
+  /*notice to users
+  useEffect(() => {
+    if (!hasShownAlert.current) {
+      alert(
+        "This application is in testing phase. The accuracy of any information is not verified, and should not be trusted blindly. Feel free to test/explore the application, and kindly provide feedback to the author in areas you believe can be improved. Thank you!"
+      );
+      hasShownAlert.current = true;
+    }
+  }, []);*/
+
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-8">
       {/* Hero Section */}
@@ -24,7 +36,10 @@ function LandingPage({ setTab }) {
       <div className="max-w-6xl mx-auto mb-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Step 1 */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+          <div
+            className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
+            onClick={() => setTab("Spray Finder")}
+          >
             <div className="text-blue-600 font-bold text-xl mb-4">Step 1</div>
             <h3 className="text-xl font-bold text-gray-800 mb-4">
               Find Your Spray
@@ -38,7 +53,10 @@ function LandingPage({ setTab }) {
           </div>
 
           {/* Step 2 */}
-          <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+          <div
+            className="bg-green-50 border border-green-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
+            onClick={() => setTab("Spray Calculator")}
+          >
             <div className="text-green-600 font-bold text-xl mb-4">Step 2</div>
             <h3 className="text-xl font-bold text-gray-800 mb-4">
               Calculate Precisely
@@ -56,7 +74,10 @@ function LandingPage({ setTab }) {
           </div>
 
           {/* Step 3 */}
-          <div className="bg-purple-50 border border-purple-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+          <div
+            className="bg-purple-50 border border-purple-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
+            onClick={() => setTab("Tracking")}
+          >
             <div className="text-purple-600 font-bold text-xl mb-4">Step 3</div>
             <h3 className="text-xl font-bold text-gray-800 mb-4">
               Track & Record

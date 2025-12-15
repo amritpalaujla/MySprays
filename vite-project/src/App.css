@@ -202,3 +202,36 @@
     transform: rotate(360deg);
   }
 }
+
+/* Date input specific styling */
+input[type="date"] {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+/* Date input placeholder/empty state */
+input[type="date"]:invalid {
+  color: #666666 !important;
+}
+
+/* WebKit date picker styling */
+input[type="date"]::-webkit-datetime-edit {
+  color: #000000 !important;
+}
+
+input[type="date"]::-webkit-datetime-edit-text {
+  color: #000000 !important;
+}
+
+input[type="date"]::-webkit-datetime-edit-month-field {
+  color: #000000 !important;
+}
+
+input[type="date"]::-webkit-datetime-edit-day-field {
+  color: #000000 !important;
+}
+
+input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #000000 !important;
+}

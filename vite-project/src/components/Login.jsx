@@ -3,31 +3,38 @@ import { useState } from "react";
 function Login({ setNewAcc, onLogin }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+    setNeedsVerification(false);
 
     const email = e.target.email.value;
     const password = e.target.password.value;
+
     try {
-      const res = await fetch("http://localhost:3000/login", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
-      if (res.status === 401) {
-        window.dispatchEvent(new CustomEvent("authFailure"));
-        return;
-      }
       const data = await res.json();
 
       if (res.ok) {
         onLogin(data.user);
-        console.log("Login successful, token received");
+        console.log("Login successful");
+      } else if (res.status === 403 && data.requiresVerification) {
+        // Email not verified
+        setNeedsVerification(true);
+        setError(data.message);
+      } else if (res.status === 401) {
+        window.dispatchEvent(new CustomEvent("authFailure"));
       } else {
         setError(data.message || "Login failed");
       }
@@ -38,6 +45,37 @@ function Login({ setNewAcc, onLogin }) {
       setIsLoading(false);
     }
   }
+
+  const handleResendVerification = async (e) => {
+    e.preventDefault();
+    setResendLoading(true);
+    setResendMessage("");
+
+    const email = e.target.form.email.value;
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/resend-verification`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setResendMessage("Verification email sent! Check your inbox.");
+      } else {
+        setResendMessage(data.message || "Failed to resend email");
+      }
+    } catch (error) {
+      setResendMessage("Network error. Please try again.");
+    } finally {
+      setResendLoading(false);
+    }
+  };
 
   const handleClick = () => {
     setNewAcc(true);
@@ -72,21 +110,43 @@ function Login({ setNewAcc, onLogin }) {
         {/* Form Container */}
         <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100">
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center space-x-2">
-              <svg
-                className="w-5 h-5 text-red-500 flex-shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>{error}</span>
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">
+              <div className="flex items-start space-x-2">
+                <svg
+                  className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <div className="flex-1">
+                  <span>{error}</span>
+                  {needsVerification && (
+                    <div className="mt-3">
+                      <button
+                        onClick={handleResendVerification}
+                        disabled={resendLoading}
+                        className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors disabled:bg-gray-400"
+                      >
+                        {resendLoading
+                          ? "Sending..."
+                          : "Resend Verification Email"}
+                      </button>
+                      {resendMessage && (
+                        <p className="mt-2 text-sm text-gray-600">
+                          {resendMessage}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
@@ -114,6 +174,10 @@ function Login({ setNewAcc, onLogin }) {
                 </label>
                 <button
                   type="button"
+                  onClick={() => {
+                    /* We'll implement forgot password navigation */
+                    window.location.href = "/forgot-password";
+                  }}
                   className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
                 >
                   Forgot password?

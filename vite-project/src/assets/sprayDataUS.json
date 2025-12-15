@@ -1,0 +1,503 @@
+{
+  "Cherries": {
+    "Bacterial Canker": [
+      {
+        "name": "Copper Spray",
+        "rate": "5.29",
+        "unit": "lb",
+        "phi": "na",
+        "pcp": "19146",
+        "stage": "Dormant, Post-Harvest",
+        "description": "Protects tree bark"
+      }
+    ],
+    "San Jose Scale": [
+      {
+        "name": "Guardsman",
+        "rate": "9.51",
+        "unit": "gal",
+        "phi": "na",
+        "pcp": "23370",
+        "stage": "Dormant",
+        "description": "Do not apply just before or during freezing weather. One application/season."
+      }
+    ],
+    "Fruit Flies": [
+      {
+        "name": "Delegate WG",
+        "rate": "3.00",
+        "unit": "oz",
+        "phi": "14 days",
+        "pcp": "28778",
+        "stage": "petal fall",
+        "description": " Max 3 applications per year"
+      },
+      {
+        "name": "Success",
+        "rate": "2.50",
+        "unit": "fl oz",
+        "phi": "7 days",
+        "pcp": "26835",
+        "stage": "summer",
+        "description": "no more than 3 applications for the year"
+      }
+    ],
+    "Brown Rot": [
+      {
+        "name": "Pristine WG",
+        "rate": "10.58",
+        "unit": "oz",
+        "phi": "0 days",
+        "pcp": "27985"
+      },
+      {
+        "name": "Mervion",
+        "rate": "0.03",
+        "unit": "gal",
+        "phi": "1 day",
+        "pcp": "33951",
+        "stage": "pink",
+        "description": "max 2 applications for season"
+      }
+    ],
+    "Aphids": [
+      {
+        "name": "Movento",
+        "rate": "5.00",
+        "unit": "fl oz",
+        "phi": "7 days",
+        "pcp": "28953"
+      },
+      {
+        "name": "Sivanto",
+        "rate": "6.83",
+        "unit": "fl oz",
+        "phi": "14 days",
+        "pcp": "31452"
+      }
+    ],
+    "Weeds": [
+      {
+        "name": "Roundup",
+        "rate": "0.26",
+        "unit": "gal",
+        "phi": "30 days",
+        "pcp": "28198"
+      }
+    ],
+    "Mildew": [
+      {
+        "name": "Cevya",
+        "rate": "0.03",
+        "unit": "gal",
+        "phi": "0 days",
+        "pcp": "33405"
+      },
+      {
+        "name": "Nova",
+        "rate": "4.94",
+        "unit": "oz",
+        "phi": "1 day",
+        "pcp": "22399"
+      }
+    ]
+  },
+  "Grapes": {
+    "Mildew": [
+      {
+        "name": "Kumulus DF",
+        "rate": "11.11",
+        "unit": "lb",
+        "phi": "1 day",
+        "pcp": "18836",
+        "description": "Apply on first sign of mildew and repeat after 10 days on Agawan, Seneca and Seibel variities."
+      },
+      {
+        "name": "PureSpray Green Oil",
+        "rate": "1.06",
+        "unit": "gal",
+        "phi": "14 days",
+        "pcp": "27666",
+        "description": " Make the first application pre-bloom and continue every 10-21 days depending on the level of disease pressure. Use the shorter spray interval when disease conditions are severe."
+      }
+    ],
+    "Black Rot": [
+      {
+        "name": "Maestro",
+        "rate": "1.76",
+        "unit": "lb",
+        "phi": "55 days",
+        "pcp": "PCP03434"
+      },
+      {
+        "name": "CaptanL",
+        "rate": "0.35",
+        "unit": "gal",
+        "phi": "55 days",
+        "pcp": "35343"
+      }
+    ],
+    "Bunch Rot": [
+      {
+        "name": "Switch",
+        "rate": "2.20",
+        "unit": "lb",
+        "phi": "10 days",
+        "pcp": "PCP03838"
+      },
+      {
+        "name": "Scala",
+        "rate": "0.13",
+        "unit": "gal",
+        "phi": "7 days",
+        "pcp": "PCP04040"
+      }
+    ],
+    "Thrips": [
+      {
+        "name": "Abound",
+        "rate": "0.26",
+        "unit": "gal",
+        "phi": "14 days",
+        "pcp": "PCP04242"
+      },
+      {
+        "name": "Mettle",
+        "rate": "8.45",
+        "unit": "fl oz",
+        "phi": "7 days",
+        "pcp": "PCP04444"
+      }
+    ]
+  },
+  "Peaches": {
+    "Brown Rot": [
+      {
+        "name": "Elevate",
+        "rate": "2.43",
+        "unit": "lb",
+        "phi": "21 days",
+        "pcp": "PCP05050"
+      },
+      {
+        "name": "Indar",
+        "rate": "16.91",
+        "unit": "fl oz",
+        "phi": "14 days",
+        "pcp": "PCP05252"
+      }
+    ],
+    "Leaf Curl": [
+      {
+        "name": "Kocide",
+        "rate": "4.41",
+        "unit": "lb",
+        "phi": "21 days",
+        "pcp": "PCP05454"
+      },
+      {
+        "name": "Copper Spray",
+        "rate": "1.06",
+        "unit": "gal",
+        "phi": "14 days",
+        "pcp": "PCP05656"
+      }
+    ],
+    "Peach Scab": [
+      {
+        "name": "Bravo",
+        "rate": "0.66",
+        "unit": "gal",
+        "phi": "14 days",
+        "pcp": "PCP05858"
+      },
+      {
+        "name": "Captan",
+        "rate": "4.85",
+        "unit": "lb",
+        "phi": "21 days",
+        "pcp": "PCP06060"
+      }
+    ],
+    "Mildew": [
+      {
+        "name": "Systhane",
+        "rate": "8.12",
+        "unit": "fl oz",
+        "phi": "7 days",
+        "pcp": "PCP06262"
+      },
+      {
+        "name": "Nova",
+        "rate": "10.14",
+        "unit": "fl oz",
+        "phi": "14 days",
+        "pcp": "PCP06464"
+      }
+    ]
+  },
+  "Plums": {
+    "Plum Curculio": [
+      {
+        "name": "Imidan 70-W",
+        "rate": "2.95",
+        "unit": "lb",
+        "phi": "14 days",
+        "pcp": "PCP07070"
+      },
+      {
+        "name": "Malathion",
+        "rate": "0.40",
+        "unit": "gal",
+        "phi": "7 days",
+        "pcp": "PCP07272"
+      }
+    ],
+    "Brown Rot": [
+      {
+        "name": "Pristine",
+        "rate": "1.65",
+        "unit": "lb",
+        "phi": "21 days",
+        "pcp": "PCP07474"
+      },
+      {
+        "name": "Elevate",
+        "rate": "2.43",
+        "unit": "lb",
+        "phi": "14 days",
+        "pcp": "PCP07676"
+      }
+    ],
+    "Aphids": [
+      {
+        "name": "Assail 70WP",
+        "rate": "2.82",
+        "unit": "oz",
+        "phi": "7 days",
+        "pcp": "PCP07878"
+      },
+      {
+        "name": "Beleaf",
+        "rate": "6.76",
+        "unit": "fl oz",
+        "phi": "14 days",
+        "pcp": "PCP08080"
+      }
+    ],
+    "Black Knot": [
+      {
+        "name": "Daconil WeatherStik",
+        "rate": "0.42",
+        "unit": "gal",
+        "phi": "14 days",
+        "pcp": "PCP08282"
+      },
+      {
+        "name": "Bravo ZN",
+        "rate": "0.53",
+        "unit": "gal",
+        "phi": "21 days",
+        "pcp": "PCP08484"
+      }
+    ]
+  },
+  "Apricots": {
+    "Bacterial Spot": [
+      {
+        "name": "Copper 53W",
+        "rate": "5.51",
+        "unit": "lb",
+        "phi": "21 days",
+        "pcp": "PCP09090"
+      },
+      {
+        "name": "Nordox",
+        "rate": "4.96",
+        "unit": "lb",
+        "phi": "14 days",
+        "pcp": "PCP09292"
+      }
+    ],
+    "Brown Rot": [
+      {
+        "name": "Scala SC",
+        "rate": "0.13",
+        "unit": "gal",
+        "phi": "7 days",
+        "pcp": "PCP09494"
+      },
+      {
+        "name": "Merivon",
+        "rate": "0.13",
+        "unit": "gal",
+        "phi": "14 days",
+        "pcp": "PCP09696"
+      }
+    ],
+    "Shot Hole": [
+      {
+        "name": "Captan 80 WDG",
+        "rate": "3.31",
+        "unit": "lb",
+        "phi": "14 days",
+        "pcp": "PCP09898"
+      },
+      {
+        "name": "Ziram",
+        "rate": "6.61",
+        "unit": "lb",
+        "phi": "21 days",
+        "pcp": "PCP10010"
+      }
+    ],
+    "Leaf Curl": [
+      {
+        "name": "Syllit 400 FL",
+        "rate": "0.33",
+        "unit": "gal",
+        "phi": "21 days",
+        "pcp": "PCP10212"
+      },
+      {
+        "name": "Kocide",
+        "rate": "4.41",
+        "unit": "lb",
+        "phi": "14 days",
+        "pcp": "PCP10414"
+      }
+    ]
+  },
+  "Nectarines": {
+    "Peach Twig Borer": [
+      {
+        "name": "Success 480 SC",
+        "rate": "0.05",
+        "unit": "gal",
+        "phi": "7 days",
+        "pcp": "PCP11011"
+      },
+      {
+        "name": "Altacor",
+        "rate": "4.23",
+        "unit": "oz",
+        "phi": "14 days",
+        "pcp": "PCP11213"
+      }
+    ],
+    "Leaf Curl": [
+      {
+        "name": "Copper Spray",
+        "rate": "5.51",
+        "unit": "lb",
+        "phi": "21 days",
+        "pcp": "PCP11415"
+      },
+      {
+        "name": "Kocide",
+        "rate": "4.41",
+        "unit": "lb",
+        "phi": "14 days",
+        "pcp": "PCP11617"
+      }
+    ],
+    "Brown Rot": [
+      {
+        "name": "Merivon",
+        "rate": "0.13",
+        "unit": "gal",
+        "phi": "14 days",
+        "pcp": "PCP11819"
+      },
+      {
+        "name": "Elevate",
+        "rate": "2.43",
+        "unit": "lb",
+        "phi": "21 days",
+        "pcp": "PCP12021"
+      }
+    ],
+    "Aphids": [
+      {
+        "name": "Movento",
+        "rate": "0.07",
+        "unit": "gal",
+        "phi": "7 days",
+        "pcp": "PCP12223"
+      },
+      {
+        "name": "Assail",
+        "rate": "2.82",
+        "unit": "oz",
+        "phi": "14 days",
+        "pcp": "PCP12425"
+      }
+    ]
+  },
+  "Apples": {
+    "Apple Scab": [
+      {
+        "name": "Captan 80 WDG",
+        "rate": "3.31",
+        "unit": "lb",
+        "phi": "14 days",
+        "pcp": "PCP13030"
+      },
+      {
+        "name": "Flint",
+        "rate": "0.31",
+        "unit": "lb",
+        "phi": "7 days",
+        "pcp": "PCP13232"
+      }
+    ],
+    "Codling Moth": [
+      {
+        "name": "Altacor",
+        "rate": "4.23",
+        "unit": "oz",
+        "phi": "7 days",
+        "pcp": "PCP13434"
+      },
+      {
+        "name": "Delegate WG",
+        "rate": "6.00",
+        "unit": "oz",
+        "phi": "14 days",
+        "pcp": "PCP13636"
+      }
+    ],
+    "Powdery Mildew": [
+      {
+        "name": "Topas 250E",
+        "rate": "8.45",
+        "unit": "fl oz",
+        "phi": "7 days",
+        "pcp": "PCP13838"
+      },
+      {
+        "name": "Sirocco",
+        "rate": "0.13",
+        "unit": "gal",
+        "phi": "14 days",
+        "pcp": "PCP14040"
+      }
+    ],
+    "Fire Blight": [
+      {
+        "name": "Kasumin",
+        "rate": "0.32",
+        "unit": "gal",
+        "phi": "21 days",
+        "pcp": "PCP14242"
+      },
+      {
+        "name": "Streptomycin 17",
+        "rate": "17.64",
+        "unit": "oz",
+        "phi": "7 days",
+        "pcp": "PCP14444"
+      }
+    ]
+  }
+}

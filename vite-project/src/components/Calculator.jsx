@@ -1,13 +1,19 @@
 import { useState, useEffect } from "react";
-import sprayData from "../assets/sprayData.json";
+import { getSprayData } from "../assets/sprayData";
+import { useRegion } from "../context/RegionContext";
 import sprayTank from "../assets/tanker.png";
 import partialSprayTank from "../assets/partialTanker.png";
 
 function Calculator({ chosenSpray, user }) {
+  const { region, getUnitLabels } = useRegion();
+  const units = getUnitLabels();
+  const sprayData = getSprayData(region);
+
   const [allSprays, setAllSprays] = useState([]);
-  const [area, setArea] = useState(0);
-  const [waterVolume, setWaterVolume] = useState(0);
-  const [tankSize, setTankSize] = useState(0);
+  const [area, setArea] = useState("");
+  const [waterVolume, setWaterVolume] = useState("");
+  const [tankSize, setTankSize] = useState("");
+  const [sprayRate, setSprayRate] = useState("");
   const [selectedSprayKey, setSelectedSprayKey] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -16,6 +22,7 @@ function Calculator({ chosenSpray, user }) {
     crop: "",
     rate: "",
     amount: "",
+    unit: "", // Add unit field
     location: "",
     PHI: "",
     PCP: "",
@@ -24,6 +31,7 @@ function Calculator({ chosenSpray, user }) {
   const selectedSpray = allSprays.find(
     (spray) => `${spray.crop}-${spray.issue}-${spray.name}` === selectedSprayKey
   );
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -31,8 +39,10 @@ function Calculator({ chosenSpray, user }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log("🚀 Submitting spray data:", formData);
+
     try {
-      const res = await fetch("http://localhost:3000/sprays", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/sprays`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,40 +51,80 @@ function Calculator({ chosenSpray, user }) {
         body: JSON.stringify(formData),
       });
 
+      console.log("📡 Response status:", res.status);
+
       if (res.status === 401) {
+        console.log("❌ Authentication failed");
         window.dispatchEvent(new CustomEvent("authFailure"));
         return;
       }
 
       const data = await res.json();
-      console.log("Saved", data);
+      console.log("✅ Response data:", data);
 
-      // Reset form + close modal on success
       if (res.ok) {
+        console.log("✅ Spray saved successfully!");
         setFormData({
           sprayName: "",
           date: "",
           crop: "",
           rate: "",
           amount: "",
+          unit: "",
           location: "",
           PHI: "",
           PCP: "",
         });
         setIsModalOpen(false);
+      } else {
+        console.error("❌ Server error:", data);
+        alert(`Failed to save spray: ${data.error || "Unknown error"}`);
       }
     } catch (err) {
-      console.error("Error saving spray:", err);
+      console.error("❌ Error saving spray:", err);
+      alert(`Network error: ${err.message}`);
     }
   };
 
+  const openModal = () => {
+    if (selectedSpray) {
+      const totalProduct = parseFloat(sprayRate) * parseFloat(area);
+      const newFormData = {
+        sprayName: selectedSpray.name,
+        crop: selectedSpray.crop,
+        rate: selectedSpray.rate,
+        amount: totalProduct.toFixed(2),
+        unit: selectedSpray.unit, // Save the unit
+        PHI: selectedSpray.phi,
+        PCP: selectedSpray.pcp,
+        date: "",
+        location: "",
+      };
+      console.log("📋 Opening modal with data:", newFormData);
+      setFormData(newFormData);
+    }
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setFormData({
+      sprayName: "",
+      date: "",
+      crop: "",
+      rate: "",
+      amount: "",
+      unit: "",
+      location: "",
+      PHI: "",
+      PCP: "",
+    });
+  };
+
   useEffect(() => {
-    const collectedSprays = []; // ✅ Moved inside useEffect
-    //looping through each crop
+    const collectedSprays = [];
     for (const crop in sprayData) {
-      //looping through each issue
       for (const issue in sprayData[crop]) {
-        //looping through each spray
         for (const spray of sprayData[crop][issue])
           collectedSprays.push({
             crop: crop,
@@ -84,29 +134,28 @@ function Calculator({ chosenSpray, user }) {
             unit: spray.unit,
             phi: spray.phi,
             pcp: spray.pcp,
-          }); //pushing data to a flat array
+          });
       }
     }
-    //console.log("collectedSprays : ", collectedSprays);
     setAllSprays(collectedSprays);
 
-    // ✅ Set chosen spray as selected if it exists
     if (chosenSpray) {
       const sprayKey = `${chosenSpray.crop}-${chosenSpray.issue}-${chosenSpray.name}`;
       setSelectedSprayKey(sprayKey);
     }
-  }, [chosenSpray]); // ✅ Added chosenSpray to dependency array
+  }, [chosenSpray, sprayData]);
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
       <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
           Spray Calculator
+          <span className="text-sm font-normal text-gray-500 ml-2">
+            ({region === "US" ? "Imperial Units" : "Metric Units"})
+          </span>
         </h2>
 
-        {/* Input Grid - responsive layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Spray Dropdown */}
           <div className="lg:col-span-2">
             <label className="form-label">Select Spray</label>
             <select
@@ -126,47 +175,60 @@ function Calculator({ chosenSpray, user }) {
             </select>
           </div>
 
-          {/* Water per Acre */}
           <div>
-            <label className="form-label">Water Volume per Acre (L)</label>
+            <label className="form-label">
+              Water Volume per Acre ({units.volume})
+            </label>
             <input
               className="form-input"
               type="number"
-              value={waterVolume || ""}
-              placeholder="e.g. 200"
-              onChange={(e) => setWaterVolume(parseFloat(e.target.value) || 0)}
+              step="any"
+              value={waterVolume}
+              placeholder={region === "US" ? "e.g. 50" : "e.g. 200"}
+              onChange={(e) => setWaterVolume(e.target.value)}
             />
           </div>
 
-          {/* Total Area */}
           <div>
             <label className="form-label">Total Area (Acres)</label>
             <input
               className="form-input"
               type="number"
-              value={area || ""}
+              step="any"
+              value={area}
               placeholder="e.g. 25"
-              onChange={(e) => setArea(parseFloat(e.target.value) || 0)}
+              onChange={(e) => setArea(e.target.value)}
             />
           </div>
 
-          {/* Tank Size */}
           <div className="md:col-span-2 lg:col-span-1">
-            <label className="form-label">Tank Size (L)</label>
+            <label className="form-label">Tank Size ({units.volume})</label>
             <input
               className="form-input"
               type="number"
-              value={tankSize || ""}
-              placeholder="e.g. 400"
-              onChange={(e) => setTankSize(parseFloat(e.target.value) || 0)}
+              step="any"
+              value={tankSize}
+              placeholder={region === "US" ? "e.g. 100" : "e.g. 400"}
+              onChange={(e) => setTankSize(e.target.value)}
             />
           </div>
 
-          {/* Log Spray Button */}
+          <div className="md:col-span-2 lg:col-span-1">
+            <label className="form-label">Spray Rate (units as given)</label>
+            <input
+              className="form-input"
+              type="number"
+              step="any"
+              value={sprayRate}
+              placeholder="e.g. 10"
+              onChange={(e) => setSprayRate(e.target.value)}
+            />
+          </div>
+
           {user && (
             <div className="md:col-span-2 lg:col-span-1 flex items-end">
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={openModal}
                 className="btn-primary w-full h-12 text-sm font-semibold"
               >
                 + Log Spray
@@ -176,12 +238,11 @@ function Calculator({ chosenSpray, user }) {
         </div>
       </div>
 
-      {/* Log Spray Modal */}
       {user && isModalOpen && (
         <div className="modal-backdrop fixed inset-0 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
             <button
-              onClick={() => setIsModalOpen(false)}
+              onClick={closeModal}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
             >
               ✕
@@ -220,29 +281,39 @@ function Calculator({ chosenSpray, user }) {
                     value={formData.crop}
                     onChange={handleChange}
                     placeholder="Crop type"
-                    className="form-input"
+                    className="form-input bg-gray-50"
+                    readOnly
                   />
                 </div>
                 <div>
                   <label className="form-label">Rate</label>
                   <input
                     name="rate"
-                    value={formData.rate}
+                    value={`${formData.rate} ${
+                      selectedSpray?.unit || ""
+                    } per acre`}
                     onChange={handleChange}
                     placeholder="Application rate"
-                    className="form-input"
+                    className="form-input bg-gray-50"
+                    readOnly
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="form-label">Amount</label>
+
                   <input
                     name="amount"
-                    value={formData.amount}
+                    value={
+                      formData.amount && formData.unit
+                        ? `${formData.amount} ${formData.unit}`
+                        : formData.amount || ""
+                    }
                     onChange={handleChange}
                     placeholder="Total amount"
-                    className="form-input"
+                    className="form-input bg-gray-50"
+                    readOnly
                   />
                 </div>
                 <div>
@@ -264,7 +335,8 @@ function Calculator({ chosenSpray, user }) {
                     value={formData.PHI}
                     onChange={handleChange}
                     placeholder="Pre-harvest interval"
-                    className="form-input"
+                    className="form-input bg-gray-50"
+                    readOnly
                   />
                 </div>
                 <div>
@@ -274,7 +346,8 @@ function Calculator({ chosenSpray, user }) {
                     value={formData.PCP}
                     onChange={handleChange}
                     placeholder="PCP number"
-                    className="form-input"
+                    className="form-input bg-gray-50"
+                    readOnly
                   />
                 </div>
               </div>
@@ -290,7 +363,6 @@ function Calculator({ chosenSpray, user }) {
         </div>
       )}
 
-      {/* Selected Spray Info */}
       {selectedSpray && (
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -325,20 +397,25 @@ function Calculator({ chosenSpray, user }) {
         </div>
       )}
 
-      {/* Calculation Results */}
       {selectedSpray &&
-        area > 0 &&
-        waterVolume > 0 &&
-        tankSize > 0 &&
+        area &&
+        waterVolume &&
+        tankSize &&
+        sprayRate &&
         (() => {
-          const totalWater = waterVolume * area;
-          const totalProduct = parseFloat(selectedSpray.rate) * area;
+          const areaNum = parseFloat(area);
+          const waterVolumeNum = parseFloat(waterVolume);
+          const tankSizeNum = parseFloat(tankSize);
+          const sprayRateNum = parseFloat(sprayRate);
+
+          const totalWater = waterVolumeNum * areaNum;
+          const totalProduct = sprayRateNum * areaNum;
           const productPerLitre = totalProduct / totalWater;
 
-          const fullTankCount = Math.floor(totalWater / tankSize);
-          const remainingLitres = totalWater % tankSize;
+          const fullTankCount = Math.floor(totalWater / tankSizeNum);
+          const remainingLitres = totalWater % tankSizeNum;
 
-          const productPerFullTank = productPerLitre * tankSize;
+          const productPerFullTank = productPerLitre * tankSizeNum;
           const productForPartialTank = productPerLitre * remainingLitres;
 
           return (
@@ -347,14 +424,13 @@ function Calculator({ chosenSpray, user }) {
                 Calculation Results
               </h3>
 
-              {/* Summary Stats */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <div className="bg-white rounded-lg p-4 text-center shadow-sm">
                   <p className="text-sm font-semibold text-gray-600 mb-1">
                     Total Water Needed
                   </p>
                   <p className="text-2xl font-bold text-blue-600">
-                    {totalWater} L
+                    {totalWater} {units.volume}
                   </p>
                 </div>
                 <div className="bg-white rounded-lg p-4 text-center shadow-sm">
@@ -375,7 +451,6 @@ function Calculator({ chosenSpray, user }) {
                 </div>
               </div>
 
-              {/* Tank Visuals */}
               <div className="flex flex-wrap justify-center gap-6">
                 {fullTankCount > 0 && (
                   <div className="bg-white border-2 border-blue-200 rounded-xl p-6 text-center shadow-md min-w-[200px]">
@@ -394,7 +469,8 @@ function Calculator({ chosenSpray, user }) {
                         Full Tanks
                       </div>
                       <div className="text-gray-600">
-                        Water: {tankSize}L each
+                        Water: {tankSizeNum}
+                        {units.volume} each
                       </div>
                       <div className="text-gray-600">
                         Product: {productPerFullTank.toFixed(2)}{" "}
@@ -419,7 +495,8 @@ function Calculator({ chosenSpray, user }) {
                         Partial Tank
                       </div>
                       <div className="text-gray-600">
-                        Water: {remainingLitres.toFixed(2)}L
+                        Water: {remainingLitres.toFixed(2)}
+                        {units.volume}
                       </div>
                       <div className="text-gray-600">
                         Product: {productForPartialTank.toFixed(2)}{" "}

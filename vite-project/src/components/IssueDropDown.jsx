@@ -1,18 +1,125 @@
 import { useState } from "react";
-import sprayData from "../assets/sprayData.json";
+import { getSprayData } from "../assets/sprayData";
+import { useRegion } from "../context/RegionContext";
 import blankImage from "../assets/blank.jpg";
+import { getIssueImage } from "../assets/issuesList";
+import { getSprayImage } from "../assets/spraysList";
+
+// Image Carousel Component
+function ImageCarousel({ images, alt }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const goToNext = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const goToPrev = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const goToSlide = (index, e) => {
+    e.stopPropagation();
+    setCurrentIndex(index);
+  };
+
+  // Don't show navigation if only one image
+  if (images.length === 1) {
+    return <img src={images[0]} alt={alt} />;
+  }
+
+  return (
+    <div className="relative w-full h-full group">
+      <img
+        src={images[currentIndex]}
+        alt={`${alt} - Image ${currentIndex + 1}`}
+        className="w-full h-full object-cover"
+      />
+
+      {/* Previous Button */}
+      <button
+        onClick={goToPrev}
+        className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 text-gray-700 hover:text-gray-900 transition-all duration-200 px-1 py-2"
+      >
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.5}
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </button>
+
+      {/* Next Button */}
+      <button
+        onClick={goToNext}
+        className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 text-gray-700 hover:text-gray-900 transition-all duration-200 px-1 py-2"
+      >
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.5}
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </button>
+
+      {/* Dots Indicator */}
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+        {images.map((_, index) => (
+          <button
+            key={index}
+            onClick={(e) => goToSlide(index, e)}
+            className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
+              index === currentIndex
+                ? "bg-white w-4"
+                : "bg-white/60 hover:bg-white/80"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
-  // ✅ Added setTab and setChosenSpray props
-  const issues = Object.keys(sprayData[crop]); // this extracts the issues and puts them in an array
-  const [selectedIssue, setSelectedIssue] = useState("");
+  const { region } = useRegion();
+  const sprayData = getSprayData(region);
 
-  const sprays = sprayData[crop][selectedIssue];
+  const issues = Object.keys(sprayData[crop]);
+  const [selectedIssue, setSelectedIssue] = useState("");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const sprays = selectedIssue ? sprayData[crop][selectedIssue] : [];
+
+  const handleIssueClick = (issue) => {
+    setSelectedIssue(issue);
+    setIsTransitioning(true);
+    setTimeout(() => setIsTransitioning(false), 700);
+  };
+
+  const handleBackToIssues = () => {
+    setSelectedIssue("");
+    setIsTransitioning(false);
+  };
 
   const handleCalculateClick = (spray) => {
     console.log("The spray you clicked", { spray });
+    console.log("Spray name for image lookup:", spray.name);
 
-    // ✅ Set the spray object
     setChosenSpray({
       crop: crop,
       issue: selectedIssue,
@@ -23,16 +130,70 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
       pcp: spray.pcp,
     });
 
-    // ✅ Switch to calculator tab
     setTab("Spray Calculator");
   };
 
+  if (!selectedIssue || isTransitioning) {
+    return (
+      <div className="issue-container">
+        <div className="mb-6">
+          <button
+            onClick={onBackToCrops}
+            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700 transition-colors duration-200"
+          >
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Back to Crops
+          </button>
+        </div>
+
+        <div className="text-center mb-8">
+          <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+            Select Issue for {crop}
+          </h3>
+          <p className="text-gray-600">
+            Choose the specific problem you need to address
+          </p>
+        </div>
+
+        <div className="crop-grid">
+          {issues.map((issue) => {
+            const issueImages = getIssueImage(crop, issue);
+            return (
+              <div
+                key={issue}
+                onClick={() => handleIssueClick(issue)}
+                className={`crop-card ${selectedIssue === issue ? "spin" : ""}`}
+              >
+                <ImageCarousel
+                  images={issueImages}
+                  alt={`${issue} on ${crop}`}
+                />
+                <p>{issue}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="issue-container">
-      {/* Back Button */}
       <div className="mb-6">
         <button
-          onClick={onBackToCrops}
+          onClick={handleBackToIssues}
           className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700 transition-colors duration-200"
         >
           <svg
@@ -48,51 +209,49 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          Back to Crops
+          Back to Issues
         </button>
       </div>
 
-      {/* Header */}
       <div className="text-center mb-8">
         <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-          Select Issue for {crop}
+          {selectedIssue} Solutions for {crop}
         </h3>
         <p className="text-gray-600">
-          Choose the specific problem you need to address
+          Select a spray option to calculate application rates
         </p>
       </div>
 
-      {/* Issue Selection */}
-      <div className="mb-8">
-        <label className="form-label text-center block mb-4">
-          What issue are you dealing with?
-        </label>
-        <select
-          value={selectedIssue}
-          onChange={(e) => setSelectedIssue(e.target.value)}
-          className="form-input max-w-md mx-auto block text-center"
-        >
-          <option value="" disabled>
-            -- Select an issue --
-          </option>
-          {issues.map((issue) => (
-            <option key={issue} value={issue}>
-              {issue}
-            </option>
-          ))}
-        </select>
-      </div>
+      <div className="sprays-grid">
+        {sprays.map((spray, index) => {
+          const sprayImage = getSprayImage(spray.name);
+          console.log(`Looking up image for: "${spray.name}" -> ${sprayImage}`);
 
-      {/* Spray Options Grid */}
-      {selectedIssue && (
-        <div className="sprays-grid">
-          {sprays.map((spray, index) => (
+          return (
             <div key={`${spray.name}-${index}`} className="spray-card">
-              <img
-                src={blankImage}
-                alt={`${spray.name} spray`}
-                className="w-full h-48 object-cover"
-              />
+              <div
+                style={{
+                  width: "100%",
+                  height: "300px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "white",
+                  padding: "1rem",
+                }}
+              >
+                <img
+                  src={sprayImage}
+                  alt={`${spray.name} spray`}
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    objectFit: "contain",
+                    width: "auto",
+                    height: "auto",
+                  }}
+                />
+              </div>
 
               <div className="spray-card-content">
                 <h4 className="text-xl font-bold text-gray-800 mb-3">
@@ -116,6 +275,18 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
                     <span className="font-semibold text-gray-700">PCP:</span>
                     <span className="text-gray-600">{spray.pcp}</span>
                   </div>
+
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-gray-700">Stage:</span>
+                    <span className="text-gray-600">{spray.stage}</span>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-gray-700">
+                      Description:
+                    </span>
+                    <span className="text-gray-600">{spray.description}</span>
+                  </div>
                 </div>
 
                 <button
@@ -126,37 +297,9 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
                 </button>
               </div>
             </div>
-          ))}
-        </div>
-      )}
-
-      {/* No Selection State */}
-      {!selectedIssue && (
-        <div className="text-center py-12">
-          <div className="bg-gray-50 rounded-xl p-8 max-w-md mx-auto">
-            <svg
-              className="w-16 h-16 text-gray-400 mx-auto mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <h4 className="text-lg font-semibold text-gray-700 mb-2">
-              Select an Issue Above
-            </h4>
-            <p className="text-gray-500">
-              Choose the specific problem you're facing with your {crop} to see
-              available spray solutions.
-            </p>
-          </div>
-        </div>
-      )}
+          );
+        })}
+      </div>
     </div>
   );
 }
