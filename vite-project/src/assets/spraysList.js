@@ -1,6 +1,6 @@
 // Import your spray product images here
 import blankImage from "./blank.jpg";
-import delegate from "../assets/delegate.png";
+import delegate from "../assets/sprayImages/delegate.png";
 import copperSpray from "../assets/sprayImages/copperSpray.PNG";
 import guardsman from "../assets/sprayImages/guardsman.png";
 import roundup from "../assets/sprayImages/roundup.png";
