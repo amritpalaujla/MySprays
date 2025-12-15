@@ -29,7 +29,7 @@ const PORT = process.env.PORT || 3000; // the port where our server will run
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:3000"],
+    origin: ["https://mysprays.netlify.app"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
