@@ -12,6 +12,7 @@ import { RegionProvider } from "./context/RegionContext";
 import RegionSelector from "./components/RegionSelector";
 
 function App() {
+  //our useState functions
   const [tab, setTab] = useState("LandingPage");
   const [chosenSpray, setChosenSpray] = useState(null);
   const [isValidating, setIsValidating] = useState(true);
@@ -47,12 +48,14 @@ function App() {
         "/forgot-password",
         "/reset-password",
       ];
-      if (!authPages.includes(window.location.pathname) && res.status === 401) {
-        await refreshTokenIfNeeded();
+      if (!res.ok) {
+        console.warn("Logout endpoint failed, but local state cleared");
       }
     } catch (error) {
       console.error("Logout failed:", error);
       setUser(null);
+      localStorage.clear();
+      sessionStorage.clear();
     }
   };
 

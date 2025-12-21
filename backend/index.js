@@ -106,14 +106,14 @@ app.post("/refresh-token", async (req, res) => {
 
           res.cookie("accessToken", newAccessToken, {
             httpOnly: true,
-            secure: false,
+            secure: true,
             sameSite: "lax",
             maxAge: 15 * 60 * 1000,
           });
 
           res.cookie("refreshToken", newRefreshToken, {
             httpOnly: true,
-            secure: false,
+            secure: true,
             sameSite: "lax",
             maxAge: 7 * 24 * 60 * 1000,
           });
@@ -175,12 +175,12 @@ app.delete("/user/delete-account", verifyToken, async (req, res) => {
     // Clear cookies
     res.clearCookie("accessToken", {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "lax",
     });
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "lax",
     });
 
@@ -571,12 +571,12 @@ app.post("/reset-password", async (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("accessToken", {
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: "lax",
   });
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: "lax",
   });
   res.json({ message: "Logged out successfully" });
