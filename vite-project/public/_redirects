@@ -1,1 +1,4 @@
 /api/* https://mysprays-production.up.railway.app/:splat 200
+
+# SPA fallback - must be LAST
+/* /index.html 200
