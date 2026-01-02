@@ -9,7 +9,7 @@ async function sendVerificationEmail(email, token) {
     console.log("📧 Sending verification email to:", email);
 
     const { data, error } = await resend.emails.send({
-      from: "MySprays <onboarding@resend.dev>",
+      from: "MySprays <noreply@mysprays.ca>",
       to: [email],
       subject: "Verify Your Email - Spray Management",
       html: `
@@ -57,7 +57,7 @@ async function sendPasswordResetEmail(email, token) {
     console.log("📧 Sending password reset email to:", email);
 
     const { data, error } = await resend.emails.send({
-      from: "MySprays <onboarding@resend.dev>",
+      from: "MySprays <noreply@mysprays.ca>",
       to: [email],
       subject: "Reset Your Password - Spray Management",
       html: `
