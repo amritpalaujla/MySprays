@@ -8,7 +8,7 @@ import cherrySanJoseScale from "../assets/issueImages/cherrySanJoseScale.PNG";
 import cherryFruitFly2 from "../assets/issueImages/cherryFruitFly2.PNG";
 import cherryBrownRot2 from "../assets/issueImages/cherryBrownRot2.PNG";
 import cherryAphids from "../assets/issueImages/cherryAphids.PNG";
-import Weeds from "../assets/issueImages/Weeds.PNG";
+import Weeds from "../assets/issueImages/weeds.PNG";
 import cherryMildew from "../assets/issueImages/cherryMildew.PNG";
 import cherryMildew2 from "../assets/issueImages/cherryMildew2.PNG";
 import grapesMildew from "../assets/issueImages/grapesMildew.PNG";

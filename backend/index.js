@@ -29,7 +29,12 @@ const PORT = process.env.PORT || 3000; // the port where our server will run
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:3000"],
+    origin: [
+      "https://mysprays.ca",
+      "https://www.mysprays.ca",
+      "https://mysprays.netlify.app", // Keep this for safety
+      "http://localhost:5173",
+    ],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
@@ -106,15 +111,15 @@ app.post("/refresh-token", async (req, res) => {
 
           res.cookie("accessToken", newAccessToken, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
+            secure: true,
+            sameSite: "none",
             maxAge: 15 * 60 * 1000,
           });
 
           res.cookie("refreshToken", newRefreshToken, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
+            secure: true,
+            sameSite: "none",
             maxAge: 7 * 24 * 60 * 1000,
           });
 
@@ -175,13 +180,13 @@ app.delete("/user/delete-account", verifyToken, async (req, res) => {
     // Clear cookies
     res.clearCookie("accessToken", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
     });
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
     });
 
     console.log(`✅ Deleted account for user: ${deletedUser.email}`);
@@ -306,14 +311,14 @@ app.post("/login", async (req, res) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "none",
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 1000,
     });
 
@@ -571,13 +576,13 @@ app.post("/reset-password", async (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("accessToken", {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
   });
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
   });
   res.json({ message: "Logged out successfully" });
 });
