@@ -20,6 +20,7 @@ import grapesThrips from "../assets/issueImages/grapesThrips.PNG";
 import grapesThrips2 from "../assets/issueImages/grapesThrips2.PNG";
 import peachesBrownRot from "../assets/issueImages/peachesBrownRot.PNG";
 import peachesScab from "../assets/issueImages/peachesScab.PNG";
+import peachesTwigBorer from "../assets/issueImages/peachesTwigBorer.PNG";
 import peachesMildew from "../assets/issueImages/peachesMildew.PNG";
 import applesScab from "../assets/issueImages/applesScab.PNG";
 import applesCodlingMoth from "../assets/issueImages/applesCodlingMoth.PNG";
@@ -108,9 +109,9 @@ export const issuesList = {
   },
 
   // Peaches
-  "Peaches-Peach Scab": {
-    name: "Peach Scab",
-    images: [peachesScab],
+  "Peaches-Twig Borer": {
+    name: "Twig Borer",
+    images: [peachesTwigBorer],
   },
   "Peaches-Brown Rot": {
     name: "Brown Rot",

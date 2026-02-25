@@ -7,11 +7,11 @@ import nectarines from "./nectarines.jpg";
 import apples from "./apples.jpg";
 
 export const cropList = [
-  { name: "Cherries", image: cherries },
-  { name: "Grapes", image: grapes },
+  //{ name: "Cherries", image: cherries },
+  //{ name: "Grapes", image: grapes },
   { name: "Peaches", image: peaches },
   //{ name: "Apricots", image: apricots },
   // { name: "Plums", image: plums },
   //{ name: "Nectarines", image: nectarines },
-  { name: "Apples", image: apples },
+  //{ name: "Apples", image: apples },
 ];

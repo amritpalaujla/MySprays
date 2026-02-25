@@ -15,20 +15,43 @@ const conversions = {
 };
 
 function convertRate(rate, unit) {
-  const numericRate = parseFloat(rate);
+  // Determine which conversion function to use
+  let convertFn;
+  let newUnit;
 
   switch (unit) {
     case "L":
-      return { rate: conversions.literToGallon(numericRate), unit: "gal" };
+      convertFn = conversions.literToGallon;
+      newUnit = "gal";
+      break;
     case "mL":
-      return { rate: conversions.mlToFlOz(numericRate), unit: "fl oz" };
+    case "ml":
+      convertFn = conversions.mlToFlOz;
+      newUnit = "fl oz";
+      break;
     case "kg":
-      return { rate: conversions.kgToLb(numericRate), unit: "lb" };
+      convertFn = conversions.kgToLb;
+      newUnit = "lb";
+      break;
     case "g":
-      return { rate: conversions.gToOz(numericRate), unit: "oz" };
+      convertFn = conversions.gToOz;
+      newUnit = "oz";
+      break;
     default:
       return { rate, unit };
   }
+
+  // Handle range strings like "485-647" or "2.4-3.6"
+  const rateStr = String(rate);
+  if (rateStr.includes("-")) {
+    const parts = rateStr.split("-");
+    const low = convertFn(parseFloat(parts[0]));
+    const high = convertFn(parseFloat(parts[1]));
+    return { rate: `${low}-${high}`, unit: newUnit };
+  }
+
+  // Single number
+  return { rate: convertFn(parseFloat(rateStr)), unit: newUnit };
 }
 
 function convertSprayData(caData) {

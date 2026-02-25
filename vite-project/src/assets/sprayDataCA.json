@@ -1,502 +1,83 @@
 {
-  "Cherries": {
-    "Bacterial Canker": [
-      {
-        "name": "Copper Spray",
-        "rate": "2.4-3.6",
-        "unit": "kg",
-        "phi": "na",
-        "pcp": "19146",
-        "stage": "Dormant, Post-Harvest",
-        "description": "Protects tree bark"
-      }
-    ],
-    "San Jose Scale": [
-      {
-        "name": "Guardsman",
-        "rate": "36",
-        "unit": "L",
-        "phi": "na",
-        "pcp": "23370",
-        "stage": "Dormant",
-        "description": "Do not apply just before or during freezing weather. One application/season."
-      }
-    ],
-    "Fruit Flies": [
-      {
-        "name": "Delegate WG",
-        "rate": "85-170",
-        "unit": "g",
-        "phi": "14 days",
-        "pcp": "28778",
-        "stage": "petal fall",
-        "description": " Max 3 applications per year"
-      },
-      {
-        "name": "Success",
-        "rate": 74,
-        "unit": "mL",
-        "phi": "7 days",
-        "pcp": "26835",
-        "stage": "summer",
-        "description": "no more than 3 applications for the year"
-      }
-    ],
+  "Peaches": {
     "Brown Rot": [
       {
-        "name": "Pristine WG",
-        "rate": "300-405",
+        "name": "Elevate",
+        "rate": 690,
+        "unit": "g",
+        "phi": "1 day",
+        "pcp": "25900",
+        "stage": "blossom, petal fall, summer",
+        "description": "Avoid more than 2 applications."
+      },
+      {
+        "name": "Cevya",
+        "rate": "100-150",
+        "unit": "mL",
+        "phi": "1 day",
+        "pcp": "33405",
+        "stage": "blossom, petal fall, summer",
+        "description": "Do not make more than 2 sequential applications. Wait 7-14 days for additional application."
+      }
+    ],
+    "Leaf Curl": [
+      {
+        "name": "Bravo ZNC",
+        "rate": "2-2.83",
+        "unit": "L",
+        "phi": "60 days",
+        "pcp": "33515",
+        "stage": "dormant",
+        "description": "Do not apply Bravo after shuck split. Use higher rate for trees over 6 m in height. Refer to label for specific REI's for thinning activities."
+      },
+      {
+        "name": "Copper Spray",
+        "rate": 800,
         "unit": "g",
         "phi": "0 days",
-        "pcp": "27985"
-      },
-      {
-        "name": "Mervion",
-        "rate": "0.12-0.16",
-        "unit": "L",
-        "phi": "1 day",
-        "pcp": "33951",
-        "stage": "pink",
-        "description": "max 2 applications for season"
+        "pcp": "19146",
+        "stage": "dormant, fall",
+        "description": "Apply at 75-100% leaf drop during dry weather. A spring dormant spray may also be required."
       }
     ],
-    "Aphids": [
+    "Twig Borer": [
       {
-        "name": "Movento",
-        "rate": "148-176",
-        "unit": "mL",
+        "name": "Harvanta 50SL",
+        "rate": "485-647",
+        "unit": "ml",
         "phi": "7 days",
-        "pcp": "28953"
+        "pcp": "22478",
+        "stage": "dormant, pink, petal fall",
+        "description": "Toxic to bees. Do not make more than 3 applications per crop year. Where possible, rotate the use of Harvanta or other Group 28 insecticides with different groups that control the same pests."
       },
       {
-        "name": "Sivanto",
-        "rate": "202-304",
+        "name": "Decis",
+        "rate": 80,
         "unit": "mL",
-        "phi": "14 days",
-        "pcp": "31452"
-      }
-    ],
-    "Weeds": [
-      {
-        "name": "Roundup",
-        "rate": 1,
-        "unit": "L",
-        "phi": "30 days",
-        "pcp": "28198"
+        "phi": "1 day",
+        "pcp": "22478",
+        "stage": "pink, petal fall",
+        "description": "Decis is harmful to beneficial insects and mites. Residual control: 10 days/"
       }
     ],
     "Mildew": [
       {
-        "name": "Cevya",
-        "rate": "0.1-0.15",
-        "unit": "L",
-        "phi": "0 days",
-        "pcp": "33405"
+        "name": "Fontelis",
+        "rate": "405-709",
+        "unit": "mL",
+        "phi": "1 day",
+        "pcp": "30331",
+        "stage": "husk fall",
+        "description": "Do not apply more than 2 times per season. Use high rate for high disease pressure."
       },
       {
         "name": "Nova",
         "rate": 140,
         "unit": "g",
         "phi": "1 day",
-        "pcp": "22399"
-      }
-    ]
-  },
-  "Grapes": {
-    "Mildew": [
-      {
-        "name": "Kumulus DF",
-        "rate": 5.04,
-        "unit": "kg",
-        "phi": "1 day",
-        "pcp": "18836",
-        "description": "Apply on first sign of mildew and repeat after 10 days on Agawan, Seneca and Seibel variities."
-      },
-      {
-        "name": "PureSpray Green Oil",
-        "rate": 4,
-        "unit": "L",
-        "phi": "14 days",
-        "pcp": "27666",
-        "description": " Make the first application pre-bloom and continue every 10-21 days depending on the level of disease pressure. Use the shorter spray interval when disease conditions are severe."
-      }
-    ],
-    "Black Rot": [
-      {
-        "name": "Maestro",
-        "rate": "0.8-1.2",
-        "unit": "kg",
-        "phi": "55 days",
-        "pcp": "PCP03434"
-      },
-      {
-        "name": "CaptanL",
-        "rate": "1.33-2",
-        "unit": "L",
-        "phi": "55 days",
-        "pcp": "35343"
-      }
-    ],
-    "Bunch Rot": [
-      {
-        "name": "Switch",
-        "rate": 1,
-        "unit": "kg",
-        "phi": "10 days",
-        "pcp": "PCP03838"
-      },
-      {
-        "name": "Scala",
-        "rate": 0.5,
-        "unit": "L",
-        "phi": "7 days",
-        "pcp": "PCP04040"
-      }
-    ],
-    "Thrips": [
-      {
-        "name": "Abound",
-        "rate": 1,
-        "unit": "L",
-        "phi": "14 days",
-        "pcp": "PCP04242"
-      },
-      {
-        "name": "Mettle",
-        "rate": 250,
-        "unit": "mL",
-        "phi": "7 days",
-        "pcp": "PCP04444"
-      }
-    ]
-  },
-  "Peaches": {
-    "Brown Rot": [
-      {
-        "name": "Elevate",
-        "rate": 1.1,
-        "unit": "kg",
-        "phi": "21 days",
-        "pcp": "PCP05050"
-      },
-      {
-        "name": "Indar",
-        "rate": 500,
-        "unit": "mL",
-        "phi": "14 days",
-        "pcp": "PCP05252"
-      }
-    ],
-    "Leaf Curl": [
-      {
-        "name": "Kocide",
-        "rate": 2,
-        "unit": "kg",
-        "phi": "21 days",
-        "pcp": "PCP05454"
-      },
-      {
-        "name": "Copper Spray",
-        "rate": 4,
-        "unit": "L",
-        "phi": "14 days",
-        "pcp": "PCP05656"
-      }
-    ],
-    "Peach Scab": [
-      {
-        "name": "Bravo",
-        "rate": 2.5,
-        "unit": "L",
-        "phi": "14 days",
-        "pcp": "PCP05858"
-      },
-      {
-        "name": "Captan",
-        "rate": 2.2,
-        "unit": "kg",
-        "phi": "21 days",
-        "pcp": "PCP06060"
-      }
-    ],
-    "Mildew": [
-      {
-        "name": "Systhane",
-        "rate": 240,
-        "unit": "mL",
-        "phi": "7 days",
-        "pcp": "PCP06262"
-      },
-      {
-        "name": "Nova",
-        "rate": 300,
-        "unit": "mL",
-        "phi": "14 days",
-        "pcp": "PCP06464"
-      }
-    ]
-  },
-  "Plums": {
-    "Plum Curculio": [
-      {
-        "name": "Imidan 70-W",
-        "rate": 1.34,
-        "unit": "kg",
-        "phi": "14 days",
-        "pcp": "PCP07070"
-      },
-      {
-        "name": "Malathion",
-        "rate": 1.5,
-        "unit": "L",
-        "phi": "7 days",
-        "pcp": "PCP07272"
-      }
-    ],
-    "Brown Rot": [
-      {
-        "name": "Pristine",
-        "rate": 0.75,
-        "unit": "kg",
-        "phi": "21 days",
-        "pcp": "PCP07474"
-      },
-      {
-        "name": "Elevate",
-        "rate": 1.1,
-        "unit": "kg",
-        "phi": "14 days",
-        "pcp": "PCP07676"
-      }
-    ],
-    "Aphids": [
-      {
-        "name": "Assail 70WP",
-        "rate": 80,
-        "unit": "g",
-        "phi": "7 days",
-        "pcp": "PCP07878"
-      },
-      {
-        "name": "Beleaf",
-        "rate": 200,
-        "unit": "mL",
-        "phi": "14 days",
-        "pcp": "PCP08080"
-      }
-    ],
-    "Black Knot": [
-      {
-        "name": "Daconil WeatherStik",
-        "rate": 1.6,
-        "unit": "L",
-        "phi": "14 days",
-        "pcp": "PCP08282"
-      },
-      {
-        "name": "Bravo ZN",
-        "rate": 2.0,
-        "unit": "L",
-        "phi": "21 days",
-        "pcp": "PCP08484"
-      }
-    ]
-  },
-  "Apricots": {
-    "Bacterial Spot": [
-      {
-        "name": "Copper 53W",
-        "rate": 2.5,
-        "unit": "kg",
-        "phi": "21 days",
-        "pcp": "PCP09090"
-      },
-      {
-        "name": "Nordox",
-        "rate": 2.25,
-        "unit": "kg",
-        "phi": "14 days",
-        "pcp": "PCP09292"
-      }
-    ],
-    "Brown Rot": [
-      {
-        "name": "Scala SC",
-        "rate": 0.5,
-        "unit": "L",
-        "phi": "7 days",
-        "pcp": "PCP09494"
-      },
-      {
-        "name": "Merivon",
-        "rate": 0.5,
-        "unit": "L",
-        "phi": "14 days",
-        "pcp": "PCP09696"
-      }
-    ],
-    "Shot Hole": [
-      {
-        "name": "Captan 80 WDG",
-        "rate": 1.5,
-        "unit": "kg",
-        "phi": "14 days",
-        "pcp": "PCP09898"
-      },
-      {
-        "name": "Ziram",
-        "rate": 3,
-        "unit": "kg",
-        "phi": "21 days",
-        "pcp": "PCP10010"
-      }
-    ],
-    "Leaf Curl": [
-      {
-        "name": "Syllit 400 FL",
-        "rate": 1.25,
-        "unit": "L",
-        "phi": "21 days",
-        "pcp": "PCP10212"
-      },
-      {
-        "name": "Kocide",
-        "rate": 2,
-        "unit": "kg",
-        "phi": "14 days",
-        "pcp": "PCP10414"
-      }
-    ]
-  },
-  "Nectarines": {
-    "Peach Twig Borer": [
-      {
-        "name": "Success 480 SC",
-        "rate": 0.2,
-        "unit": "L",
-        "phi": "7 days",
-        "pcp": "PCP11011"
-      },
-      {
-        "name": "Altacor",
-        "rate": 120,
-        "unit": "g",
-        "phi": "14 days",
-        "pcp": "PCP11213"
-      }
-    ],
-    "Leaf Curl": [
-      {
-        "name": "Copper Spray",
-        "rate": 2.5,
-        "unit": "kg",
-        "phi": "21 days",
-        "pcp": "PCP11415"
-      },
-      {
-        "name": "Kocide",
-        "rate": 2,
-        "unit": "kg",
-        "phi": "14 days",
-        "pcp": "PCP11617"
-      }
-    ],
-    "Brown Rot": [
-      {
-        "name": "Merivon",
-        "rate": 0.5,
-        "unit": "L",
-        "phi": "14 days",
-        "pcp": "PCP11819"
-      },
-      {
-        "name": "Elevate",
-        "rate": 1.1,
-        "unit": "kg",
-        "phi": "21 days",
-        "pcp": "PCP12021"
-      }
-    ],
-    "Aphids": [
-      {
-        "name": "Movento",
-        "rate": 0.25,
-        "unit": "L",
-        "phi": "7 days",
-        "pcp": "PCP12223"
-      },
-      {
-        "name": "Assail",
-        "rate": 80,
-        "unit": "g",
-        "phi": "14 days",
-        "pcp": "PCP12425"
-      }
-    ]
-  },
-  "Apples": {
-    "Apple Scab": [
-      {
-        "name": "Captan 80 WDG",
-        "rate": 1.5,
-        "unit": "kg",
-        "phi": "14 days",
-        "pcp": "PCP13030"
-      },
-      {
-        "name": "Flint",
-        "rate": 0.14,
-        "unit": "kg",
-        "phi": "7 days",
-        "pcp": "PCP13232"
-      }
-    ],
-    "Codling Moth": [
-      {
-        "name": "Altacor",
-        "rate": 120,
-        "unit": "g",
-        "phi": "7 days",
-        "pcp": "PCP13434"
-      },
-      {
-        "name": "Delegate WG",
-        "rate": 170,
-        "unit": "g",
-        "phi": "14 days",
-        "pcp": "PCP13636"
-      }
-    ],
-    "Powdery Mildew": [
-      {
-        "name": "Topas 250E",
-        "rate": 250,
-        "unit": "mL",
-        "phi": "7 days",
-        "pcp": "PCP13838"
-      },
-      {
-        "name": "Sirocco",
-        "rate": 0.5,
-        "unit": "L",
-        "phi": "14 days",
-        "pcp": "PCP14040"
-      }
-    ],
-    "Fire Blight": [
-      {
-        "name": "Kasumin",
-        "rate": 1.2,
-        "unit": "L",
-        "phi": "21 days",
-        "pcp": "PCP14242"
-      },
-      {
-        "name": "Streptomycin 17",
-        "rate": 500,
-        "unit": "g",
-        "phi": "7 days",
-        "pcp": "PCP14444"
+        "pcp": "22399",
+        "stage": "blossom, petal fall, husk fall",
+        "description": "Limit use of group 3 fungicides (Indar, Nova, Topas, Jade, Tilt, Quash) to 2 sprays/season. Rotate with fungicides from other groups for resistance management. 12 days REI for thinning."
       }
     ]
   }

@@ -24,7 +24,6 @@ function ImageCarousel({ images, alt }) {
     setCurrentIndex(index);
   };
 
-  // Don't show navigation if only one image
   if (images.length === 1) {
     return <img src={images[0]} alt={alt} />;
   }
@@ -37,7 +36,6 @@ function ImageCarousel({ images, alt }) {
         className="w-full h-full object-cover"
       />
 
-      {/* Previous Button */}
       <button
         onClick={goToPrev}
         className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 text-gray-700 hover:text-gray-900 transition-all duration-200 px-1 py-2"
@@ -57,7 +55,6 @@ function ImageCarousel({ images, alt }) {
         </svg>
       </button>
 
-      {/* Next Button */}
       <button
         onClick={goToNext}
         className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white/90 text-gray-700 hover:text-gray-900 transition-all duration-200 px-1 py-2"
@@ -77,7 +74,6 @@ function ImageCarousel({ images, alt }) {
         </svg>
       </button>
 
-      {/* Dots Indicator */}
       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
         {images.map((_, index) => (
           <button
@@ -117,9 +113,6 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
   };
 
   const handleCalculateClick = (spray) => {
-    console.log("The spray you clicked", { spray });
-    console.log("Spray name for image lookup:", spray.name);
-
     setChosenSpray({
       crop: crop,
       issue: selectedIssue,
@@ -129,10 +122,10 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
       phi: spray.phi,
       pcp: spray.pcp,
     });
-
     setTab("Spray Calculator");
   };
 
+  // ── Issue selection screen ──
   if (!selectedIssue || isTransitioning) {
     return (
       <div className="issue-container">
@@ -189,6 +182,7 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
     );
   }
 
+  // ── Spray cards screen ──
   return (
     <div className="issue-container">
       <div className="mb-6">
@@ -225,74 +219,53 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
       <div className="sprays-grid">
         {sprays.map((spray, index) => {
           const sprayImage = getSprayImage(spray.name);
-          console.log(`Looking up image for: "${spray.name}" -> ${sprayImage}`);
 
           return (
             <div key={`${spray.name}-${index}`} className="spray-card">
-              <div
-                style={{
-                  width: "100%",
-                  height: "300px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: "white",
-                  padding: "1rem",
-                }}
-              >
-                <img
-                  src={sprayImage}
-                  alt={`${spray.name} spray`}
-                  style={{
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                    objectFit: "contain",
-                    width: "auto",
-                    height: "auto",
-                  }}
-                />
+              {/* Fixed-height image container */}
+              <div className="spray-card-image">
+                <img src={sprayImage} alt={`${spray.name} spray`} />
               </div>
 
+              {/* Content area — flexbox pushes button to bottom */}
               <div className="spray-card-content">
-                <h4 className="text-xl font-bold text-gray-800 mb-3">
-                  {spray.name}
-                </h4>
+                <h4>{spray.name}</h4>
 
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-700">Rate:</span>
-                    <span className="text-gray-600 font-medium">
+                {/* Info rows — always show same fields */}
+                <div className="spray-info-rows">
+                  <div className="spray-info-row">
+                    <span className="spray-info-label">Rate:</span>
+                    <span className="spray-info-value">
                       {spray.rate} {spray.unit} per acre
                     </span>
                   </div>
 
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-700">PHI:</span>
-                    <span className="text-gray-600">{spray.phi}</span>
+                  <div className="spray-info-row">
+                    <span className="spray-info-label">PHI:</span>
+                    <span className="spray-info-value">{spray.phi || "—"}</span>
                   </div>
 
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-700">PCP:</span>
-                    <span className="text-gray-600">{spray.pcp}</span>
+                  <div className="spray-info-row">
+                    <span className="spray-info-label">PCP #:</span>
+                    <span className="spray-info-value">{spray.pcp || "—"}</span>
                   </div>
 
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-700">Stage:</span>
-                    <span className="text-gray-600">{spray.stage}</span>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-700">
-                      Description:
+                  <div className="spray-info-row">
+                    <span className="spray-info-label">Stage:</span>
+                    <span className="spray-info-value">
+                      {spray.stage || "—"}
                     </span>
-                    <span className="text-gray-600">{spray.description}</span>
                   </div>
+
+                  {/* Description only shown if present, in its own styled box */}
+                  {spray.description && spray.description.trim() && (
+                    <div className="spray-description">
+                      <p>{spray.description.trim()}</p>
+                    </div>
+                  )}
                 </div>
 
-                <button
-                  onClick={() => handleCalculateClick(spray)}
-                  className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:-translate-y-1 hover:shadow-lg"
-                >
+                <button onClick={() => handleCalculateClick(spray)}>
                   Calculate Application
                 </button>
               </div>
