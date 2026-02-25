@@ -17,8 +17,8 @@ import captanL from "../assets/sprayImages/captanL.PNG";
 import maestro from "../assets/sprayImages/maestro.PNG";
 import elevate from "../assets/sprayImages/elevate.PNG";
 import bravoZNC from "../assets/sprayImages/bravoZNC.PNG";
-import harvanta from "../assets/sprayImages/harvanta.PNG";
-import decis from "../assets/sprayImages/decis.PNG";
+import harvanta from "../assets/sprayImages/Harvanta.PNG";
+import decis from "../assets/sprayImages/Decis.PNG";
 import fontelis from "../assets/sprayImages/fontelis.PNG";
 
 // TODO: Replace with actual spray product images
