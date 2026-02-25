@@ -15,6 +15,11 @@ import kumulusDF from "../assets/sprayImages/kumulusDF.PNG";
 import pureSprayGreenOil from "../assets/sprayImages/pureSprayGreenOil.PNG";
 import captanL from "../assets/sprayImages/captanL.PNG";
 import maestro from "../assets/sprayImages/maestro.PNG";
+import elevate from "../assets/sprayImages/elevate.PNG";
+import bravoZNC from "../assets/sprayImages/bravoZNC.PNG";
+import harvanta from "../assets/sprayImages/harvanta.PNG";
+import decis from "../assets/sprayImages/decis.PNG";
+import fontelis from "../assets/sprayImages/fontelis.PNG";
 
 // TODO: Replace with actual spray product images
 // Example:
@@ -45,6 +50,9 @@ export const spraysList = {
   },
   CaptanL: { name: "CaptanL", image: captanL },
   Maestro: { name: "maestro", image: maestro },
+  Elevate: { name: "Elevate", image: elevate },
+  "Bravo ZNC": { name: "Bravo ZNC", image: bravoZNC },
+  Fontelis: { name: "Fontelis", image: fontelis },
 
   // Insecticides
   Assail: { name: "Assail", image: blankImage },
@@ -58,6 +66,8 @@ export const spraysList = {
   Warrior: { name: "Warrior", image: blankImage },
   Actara: { name: "Actara", image: blankImage },
   Sivanto: { name: "Sivanto", image: sivanto },
+  "Harvanta 50SL": { name: "Harvanta", image: harvanta },
+  Decis: { name: "Decis", image: decis },
 
   // Miticides
   Acramite: { name: "Acramite", image: blankImage },

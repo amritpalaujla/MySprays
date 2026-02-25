@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express"); //importing express framework
 const app = express(); // creating an instance, aka server
 const cors = require("cors"); // cross origin resource sharing
@@ -11,7 +12,6 @@ const { sendVerificationEmail } = require("./services/emailService");
 const { sendPasswordResetEmail } = require("./services/emailService");
 
 const mongoose = require("mongoose");
-require("dotenv").config();
 
 // variables test to see if loading
 
@@ -41,6 +41,34 @@ app.use(
 ); // cors lets us choose where loading resources are allowed to come from
 app.use(express.json()); // parses incoming json to a object in req body
 app.use(cookieParser());
+
+// ===== Cookie Configuration (works for both localhost and production) =====
+const isProduction = process.env.NODE_ENV === "production";
+
+function getCookieOptions(maxAge) {
+  const options = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax",
+    maxAge,
+  };
+  if (isProduction) {
+    options.domain = ".mysprays.ca";
+  }
+  return options;
+}
+
+function getClearCookieOptions() {
+  const options = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax",
+  };
+  if (isProduction) {
+    options.domain = ".mysprays.ca";
+  }
+  return options;
+}
 
 function generateAccessToken(user) {
   return jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
@@ -109,19 +137,17 @@ app.post("/refresh-token", async (req, res) => {
           const newAccessToken = generateAccessToken(user);
           const newRefreshToken = generateRefreshToken(user);
 
-          res.cookie("accessToken", newAccessToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            maxAge: 15 * 60 * 1000,
-          });
+          res.cookie(
+            "accessToken",
+            newAccessToken,
+            getCookieOptions(15 * 60 * 1000)
+          );
 
-          res.cookie("refreshToken", newRefreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            maxAge: 7 * 24 * 60 * 1000,
-          });
+          res.cookie(
+            "refreshToken",
+            newRefreshToken,
+            getCookieOptions(7 * 24 * 60 * 60 * 1000)
+          );
 
           res.json({
             message: "Tokens refreshed successfully",
@@ -178,16 +204,8 @@ app.delete("/user/delete-account", verifyToken, async (req, res) => {
     }
 
     // Clear cookies
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
+    res.clearCookie("accessToken", getClearCookieOptions());
+    res.clearCookie("refreshToken", getClearCookieOptions());
 
     console.log(`✅ Deleted account for user: ${deletedUser.email}`);
     res.json({ message: "Account deleted successfully" });
@@ -199,8 +217,32 @@ app.delete("/user/delete-account", verifyToken, async (req, res) => {
 
 app.post("/sprays", verifyToken, async (req, res) => {
   try {
-    const { sprayName, date, crop, rate, amount, unit, location, PHI, PCP } =
-      req.body;
+    const {
+      sprayName,
+      date,
+      crop,
+      rate,
+      amount,
+      unit,
+      location,
+      PHI,
+      PCP,
+      growthStage,
+      reasonForApplication,
+      areaTreated,
+      earliestHarvestDate,
+      applicationMethod,
+      tankSize,
+      equipmentInspected,
+      equipmentCleaned,
+      temperature,
+      windDirection,
+      windCondition,
+      labelInstructionsFollowed,
+      applicatorInitials,
+      notes,
+    } = req.body;
+
     const newSpray = new Sprays({
       userId: req.user.id,
       sprayName,
@@ -208,13 +250,43 @@ app.post("/sprays", verifyToken, async (req, res) => {
       crop,
       rate,
       amount,
-      unit, // Add this
+      unit,
       location,
       PHI,
       PCP,
+      growthStage,
+      reasonForApplication,
+      areaTreated,
+      earliestHarvestDate,
+      applicationMethod,
+      tankSize,
+      equipmentInspected,
+      equipmentCleaned,
+      temperature,
+      windDirection,
+      windCondition,
+      labelInstructionsFollowed,
+      applicatorInitials,
+      notes,
     });
 
     const savedSpray = await newSpray.save();
+
+    // Update user defaults for next time
+    try {
+      const updates = {};
+      if (applicationMethod)
+        updates.defaultApplicationMethod = applicationMethod;
+      if (tankSize) updates.defaultTankSize = tankSize;
+      if (applicatorInitials)
+        updates.defaultApplicatorInitials = applicatorInitials;
+      if (Object.keys(updates).length > 0) {
+        await User.findByIdAndUpdate(req.user.id, updates);
+      }
+    } catch (defaultsErr) {
+      console.error("Failed to update user defaults:", defaultsErr);
+    }
+
     res.json(savedSpray);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -308,26 +380,24 @@ app.post("/login", async (req, res) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 15 * 60 * 1000,
-    });
+    res.cookie("accessToken", accessToken, getCookieOptions(15 * 60 * 1000));
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 1000,
-    });
+    res.cookie(
+      "refreshToken",
+      refreshToken,
+      getCookieOptions(7 * 24 * 60 * 60 * 1000)
+    );
 
     res.json({
       message: "Login successful",
       user: {
         id: user._id,
         email: user.email,
-        region: user.region || "CA", // ← ADD THIS
+        region: user.region || "CA",
+        growerName: user.growerName || "",
+        defaultApplicationMethod: user.defaultApplicationMethod || "",
+        defaultTankSize: user.defaultTankSize || "",
+        defaultApplicatorInitials: user.defaultApplicatorInitials || "",
       },
     });
   } catch (err) {
@@ -574,16 +644,8 @@ app.post("/reset-password", async (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("accessToken", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-  });
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-  });
+  res.clearCookie("accessToken", getClearCookieOptions());
+  res.clearCookie("refreshToken", getClearCookieOptions());
   res.json({ message: "Logged out successfully" });
 });
 
@@ -684,8 +746,31 @@ app.get("/sprays", verifyToken, async (req, res) => {
 app.put("/sprays/:id", verifyToken, async (req, res) => {
   try {
     const sprayId = req.params.id;
-    const { sprayName, date, crop, rate, amount, unit, location, PHI, PCP } =
-      req.body;
+    const {
+      sprayName,
+      date,
+      crop,
+      rate,
+      amount,
+      unit,
+      location,
+      PHI,
+      PCP,
+      growthStage,
+      reasonForApplication,
+      areaTreated,
+      earliestHarvestDate,
+      applicationMethod,
+      tankSize,
+      equipmentInspected,
+      equipmentCleaned,
+      temperature,
+      windDirection,
+      windCondition,
+      labelInstructionsFollowed,
+      applicatorInitials,
+      notes,
+    } = req.body;
 
     const updatedSpray = await Sprays.findOneAndUpdate(
       {
@@ -698,10 +783,24 @@ app.put("/sprays/:id", verifyToken, async (req, res) => {
         crop,
         rate,
         amount,
-        unit, // Add this
+        unit,
         location,
         PHI,
         PCP,
+        growthStage,
+        reasonForApplication,
+        areaTreated,
+        earliestHarvestDate,
+        applicationMethod,
+        tankSize,
+        equipmentInspected,
+        equipmentCleaned,
+        temperature,
+        windDirection,
+        windCondition,
+        labelInstructionsFollowed,
+        applicatorInitials,
+        notes,
       },
       { new: true }
     );
@@ -761,6 +860,84 @@ app.get("/test-email-direct", async (req, res) => {
     });
   }
 });
+// Get user profile (grower info + defaults)
+app.get("/user/profile", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json({
+      growerName: user.growerName || "",
+      growerLotNumbers: user.growerLotNumbers || "",
+      defaultApplicationMethod: user.defaultApplicationMethod || "",
+      defaultTankSize: user.defaultTankSize || "",
+      defaultApplicatorInitials: user.defaultApplicatorInitials || "",
+      region: user.region || "CA",
+    });
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Update user profile (grower info + defaults)
+app.put("/user/profile", verifyToken, async (req, res) => {
+  try {
+    const {
+      growerName,
+      growerLotNumbers,
+      defaultApplicationMethod,
+      defaultTankSize,
+      defaultApplicatorInitials,
+    } = req.body;
+
+    const updates = {};
+    if (growerName !== undefined) updates.growerName = growerName;
+    if (growerLotNumbers !== undefined)
+      updates.growerLotNumbers = growerLotNumbers;
+    if (defaultApplicationMethod !== undefined)
+      updates.defaultApplicationMethod = defaultApplicationMethod;
+    if (defaultTankSize !== undefined)
+      updates.defaultTankSize = defaultTankSize;
+    if (defaultApplicatorInitials !== undefined)
+      updates.defaultApplicatorInitials = defaultApplicatorInitials;
+
+    const user = await User.findByIdAndUpdate(req.user.id, updates, {
+      new: true,
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({
+      message: "Profile updated successfully",
+      growerName: user.growerName,
+      growerLotNumbers: user.growerLotNumbers,
+      defaultApplicationMethod: user.defaultApplicationMethod,
+      defaultTankSize: user.defaultTankSize,
+      defaultApplicatorInitials: user.defaultApplicatorInitials,
+    });
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Get user's previously used locations (for dropdown)
+app.get("/user/locations", verifyToken, async (req, res) => {
+  try {
+    const locations = await Sprays.distinct("location", {
+      userId: req.user.id,
+    });
+    res.json(locations.filter(Boolean).sort());
+  } catch (error) {
+    console.error("Error fetching user locations:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // Get user region preference (works for logged-in users)
 app.get("/user/region", verifyToken, async (req, res) => {
   try {

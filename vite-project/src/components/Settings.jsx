@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -8,24 +8,95 @@ function Settings({ user, onLogout }) {
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
   const [showClearSpraysModal, setShowClearSpraysModal] = useState(false);
 
-  // Download all sprays as PDF
+  // Grower profile state
+  const [profileData, setProfileData] = useState({
+    growerName: "",
+    growerLotNumbers: "",
+    defaultApplicationMethod: "",
+    defaultTankSize: "",
+    defaultApplicatorInitials: "",
+  });
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [profileMessage, setProfileMessage] = useState("");
+
+  // Fetch grower profile on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/user/profile`,
+          {
+            credentials: "include",
+          }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setProfileData({
+            growerName: data.growerName || "",
+            growerLotNumbers: data.growerLotNumbers || "",
+            defaultApplicationMethod: data.defaultApplicationMethod || "",
+            defaultTankSize: data.defaultTankSize || "",
+            defaultApplicatorInitials: data.defaultApplicatorInitials || "",
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleProfileChange = (e) => {
+    setProfileData({ ...profileData, [e.target.name]: e.target.value });
+  };
+
+  const handleProfileSave = async () => {
+    setIsSavingProfile(true);
+    setProfileMessage("");
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/profile`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(profileData),
+      });
+      if (res.ok) {
+        setProfileMessage("Profile saved successfully!");
+        setTimeout(() => setProfileMessage(""), 3000);
+      } else {
+        setProfileMessage("Failed to save profile.");
+      }
+    } catch (err) {
+      console.error("Error saving profile:", err);
+      setProfileMessage("Error saving profile.");
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  // Download all sprays as PDF (H1 format, organized by location)
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/sprays`, {
-        credentials: "include",
-      });
+      // Fetch sprays and profile in parallel
+      const [spraysRes, profileRes] = await Promise.all([
+        fetch(`${import.meta.env.VITE_API_URL}/sprays`, {
+          credentials: "include",
+        }),
+        fetch(`${import.meta.env.VITE_API_URL}/user/profile`, {
+          credentials: "include",
+        }),
+      ]);
 
-      if (res.status === 401) {
+      if (spraysRes.status === 401) {
         window.dispatchEvent(new CustomEvent("authFailure"));
         return;
       }
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch sprays");
-      }
+      if (!spraysRes.ok) throw new Error("Failed to fetch sprays");
 
-      const sprays = await res.json();
+      const sprays = await spraysRes.json();
+      const profile = profileRes.ok ? await profileRes.json() : {};
 
       if (sprays.length === 0) {
         alert("No spray logs to download");
@@ -33,78 +104,208 @@ function Settings({ user, onLogout }) {
         return;
       }
 
-      // Sort sprays by date (newest first), then by location
-      const sortedSprays = sprays.sort((a, b) => {
-        const dateCompare = new Date(b.date) - new Date(a.date);
-        if (dateCompare !== 0) return dateCompare;
-        return a.location.localeCompare(b.location);
-      });
-
-      // Create PDF
-      const doc = new jsPDF();
-
-      // Title
-      doc.setFontSize(18);
-      doc.text("Spray Application Records", 14, 20);
-
-      // User info
-      doc.setFontSize(10);
-      doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 28);
-      doc.text(`User: ${user.email}`, 14, 33);
-
-      // Group sprays by location
+      // Group sprays by location, sorted by date within each group
       const spraysByLocation = {};
-      sortedSprays.forEach((spray) => {
-        if (!spraysByLocation[spray.location]) {
-          spraysByLocation[spray.location] = [];
-        }
-        spraysByLocation[spray.location].push(spray);
+      sprays.forEach((spray) => {
+        const loc = spray.location || "Unknown";
+        if (!spraysByLocation[loc]) spraysByLocation[loc] = [];
+        spraysByLocation[loc].push(spray);
       });
 
-      let yPosition = 45;
+      // Sort each location group by date (oldest first for chronological record)
+      Object.keys(spraysByLocation).forEach((loc) => {
+        spraysByLocation[loc].sort(
+          (a, b) => new Date(a.date) - new Date(b.date)
+        );
+      });
 
-      // Generate table for each location
-      Object.keys(spraysByLocation).forEach((location) => {
+      const sortedLocations = Object.keys(spraysByLocation).sort();
+
+      // Create landscape PDF
+      const doc = new jsPDF({ orientation: "landscape" });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const currentYear = new Date().getFullYear();
+
+      // Helper to format date
+      const fmtDate = (d) => (d ? new Date(d).toLocaleDateString() : "—");
+
+      // Generate one page (or more) per location
+      sortedLocations.forEach((location, locIndex) => {
+        if (locIndex > 0) doc.addPage();
+
         const locationSprays = spraysByLocation[location];
+        let y = 12;
 
-        // Check if we need a new page
-        if (yPosition > 250) {
-          doc.addPage();
-          yPosition = 20;
-        }
-
-        // Location header
-        doc.setFontSize(12);
+        // ── H1 Form Header ──
+        doc.setFontSize(14);
         doc.setFont(undefined, "bold");
-        doc.text(`Location: ${location}`, 14, yPosition);
-        yPosition += 8;
+        doc.text(
+          "FORM H1 — AGRICULTURAL CHEMICALS APPLICATION",
+          pageWidth / 2,
+          y,
+          { align: "center" }
+        );
+        y += 7;
 
-        // Create table data
-        const tableData = locationSprays.map((spray) => [
-          new Date(spray.date).toLocaleDateString(),
-          spray.sprayName,
-          spray.crop,
-          `${spray.rate} ${spray.unit || ""} per acre`,
-          `${spray.amount} ${spray.unit || ""}`,
-          spray.PHI,
-          spray.PCP,
+        doc.setFontSize(8);
+        doc.setFont(undefined, "normal");
+        doc.setTextColor(100);
+        doc.text(
+          "Record all applications of PESTICIDES (INSECTICIDES, HERBICIDES, FUNGICIDES), NUTRIENTS and GROWTH REGULATORS.",
+          pageWidth / 2,
+          y,
+          { align: "center" }
+        );
+        doc.setTextColor(0);
+        y += 8;
+
+        // ── Grower Info Row ──
+        doc.setFontSize(9);
+        doc.setFont(undefined, "bold");
+        const growerName = profile.growerName || user?.email || "";
+        const lotNumbers = profile.growerLotNumbers || "";
+        doc.text(`Grower: ${growerName}`, 14, y);
+        doc.text(`Lot Number(s): ${lotNumbers}`, 120, y);
+        doc.text(`Location: ${location}`, 200, y);
+        doc.text(`Year: ${currentYear}`, pageWidth - 14, y, { align: "right" });
+        y += 4;
+
+        // Thin line under header
+        doc.setDrawColor(180);
+        doc.setLineWidth(0.3);
+        doc.line(14, y, pageWidth - 14, y);
+        y += 4;
+
+        // ── Table with all H1 fields ──
+        const tableHead = [
+          [
+            "Date",
+            "Product\nTrade Name",
+            "PCP #",
+            "Crop",
+            "Growth\nStage",
+            "Reason for\nApplication",
+            "Rate/\nAcre",
+            "Area\n(acres)",
+            "Qty in\nTank",
+            "PHI\n(days)",
+            "Earliest\nHarvest",
+            "Method",
+            "Tank\nSize",
+            "Temp",
+            "Wind\nDir",
+            "Wind\nCond",
+            "Equip.\nInsp.",
+            "Equip.\nClean",
+            "Label\nFollowed",
+            "Appl.\nInitials",
+            "Notes",
+          ],
+        ];
+
+        const tableBody = locationSprays.map((s) => [
+          fmtDate(s.date),
+          s.sprayName || "—",
+          s.PCP || "—",
+          s.crop || "—",
+          s.growthStage || "—",
+          s.reasonForApplication || "—",
+          s.rate ? `${s.rate} ${s.unit || ""}` : "—",
+          s.areaTreated || "—",
+          s.amount ? `${s.amount} ${s.unit || ""}` : "—",
+          s.PHI || "—",
+          fmtDate(s.earliestHarvestDate),
+          s.applicationMethod || "—",
+          s.tankSize || "—",
+          s.temperature || "—",
+          s.windDirection || "—",
+          s.windCondition || "—",
+          s.equipmentInspected ? "Yes" : "No",
+          s.equipmentCleaned ? "Yes" : "No",
+          s.labelInstructionsFollowed === false ? "No" : "Yes",
+          s.applicatorInitials || "—",
+          s.notes || "",
         ]);
 
         autoTable(doc, {
-          startY: yPosition,
-          head: [["Date", "Spray", "Crop", "Rate", "Amount", "PHI", "PCP"]],
-          body: tableData,
-          theme: "striped",
-          headStyles: { fillColor: [59, 130, 246] },
-          margin: { left: 14, right: 14 },
-          styles: { fontSize: 8 },
+          startY: y,
+          head: tableHead,
+          body: tableBody,
+          theme: "grid",
+          headStyles: {
+            fillColor: [34, 85, 51],
+            textColor: 255,
+            fontSize: 6,
+            fontStyle: "bold",
+            halign: "center",
+            valign: "middle",
+            cellPadding: 1.5,
+          },
+          bodyStyles: {
+            fontSize: 6,
+            cellPadding: 1.5,
+            halign: "center",
+            valign: "middle",
+          },
+          alternateRowStyles: { fillColor: [245, 248, 245] },
+          margin: { left: 6, right: 6 },
+          tableWidth: "auto",
+          styles: {
+            overflow: "linebreak",
+            lineWidth: 0.2,
+            lineColor: [180, 180, 180],
+          },
+          columnStyles: {
+            0: { cellWidth: 16 }, // Date
+            1: { cellWidth: 22, halign: "left" }, // Product Name
+            2: { cellWidth: 12 }, // PCP
+            3: { cellWidth: 14 }, // Crop
+            4: { cellWidth: 14 }, // Growth Stage
+            5: { cellWidth: 20, halign: "left" }, // Reason
+            6: { cellWidth: 16 }, // Rate
+            7: { cellWidth: 10 }, // Area
+            8: { cellWidth: 16 }, // Qty
+            9: { cellWidth: 9 }, // PHI
+            10: { cellWidth: 16 }, // Earliest Harvest
+            11: { cellWidth: 14 }, // Method
+            12: { cellWidth: 12 }, // Tank Size
+            13: { cellWidth: 10 }, // Temp
+            14: { cellWidth: 9 }, // Wind Dir
+            15: { cellWidth: 10 }, // Wind Cond
+            16: { cellWidth: 9 }, // Equip Insp
+            17: { cellWidth: 9 }, // Equip Clean
+            18: { cellWidth: 9 }, // Label Followed
+            19: { cellWidth: 10 }, // Applicator
+            20: { cellWidth: 18, halign: "left" }, // Notes
+          },
+          didDrawPage: (data) => {
+            // Footer on every page
+            const pageH = doc.internal.pageSize.getHeight();
+            doc.setFontSize(7);
+            doc.setTextColor(150);
+            doc.text(
+              `Generated: ${new Date().toLocaleDateString()} | ${growerName} | Location: ${location}`,
+              14,
+              pageH - 6
+            );
+            doc.text(
+              `Page ${doc.internal.getNumberOfPages()}`,
+              pageWidth - 14,
+              pageH - 6,
+              { align: "right" }
+            );
+            doc.setTextColor(0);
+          },
         });
-
-        yPosition = doc.lastAutoTable.finalY + 10;
       });
 
       // Save PDF
-      doc.save(`spray-logs-${new Date().toISOString().split("T")[0]}.pdf`);
+      const fileName = profile.growerName
+        ? `H1-Spray-Records-${profile.growerName.replace(/\s+/g, "-")}-${
+            new Date().toISOString().split("T")[0]
+          }.pdf`
+        : `H1-Spray-Records-${new Date().toISOString().split("T")[0]}.pdf`;
+      doc.save(fileName);
       setIsDownloading(false);
     } catch (error) {
       console.error("Error generating PDF:", error);
@@ -178,6 +379,126 @@ function Settings({ user, onLogout }) {
 
   return (
     <div className="space-y-6">
+      {/* Grower Profile Section */}
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+        <div className="flex items-start space-x-4">
+          <div className="flex-shrink-0">
+            <svg
+              className="w-10 h-10 text-green-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              Grower Profile & Defaults
+            </h3>
+            <p className="text-gray-600 text-sm mb-4">
+              Set your grower info for H1 forms and default values that
+              auto-fill when logging sprays.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Grower Name
+                </label>
+                <input
+                  name="growerName"
+                  value={profileData.growerName}
+                  onChange={handleProfileChange}
+                  placeholder="Your farm / grower name"
+                  className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Grower Lot Number(s)
+                </label>
+                <input
+                  name="growerLotNumbers"
+                  value={profileData.growerLotNumbers}
+                  onChange={handleProfileChange}
+                  placeholder="e.g. Lot 12, Lot 15"
+                  className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Default Application Method
+                </label>
+                <select
+                  name="defaultApplicationMethod"
+                  value={profileData.defaultApplicationMethod}
+                  onChange={handleProfileChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+                  <option value="">Select...</option>
+                  <option value="Air Blast">Air Blast</option>
+                  <option value="Weed Sprayer">Weed Sprayer</option>
+                  <option value="Backpack">Backpack</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Default Tank Size
+                </label>
+                <input
+                  name="defaultTankSize"
+                  value={profileData.defaultTankSize}
+                  onChange={handleProfileChange}
+                  placeholder="e.g. 400 L"
+                  className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Default Applicator Initials
+                </label>
+                <input
+                  name="defaultApplicatorInitials"
+                  value={profileData.defaultApplicatorInitials}
+                  onChange={handleProfileChange}
+                  placeholder="e.g. AA"
+                  maxLength={5}
+                  className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <button
+                onClick={handleProfileSave}
+                disabled={isSavingProfile}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                {isSavingProfile ? "Saving..." : "Save Profile"}
+              </button>
+              {profileMessage && (
+                <span
+                  className={`text-sm font-medium ${
+                    profileMessage.includes("success")
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {profileMessage}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Download PDF Section */}
       <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
         <div className="flex items-start space-x-4">
