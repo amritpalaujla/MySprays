@@ -49,25 +49,18 @@ function getCookieOptions(maxAge) {
   const options = {
     httpOnly: true,
     secure: isProduction,
-    sameSite: "lax",
+    sameSite: isProduction ? "none" : "lax",
     maxAge,
   };
-  if (isProduction) {
-    options.domain = ".mysprays.ca";
-  }
   return options;
 }
 
 function getClearCookieOptions() {
-  const options = {
+  return {
     httpOnly: true,
     secure: isProduction,
-    sameSite: "lax",
+    sameSite: isProduction ? "none" : "lax",
   };
-  if (isProduction) {
-    options.domain = ".mysprays.ca";
-  }
-  return options;
 }
 
 function generateAccessToken(user) {
