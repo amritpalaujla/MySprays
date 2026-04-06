@@ -3,7 +3,7 @@ import { cropList } from "../assets/cropList";
 import "./SprayFinder.css";
 import IssueDropDown from "./IssueDropDown";
 
-function SprayFinder({ setTab, setChosenSpray }) {
+function SprayFinder() {
   const [selectedCrop, setSelectedCrop] = useState(null);
   const [isSpinning, setIsSpinning] = useState(false);
 
@@ -41,8 +41,6 @@ function SprayFinder({ setTab, setChosenSpray }) {
   return (
     <IssueDropDown
       crop={selectedCrop}
-      setTab={setTab}
-      setChosenSpray={setChosenSpray}
       onBackToCrops={handleBackToCrops}
     />
   );

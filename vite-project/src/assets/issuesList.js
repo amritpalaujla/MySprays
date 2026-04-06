@@ -19,13 +19,25 @@ import grapesBunchRot2 from "../assets/issueImages/grapesBunchRot2.PNG";
 import grapesThrips from "../assets/issueImages/grapesThrips.PNG";
 import grapesThrips2 from "../assets/issueImages/grapesThrips2.PNG";
 import peachesBrownRot from "../assets/issueImages/peachesBrownRot.PNG";
-import peachesScab from "../assets/issueImages/peachesScab.PNG";
 import peachesTwigBorer from "../assets/issueImages/peachesTwigBorer.PNG";
 import peachesMildew from "../assets/issueImages/peachesMildew.PNG";
 import applesScab from "../assets/issueImages/applesScab.PNG";
 import applesCodlingMoth from "../assets/issueImages/applesCodlingMoth.PNG";
 import applesPowderyMildew from "../assets/issueImages/applesPowderyMildew.PNG";
 import applesFireBlight from "../assets/issueImages/applesFireBlight.PNG";
+import europeanRedMite from "../assets/issueImages/peachesEuropeanRedMite.png";
+import lecaniumScale from "../assets/issueImages/peachesLecaniumScale.png";
+import sanjoseScale from "../assets/issueImages/peachesSanJoseScale.png";
+import spiderMite from "../assets/issueImages/peachesSpiderMites.png";
+import leafroller from "../assets/issueImages/peachesLeafroller.png";
+import greenFruitWorm from "../assets/issueImages/peachesGreenFruitworm.PNG";
+import obliquebandedLeafroller from "../assets/issueImages/peachesObliquebandedLeafroller.png";
+import eyeSpottedBudMoth from "../assets/issueImages/peachesEyeSpottedBudMoth.png";
+import westernFlowerThrip from "../assets/issueImages/peachesWesternFlowerThrips.png";
+import CoryneumBlight from "../assets/issueImages/peachesCoryneumBlight.png";
+import mealyBugs from "../assets/issueImages/peachesMealyBugs.png";
+import peachAphids from "../assets/issueImages/peachesAphids.png";
+import treeBorer from "../assets/issueImages/peachesTreeBorer.png";
 
 // Crop-specific issue images
 // Format: "CropName-IssueName"
@@ -109,21 +121,73 @@ export const issuesList = {
   },
 
   // Peaches
-  "Peaches-Twig Borer": {
-    name: "Twig Borer",
+  "Peaches-Peach Twig Borer": {
+    name: "Peach Twig Borer",
     images: [peachesTwigBorer],
   },
   "Peaches-Brown Rot": {
     name: "Brown Rot",
     images: [peachesBrownRot],
   },
-  "Peaches-Leaf Curl": {
-    name: "Leaf Curl",
+  "Peaches-Peach Leaf Curl": {
+    name: "Peach Leaf Curl",
     images: [peachLeafCurl],
   },
-  "Peaches-Mildew": {
-    name: "Mildew",
+  "Peaches-Powdery Mildew": {
+    name: "Powdery Mildew",
     images: [peachesMildew],
+  },
+  "Peaches-European Red Mite": {
+    name: "European Red Mite",
+    images: [europeanRedMite],
+  },
+  "Peaches-Lecanium Scale": {
+    name: "Lecanium Scale",
+    images: [lecaniumScale],
+  },
+  "Peaches-San Jose Scale": {
+    name: "San Jose Scale",
+    images: [sanjoseScale],
+  },
+  "Peaches-McDaniel, Twospotted Spider Mites": {
+    name: "McDaniel, Twospotted Spider Mites",
+    images: [spiderMite],
+  },
+  "Peaches-Fruittree and European Leafrollers": {
+    name: "Fruittree and European Leafrollers",
+    images: [leafroller],
+  },
+  "Peaches-Green Fruitworms": {
+    name: "Green Fruitworms",
+    images: [greenFruitWorm],
+  },
+  "Peaches-Obliquebanded and Threelined Leafrollers": {
+    name: "Obliquebanded and Threelined Leafrollers",
+    images: [obliquebandedLeafroller],
+  },
+  "Peaches-Eyespotted Bud Moth": {
+    name: "Eyespotted Bud Moth",
+    images: [eyeSpottedBudMoth],
+  },
+  "Peaches-Western Flower Thrips": {
+    name: "Western Flower Thrips",
+    images: [westernFlowerThrip],
+  },
+  "Peaches-Mealybugs": {
+    name: "Mealybugs",
+    images: [mealyBugs],
+  },
+  "Peaches-Green Peach Aphid and Black Peach Aphid": {
+    name: "Green Peach Aphid and Black Peach Aphid",
+    images: [peachAphids],
+  },
+  "Peaches-Peach Tree Borer": {
+    name: "Peach Tree Borer",
+    images: [treeBorer],
+  },
+  "Peaches-Coryneum blight": {
+    name: "Coryneum blight",
+    images: [CoryneumBlight],
   },
 
   // Apricots

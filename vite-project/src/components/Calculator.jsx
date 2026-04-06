@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { getSprayData } from "../assets/sprayData";
 import { useRegion } from "../context/RegionContext";
@@ -44,7 +45,9 @@ const emptyForm = {
   notes: "",
 };
 
-function Calculator({ chosenSpray, user }) {
+function Calculator({ user }) {
+  const location = useLocation();
+  const chosenSpray = location.state?.chosenSpray ?? null;
   const { region, getUnitLabels } = useRegion();
   const units = getUnitLabels();
   const sprayData = getSprayData(region);
