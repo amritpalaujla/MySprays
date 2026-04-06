@@ -25,19 +25,19 @@ import applesScab from "../assets/issueImages/applesScab.PNG";
 import applesCodlingMoth from "../assets/issueImages/applesCodlingMoth.PNG";
 import applesPowderyMildew from "../assets/issueImages/applesPowderyMildew.PNG";
 import applesFireBlight from "../assets/issueImages/applesFireBlight.PNG";
-import europeanRedMite from "../assets/issueImages/peachesEuropeanRedMite.PNG";
-import lecaniumScale from "../assets/issueImages/peachesLecaniumScale.PNG";
-import sanjoseScale from "../assets/issueImages/peachesSanJoseScale.PNG";
-import spiderMite from "../assets/issueImages/peachesSpiderMites.PNG";
-import leafroller from "../assets/issueImages/peachesLeafroller.PNG";
+import europeanRedMite from "../assets/issueImages/peachesEuropeanRedMite.png";
+import lecaniumScale from "../assets/issueImages/peachesLecaniumScale.png";
+import sanjoseScale from "../assets/issueImages/peachesSanJoseScale.png";
+import spiderMite from "../assets/issueImages/peachesSpiderMites.png";
+import leafroller from "../assets/issueImages/peachesLeafroller.png";
 import greenFruitWorm from "../assets/issueImages/peachesGreenFruitworm.PNG";
-import obliquebandedLeafroller from "../assets/issueImages/peachesObliquebandedLeafroller.PNG";
-import eyeSpottedBudMoth from "../assets/issueImages/peachesEyeSpottedBudMoth.PNG";
-import westernFlowerThrip from "../assets/issueImages/peachesWesternFlowerThrips.PNG";
-import CoryneumBlight from "../assets/issueImages/peachesCoryneumBlight.PNG";
-import mealyBugs from "../assets/issueImages/peachesMealyBugs.PNG";
-import peachAphids from "../assets/issueImages/peachesAphids.PNG";
-import treeBorer from "../assets/issueImages/peachesTreeBorer.PNG";
+import obliquebandedLeafroller from "../assets/issueImages/peachesObliquebandedLeafroller.png";
+import eyeSpottedBudMoth from "../assets/issueImages/peachesEyeSpottedBudMoth.png";
+import westernFlowerThrip from "../assets/issueImages/peachesWesternFlowerThrips.png";
+import CoryneumBlight from "../assets/issueImages/peachesCoryneumBlight.png";
+import mealyBugs from "../assets/issueImages/peachesMealyBugs.png";
+import peachAphids from "../assets/issueImages/peachesAphids.png";
+import treeBorer from "../assets/issueImages/peachesTreeBorer.png";
 
 // Crop-specific issue images
 // Format: "CropName-IssueName"
