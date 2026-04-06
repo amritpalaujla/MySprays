@@ -1,83 +1,1000 @@
 {
   "Peaches": {
-    "Brown Rot": [
+    "Peach Twig Borer": [
       {
-        "name": "Elevate",
-        "rate": 690,
+        "name": "Rimon",
+        "rate": "0.55-1.35",
+        "unit": "L",
+        "phi": "14 days",
+        "pcp": "28515",
+        "stage": "dormant, pink, petal fall, husk fall, summer",
+        "description": "Use high rates for heavy populations. Spray interval: 10-14 days. Do not apply more than 3 times/season."
+      },
+      {
+        "name": "Harvanta 50SL",
+        "rate": "485-647",
+        "unit": "mL",
+        "phi": "7 days",
+        "pcp": "32889",
+        "stage": "dormant, pink, petal fall",
+        "description": "Toxic to bees. Do not make more than 3 applications per crop year. Rotate with other insecticide groups."
+      },
+      {
+        "name": "Imidan 70% WP",
+        "rate": "1.08",
+        "unit": "kg",
+        "phi": "17 days",
+        "pcp": "29064",
+        "stage": "pink, petal fall",
+        "description": "Toxic to bees. Do not apply more than 1 application per season."
+      },
+      {
+        "name": "Decis",
+        "rate": "80",
+        "unit": "mL",
+        "phi": "1 day",
+        "pcp": "22478",
+        "stage": "pink, petal fall",
+        "description": "Harmful to beneficial insects and mites. Residual control: 10 days."
+      },
+      {
+        "name": "Intrepid",
+        "rate": "304",
+        "unit": "mL",
+        "phi": "7 days",
+        "pcp": "27786",
+        "stage": "petal fall, husk fall, summer",
+        "description": "Do not apply more than 2 times per season."
+      },
+      {
+        "name": "Altacor",
+        "rate": "87-115",
         "unit": "g",
         "phi": "1 day",
-        "pcp": "25900",
-        "stage": "blossom, petal fall, summer",
-        "description": "Avoid more than 2 applications."
+        "pcp": "28981",
+        "stage": "petal fall, summer",
+        "description": "Use pheromone traps to monitor. Do not exceed 261 g/ac per season."
+      },
+      {
+        "name": "Exirel",
+        "rate": "304-404",
+        "unit": "mL",
+        "phi": "3 days",
+        "pcp": "30895",
+        "stage": "petal fall, summer",
+        "description": "Toxic to bees. Do not apply more than 4 times/season. Use pheromone traps."
+      },
+      {
+        "name": "Altacor MaX",
+        "rate": "44-58",
+        "unit": "g",
+        "phi": "1 day",
+        "pcp": "34654",
+        "stage": "petal fall, summer",
+        "description": "Do not exceed 131 g/ac per season."
+      },
+      {
+        "name": "Entrust",
+        "rate": "147",
+        "unit": "mL",
+        "phi": "14 days",
+        "pcp": "30382",
+        "stage": "husk fall",
+        "description": "For suppression only. Do not apply more than 3 times per season."
+      },
+      {
+        "name": "Vayego 200 SC",
+        "rate": "91",
+        "unit": "mL",
+        "phi": "5 days",
+        "pcp": "33711",
+        "stage": "husk fall",
+        "description": "Max 3 applications per year. Toxic to bees. Post-bloom only."
+      }
+    ],
+    "Peach Leaf Curl": [
+      {
+        "name": "Parasol",
+        "rate": "1.8-2.7",
+        "unit": "L",
+        "phi": "2 days",
+        "pcp": "25901",
+        "stage": "dormant",
+        "description": "Use higher rate for heavy rainfall and high disease pressure."
+      },
+      {
+        "name": "Guardsman",
+        "rate": "800",
+        "unit": "g",
+        "phi": "0 days",
+        "pcp": "13245",
+        "stage": "dormant",
+        "description": "Apply at 75-100% leaf drop during dry weather."
+      },
+      {
+        "name": "Copper Spray",
+        "rate": "800",
+        "unit": "g",
+        "phi": "0 days",
+        "pcp": "19146",
+        "stage": "dormant",
+        "description": "Apply at 75-100% leaf drop during dry weather. A spring dormant spray may also be required."
+      },
+      {
+        "name": "Lime Sulphur 30%",
+        "rate": "7.3 L/100 L water",
+        "unit": "",
+        "phi": "1 day",
+        "pcp": "16465",
+        "stage": "dormant",
+        "description": "Apply early, before oil sprays and before bud swell."
+      },
+      {
+        "name": "Bravo ZNC",
+        "rate": "2.0-2.83",
+        "unit": "L",
+        "phi": "60 days",
+        "pcp": "33515",
+        "stage": "dormant",
+        "description": "Do not apply after shuck split. Use higher rate for trees over 6 m in height."
+      },
+      {
+        "name": "Echo",
+        "rate": "1.4-2.0",
+        "unit": "L",
+        "phi": "60 days",
+        "pcp": "33479",
+        "stage": "dormant",
+        "description": "Make one application per year at dormant spray or early spring."
+      },
+      {
+        "name": "Syllit 400 FL",
+        "rate": "0.728-1.416",
+        "unit": "L",
+        "phi": "60 days",
+        "pcp": "28351",
+        "stage": "dormant",
+        "description": "Maximum 2 applications per year."
+      }
+    ],
+    "European Red Mite": [
+      {
+        "name": "Purespray Green Oil",
+        "rate": "20 L/1000 L water",
+        "unit": "",
+        "phi": "0 days",
+        "pcp": "27666",
+        "stage": "dormant, summer",
+        "description": "Apply 20 L per 1000 L water at dormant stage; 4 L/ac in summer. Apply dormant to pre-bloom."
+      },
+      {
+        "name": "Superior 70",
+        "rate": "20 L/1000 L water",
+        "unit": "",
+        "phi": "0 days",
+        "pcp": "14981",
+        "stage": "dormant",
+        "description": "Do not use after green tip stage."
+      },
+      {
+        "name": "Apollo",
+        "rate": "120-240",
+        "unit": "mL",
+        "phi": "21 days",
+        "pcp": "21035",
+        "stage": "pink, petal fall, summer",
+        "description": "Do not apply more than once/season. Residual: 45 days."
+      },
+      {
+        "name": "Acramite",
+        "rate": "344",
+        "unit": "g",
+        "phi": "7 days",
+        "pcp": "27925",
+        "stage": "pink, petal fall, summer",
+        "description": "Do not apply more than once/season. Residual: 21 days."
+      },
+      {
+        "name": "Magister SC",
+        "rate": "0.7-0.95",
+        "unit": "L",
+        "phi": "10 days",
+        "pcp": "34544",
+        "stage": "pink, petal fall, summer",
+        "description": "Toxic to bees. Maximum 1 application."
+      },
+      {
+        "name": "Nealta",
+        "rate": "405",
+        "unit": "mL",
+        "phi": "7 days",
+        "pcp": "31284",
+        "stage": "pink, petal fall, summer",
+        "description": "Do not apply more than 2 times/season."
+      },
+      {
+        "name": "Envidor",
+        "rate": "300",
+        "unit": "mL",
+        "phi": "7 days",
+        "pcp": "28051",
+        "stage": "petal fall, summer",
+        "description": "Do not apply more than once per season."
+      }
+    ],
+    "Lecanium Scale": [
+      {
+        "name": "Guardsman",
+        "rate": "36",
+        "unit": "L",
+        "phi": "0 days",
+        "pcp": "23370",
+        "stage": "dormant",
+        "description": "Apply at bud swell stage."
+      }
+    ],
+    "San Jose Scale": [
+      {
+        "name": "Guardsman",
+        "rate": "36",
+        "unit": "L",
+        "phi": "0 days",
+        "pcp": "23370",
+        "stage": "dormant",
+        "description": "Apply at bud-swell stage."
+      },
+      {
+        "name": "Superior 70",
+        "rate": "24.3",
+        "unit": "L",
+        "phi": "0 days",
+        "pcp": "14981",
+        "stage": "dormant",
+        "description": "Do not use after green tip stage."
+      },
+      {
+        "name": "Purespray Green Oil",
+        "rate": "20 L/1000 L water",
+        "unit": "",
+        "phi": "0 days",
+        "pcp": "27666",
+        "stage": "dormant",
+        "description": "Apply dormant to pre-bloom."
+      }
+    ],
+    "McDaniel, Twospotted Spider Mites": [
+      {
+        "name": "Apollo",
+        "rate": "120-240",
+        "unit": "mL",
+        "phi": "21 days",
+        "pcp": "21035",
+        "stage": "pink, petal fall, summer",
+        "description": "Do not apply more than once/season. Residual: 45 days."
+      },
+      {
+        "name": "Acramite",
+        "rate": "344",
+        "unit": "g",
+        "phi": "7 days",
+        "pcp": "27925",
+        "stage": "pink, petal fall, summer",
+        "description": "Do not apply more than once/season. Residual: 21 days."
+      },
+      {
+        "name": "Magister SC",
+        "rate": "0.7-0.95",
+        "unit": "L",
+        "phi": "10 days",
+        "pcp": "34544",
+        "stage": "pink, petal fall, summer",
+        "description": "Toxic to bees. Maximum 1 application."
+      },
+      {
+        "name": "Nealta",
+        "rate": "405",
+        "unit": "mL",
+        "phi": "7 days",
+        "pcp": "31284",
+        "stage": "pink, petal fall, summer",
+        "description": "Do not apply more than 2 times/season."
+      },
+      {
+        "name": "Envidor",
+        "rate": "300",
+        "unit": "mL",
+        "phi": "7 days",
+        "pcp": "28051",
+        "stage": "petal fall, summer",
+        "description": "Do not apply more than once per season."
+      },
+      {
+        "name": "Suffoil-X",
+        "rate": "13 L/1000 L water",
+        "unit": "",
+        "phi": "0 days",
+        "pcp": "33099",
+        "stage": "summer",
+        "description": "Apply every 10-14 days. Do not apply more than 8/year."
+      }
+    ],
+    "Brown Rot": [
+      {
+        "name": "Quash",
+        "rate": "71-113",
+        "unit": "g",
+        "phi": "14 days",
+        "pcp": "30402",
+        "stage": "pink, blossom, petal fall, summer",
+        "description": "Maximum 1 application/season."
       },
       {
         "name": "Cevya",
         "rate": "100-150",
         "unit": "mL",
-        "phi": "1 day",
-        "pcp": "33405",
-        "stage": "blossom, petal fall, summer",
-        "description": "Do not make more than 2 sequential applications. Wait 7-14 days for additional application."
-      }
-    ],
-    "Leaf Curl": [
-      {
-        "name": "Bravo ZNC",
-        "rate": "2-2.83",
-        "unit": "L",
-        "phi": "60 days",
-        "pcp": "33515",
-        "stage": "dormant",
-        "description": "Do not apply Bravo after shuck split. Use higher rate for trees over 6 m in height. Refer to label for specific REI's for thinning activities."
-      },
-      {
-        "name": "Copper Spray",
-        "rate": 800,
-        "unit": "g",
         "phi": "0 days",
-        "pcp": "19146",
-        "stage": "dormant, fall",
-        "description": "Apply at 75-100% leaf drop during dry weather. A spring dormant spray may also be required."
-      }
-    ],
-    "Twig Borer": [
-      {
-        "name": "Harvanta 50SL",
-        "rate": "485-647",
-        "unit": "ml",
-        "phi": "7 days",
-        "pcp": "22478",
-        "stage": "dormant, pink, petal fall",
-        "description": "Toxic to bees. Do not make more than 3 applications per crop year. Where possible, rotate the use of Harvanta or other Group 28 insecticides with different groups that control the same pests."
+        "pcp": "33405",
+        "stage": "pink, blossom, petal fall, summer",
+        "description": "Do not make more than 2 sequential applications before alternating."
       },
       {
-        "name": "Decis",
-        "rate": 80,
+        "name": "Sercadis",
+        "rate": "135",
+        "unit": "mL",
+        "phi": "0 days",
+        "pcp": "31697",
+        "stage": "pink, blossom, petal fall",
+        "description": "Non-ionic surfactant recommended."
+      },
+      {
+        "name": "Merivon",
+        "rate": "120-160",
         "unit": "mL",
         "phi": "1 day",
-        "pcp": "22478",
-        "stage": "pink, petal fall",
-        "description": "Decis is harmful to beneficial insects and mites. Residual control: 10 days/"
-      }
-    ],
-    "Mildew": [
+        "pcp": "33951",
+        "stage": "pink, blossom, petal fall, summer",
+        "description": "Limit Group 11 fungicides to 2 sprays/season."
+      },
+      {
+        "name": "Luna Sensation",
+        "rate": "121-162",
+        "unit": "mL",
+        "phi": "1 day",
+        "pcp": "32107",
+        "stage": "pink, blossom, petal fall, summer",
+        "description": "Limit Group 11 fungicides to 2 applications per season."
+      },
+      {
+        "name": "ProBlad",
+        "rate": "0.61-1.33",
+        "unit": "L",
+        "phi": "0 days",
+        "pcp": "34050",
+        "stage": "pink",
+        "description": "Biological fungicide."
+      },
+      {
+        "name": "Senator 50SC",
+        "rate": "1",
+        "unit": "L",
+        "phi": "1 day",
+        "pcp": "32096",
+        "stage": "blossom",
+        "description": "Maximum 2 applications/season."
+      },
+      {
+        "name": "Elevate",
+        "rate": "690",
+        "unit": "g",
+        "phi": "1 day",
+        "pcp": "25900",
+        "stage": "blossom, petal fall, summer",
+        "description": "Avoid more than 2 consecutive applications."
+      },
+      {
+        "name": "Funginex",
+        "rate": "1.0",
+        "unit": "L",
+        "phi": "bloom only",
+        "pcp": "27686",
+        "stage": "blossom",
+        "description": "Do not apply after blossom."
+      },
+      {
+        "name": "Nova 40WP",
+        "rate": "140",
+        "unit": "g",
+        "phi": "1 day",
+        "pcp": "22399",
+        "stage": "blossom, petal fall, summer",
+        "description": "Limit Group 3 fungicides to 2 sprays/season. Rotate with fungicides from other groups."
+      },
+      {
+        "name": "Princeton",
+        "rate": "121",
+        "unit": "mL",
+        "phi": "3 days",
+        "pcp": "33840",
+        "stage": "blossom, petal fall",
+        "description": "Limit sprays of Group 3 fungicides to 2 per season."
+      },
+      {
+        "name": "Serenade Opti",
+        "rate": "445-688",
+        "unit": "g",
+        "phi": "0 days",
+        "pcp": "31666",
+        "stage": "blossom, petal fall",
+        "description": "Suppression only. Begin at early bloom."
+      },
       {
         "name": "Fontelis",
         "rate": "405-709",
         "unit": "mL",
-        "phi": "1 day",
+        "phi": "0 days",
         "pcp": "30331",
-        "stage": "husk fall",
-        "description": "Do not apply more than 2 times per season. Use high rate for high disease pressure."
+        "stage": "blossom, petal fall, summer",
+        "description": "Do not apply more than 2 times per season."
       },
       {
-        "name": "Nova",
-        "rate": 140,
+        "name": "Cantus",
+        "rate": "150",
+        "unit": "g",
+        "phi": "0 days",
+        "pcp": "30141",
+        "stage": "blossom, petal fall, summer",
+        "description": "Avoid more than 2 consecutive applications."
+      },
+      {
+        "name": "Kenja",
+        "rate": "369",
+        "unit": "mL",
+        "phi": "1 day",
+        "pcp": "31758",
+        "stage": "blossom, petal fall, summer",
+        "description": "Suppression only. Maximum of 3 applications per year."
+      },
+      {
+        "name": "Pristine WG",
+        "rate": "304-405",
+        "unit": "g",
+        "phi": "0 days",
+        "pcp": "27985",
+        "stage": "blossom, petal fall, summer",
+        "description": "Also suppresses powdery mildew. Limit Group 11 fungicides to 2/season."
+      },
+      {
+        "name": "Miravis Duo",
+        "rate": "405",
+        "unit": "mL",
+        "phi": "0 days",
+        "pcp": "33206",
+        "stage": "blossom, petal fall, summer",
+        "description": "Max 2 applications per year."
+      },
+      {
+        "name": "Captan L",
+        "rate": "2.68",
+        "unit": "L",
+        "phi": "15 days",
+        "pcp": "35343",
+        "stage": "blossom, petal fall, summer",
+        "description": "Use under low to moderate disease pressure."
+      },
+      {
+        "name": "Maestro",
+        "rate": "1.5-1.8",
+        "unit": "kg",
+        "phi": "2 days",
+        "pcp": "33488",
+        "stage": "blossom, petal fall, summer",
+        "description": "Do not apply with or near oil sprays."
+      },
+      {
+        "name": "Bravo ZNC",
+        "rate": "2.0-2.83",
+        "unit": "L",
+        "phi": "60 days",
+        "pcp": "33515",
+        "stage": "blossom, petal fall",
+        "description": "Do not apply after shuck split. Use higher rate for trees over 6 m."
+      },
+      {
+        "name": "Echo",
+        "rate": "1.4-2.5",
+        "unit": "L",
+        "phi": "60 days",
+        "pcp": "33479",
+        "stage": "blossom, petal fall",
+        "description": "Do not apply within 10 days of oil application."
+      }
+    ],
+    "Fruittree and European Leafrollers": [
+      {
+        "name": "Bioprotec CAF",
+        "rate": "1.6",
+        "unit": "L",
+        "phi": "0 days",
+        "pcp": "26854",
+        "stage": "petal fall",
+        "description": "Spray interval: 7 days under optimal conditions."
+      },
+      {
+        "name": "Dipel 2X DF",
+        "rate": "455-678",
+        "unit": "g",
+        "phi": "0 days",
+        "pcp": "26508",
+        "stage": "petal fall",
+        "description": "Controls other leaf-feeding larvae."
+      },
+      {
+        "name": "Bioprotec PLUS",
+        "rate": "0.73-1.0",
+        "unit": "L",
+        "phi": "0 days",
+        "pcp": "32425",
+        "stage": "petal fall",
+        "description": "Controls leaf-feeding larvae."
+      },
+      {
+        "name": "Exirel",
+        "rate": "202-404",
+        "unit": "mL",
+        "phi": "3 days",
+        "pcp": "30895",
+        "stage": "petal fall",
+        "description": "Toxic to bees. Do not apply more than 4 times/season."
+      },
+      {
+        "name": "Success",
+        "rate": "74",
+        "unit": "mL",
+        "phi": "14 days",
+        "pcp": "26835",
+        "stage": "petal fall",
+        "description": "Do not apply more than 3 times/season."
+      }
+    ],
+    "Green Fruitworms": [
+      {
+        "name": "Bioprotec CAF",
+        "rate": "1.6",
+        "unit": "L",
+        "phi": "0 days",
+        "pcp": "26854",
+        "stage": "petal fall",
+        "description": "Spray interval: 7 days."
+      },
+      {
+        "name": "Dipel 2X DF",
+        "rate": "455-678",
+        "unit": "g",
+        "phi": "0 days",
+        "pcp": "26508",
+        "stage": "petal fall",
+        "description": "Controls other leaf-feeding larvae."
+      },
+      {
+        "name": "Bioprotec PLUS",
+        "rate": "0.73-1.0",
+        "unit": "L",
+        "phi": "0 days",
+        "pcp": "32425",
+        "stage": "petal fall",
+        "description": "Controls leaf-feeding larvae."
+      }
+    ],
+    "Obliquebanded and Threelined Leafrollers": [
+      {
+        "name": "Bioprotec CAF",
+        "rate": "1.6",
+        "unit": "L",
+        "phi": "0 days",
+        "pcp": "26854",
+        "stage": "petal fall",
+        "description": "Helps control exposed peach twig borer larvae."
+      },
+      {
+        "name": "Dipel 2X DF",
+        "rate": "455-678",
+        "unit": "g",
+        "phi": "0 days",
+        "pcp": "26508",
+        "stage": "petal fall",
+        "description": "Helps control exposed peach twig borer larvae."
+      },
+      {
+        "name": "Bioprotec PLUS",
+        "rate": "0.73-1.0",
+        "unit": "L",
+        "phi": "0 days",
+        "pcp": "32425",
+        "stage": "petal fall, summer",
+        "description": "Controls leaf-feeding larvae."
+      },
+      {
+        "name": "Rimon",
+        "rate": "0.55-1.35",
+        "unit": "L",
+        "phi": "14 days",
+        "pcp": "28515",
+        "stage": "petal fall, summer",
+        "description": "Do not apply more than 3 times/season."
+      },
+      {
+        "name": "Altacor",
+        "rate": "59-115",
+        "unit": "g",
+        "phi": "1 day",
+        "pcp": "28981",
+        "stage": "petal fall, summer",
+        "description": "Do not apply more than 3 times/season or 2 times above 87 g/ac."
+      },
+      {
+        "name": "Exirel",
+        "rate": "202-404",
+        "unit": "mL",
+        "phi": "3 days",
+        "pcp": "30895",
+        "stage": "petal fall, summer",
+        "description": "Toxic to bees. Do not apply more than 4 times/season."
+      },
+      {
+        "name": "Harvanta 50SL",
+        "rate": "485-647",
+        "unit": "mL",
+        "phi": "7 days",
+        "pcp": "32889",
+        "stage": "petal fall, summer",
+        "description": "Toxic to bees. Do not make more than 3 applications per crop year."
+      },
+      {
+        "name": "Altacor MaX",
+        "rate": "30-58",
+        "unit": "g",
+        "phi": "5 days",
+        "pcp": "34654",
+        "stage": "petal fall, summer",
+        "description": "Do not exceed 131 g/ac per season."
+      },
+      {
+        "name": "Delegate",
+        "rate": "85-170",
+        "unit": "g",
+        "phi": "1 day",
+        "pcp": "28778",
+        "stage": "petal fall, summer",
+        "description": "Do not apply more than 3 times a season."
+      },
+      {
+        "name": "Entrust",
+        "rate": "147",
+        "unit": "mL",
+        "phi": "1 day",
+        "pcp": "30382",
+        "stage": "petal fall, summer",
+        "description": "Do not apply more than 3 times per season."
+      },
+      {
+        "name": "Success",
+        "rate": "74",
+        "unit": "mL",
+        "phi": "14 days",
+        "pcp": "26835",
+        "stage": "petal fall, summer",
+        "description": "Do not apply more than 3 times/season."
+      },
+      {
+        "name": "Vayego 200 SC",
+        "rate": "91",
+        "unit": "mL",
+        "phi": "5 days",
+        "pcp": "33711",
+        "stage": "summer",
+        "description": "Max 3 applications per year. Toxic to bees."
+      }
+    ],
+    "Eyespotted Bud Moth": [
+      {
+        "name": "Exirel",
+        "rate": "202-404",
+        "unit": "mL",
+        "phi": "3 days",
+        "pcp": "30895",
+        "stage": "petal fall",
+        "description": "Toxic to bees. Do not apply more than 4 times/season."
+      },
+      {
+        "name": "Entrust",
+        "rate": "147",
+        "unit": "mL",
+        "phi": "1 day",
+        "pcp": "30382",
+        "stage": "petal fall",
+        "description": "Do not apply more than 3 times per season."
+      },
+      {
+        "name": "Success",
+        "rate": "74",
+        "unit": "mL",
+        "phi": "1 day",
+        "pcp": "26835",
+        "stage": "petal fall",
+        "description": "Do not apply more than 3 times/season."
+      }
+    ],
+    "Western Flower Thrips": [
+      {
+        "name": "Harvanta 50SL",
+        "rate": "485-647",
+        "unit": "mL",
+        "phi": "7 days",
+        "pcp": "32889",
+        "stage": "petal fall, husk fall",
+        "description": "Toxic to bees. For suppression only. Do not make more than 3 applications."
+      },
+      {
+        "name": "Success",
+        "rate": "73",
+        "unit": "mL",
+        "phi": "14 days",
+        "pcp": "26835",
+        "stage": "petal fall, husk fall",
+        "description": "For nectarines only. Suppression only. Do not apply when bees forage."
+      },
+      {
+        "name": "Entrust",
+        "rate": "147",
+        "unit": "mL",
+        "phi": "14 days",
+        "pcp": "30382",
+        "stage": "petal fall, husk fall",
+        "description": "For nectarines only. Suppression only. Do not apply when bees forage."
+      }
+    ],
+    "Powdery Mildew": [
+      {
+        "name": "Miravis Duo",
+        "rate": "405",
+        "unit": "mL",
+        "phi": "0 days",
+        "pcp": "33206",
+        "stage": "petal fall, husk fall",
+        "description": "Max 2 applications per year, then switch to non-Group 7 and 3."
+      },
+      {
+        "name": "Flint Extra Fungicide",
+        "rate": "57-113",
+        "unit": "g",
+        "phi": "1 day",
+        "pcp": "34962",
+        "stage": "husk fall",
+        "description": "Suppression only. Limit Group 11 fungicides to 2/season."
+      },
+      {
+        "name": "Magister SC",
+        "rate": "0.7-1.1",
+        "unit": "L",
+        "phi": "10 days",
+        "pcp": "34544",
+        "stage": "husk fall",
+        "description": "Toxic to bees. Maximum 1 application."
+      },
+      {
+        "name": "Nova 40WP",
+        "rate": "140",
         "unit": "g",
         "phi": "1 day",
         "pcp": "22399",
-        "stage": "blossom, petal fall, husk fall",
-        "description": "Limit use of group 3 fungicides (Indar, Nova, Topas, Jade, Tilt, Quash) to 2 sprays/season. Rotate with fungicides from other groups for resistance management. 12 days REI for thinning."
+        "stage": "husk fall",
+        "description": "Limit Group 3 fungicides to 2 sprays/season. Rotate with fungicides from other groups."
+      },
+      {
+        "name": "Quash",
+        "rate": "99-113",
+        "unit": "g",
+        "phi": "14 days",
+        "pcp": "30402",
+        "stage": "husk fall",
+        "description": "Suppression only. Maximum 1 application/season."
+      },
+      {
+        "name": "Cevya",
+        "rate": "100-150",
+        "unit": "mL",
+        "phi": "0 days",
+        "pcp": "33405",
+        "stage": "husk fall",
+        "description": "Do not make more than 2 sequential applications before alternating."
+      },
+      {
+        "name": "Fontelis",
+        "rate": "405-709",
+        "unit": "mL",
+        "phi": "0 days",
+        "pcp": "30331",
+        "stage": "husk fall",
+        "description": "Do not apply more than 2 times per season."
+      },
+      {
+        "name": "Pristine WG",
+        "rate": "304-405",
+        "unit": "g",
+        "phi": "0 days",
+        "pcp": "27985",
+        "stage": "husk fall",
+        "description": "Limit Group 11 fungicides to 2/season."
+      },
+      {
+        "name": "Merivon",
+        "rate": "120-160",
+        "unit": "mL",
+        "phi": "1 day",
+        "pcp": "33951",
+        "stage": "husk fall",
+        "description": "Limit Group 11 fungicides to 2 sprays/season."
+      },
+      {
+        "name": "Luna Sensation",
+        "rate": "121-162",
+        "unit": "mL",
+        "phi": "1 day",
+        "pcp": "32107",
+        "stage": "husk fall",
+        "description": "Limit Group 11 fungicides to 2 applications per season."
+      },
+      {
+        "name": "Kumulus DF",
+        "rate": "2.8",
+        "unit": "kg",
+        "phi": "1 day",
+        "pcp": "18836",
+        "stage": "husk fall",
+        "description": "May cause injury in hot weather. Do not apply more than 8 times/season."
+      },
+      {
+        "name": "Purespray Green Oil",
+        "rate": "4",
+        "unit": "L",
+        "phi": "0 days",
+        "pcp": "27666",
+        "stage": "husk fall",
+        "description": "For suppression. Apply in minimum 1000 L water/ha every 10-14 days."
+      },
+      {
+        "name": "MilStop",
+        "rate": "1.13-2.27",
+        "unit": "kg",
+        "phi": "0 days",
+        "pcp": "28095",
+        "stage": "husk fall",
+        "description": "Suppression only. Do not mix with other pesticides."
+      },
+      {
+        "name": "Vivando",
+        "rate": "304-453",
+        "unit": "mL",
+        "phi": "7 days",
+        "pcp": "29765",
+        "stage": "husk fall",
+        "description": "Maximum of 2 sprays/season."
+      }
+    ],
+    "Coryneum blight": [
+      {
+        "name": "Flint Extra Fungicide",
+        "rate": "85-113",
+        "unit": "g",
+        "phi": "1 day",
+        "pcp": "34962",
+        "stage": "husk fall",
+        "description": "Limit Group 11 fungicides to 2/season."
+      }
+    ],
+    "Mealybugs": [
+      {
+        "name": "Movento 240 SC",
+        "rate": "148-237",
+        "unit": "mL",
+        "phi": "7 days",
+        "pcp": "28953",
+        "stage": "husk fall",
+        "description": "Apply with adjuvant. Toxic to bees."
+      }
+    ],
+    "Green Peach Aphid and Black Peach Aphid": [
+      {
+        "name": "Exirel",
+        "rate": "304-607",
+        "unit": "mL",
+        "phi": "3 days",
+        "pcp": "30895",
+        "stage": "husk fall",
+        "description": "Do not apply more than 4 times/season. Toxic to bees."
+      },
+      {
+        "name": "Vayego 200 SC",
+        "rate": "61",
+        "unit": "mL",
+        "phi": "5 days",
+        "pcp": "33711",
+        "stage": "husk fall",
+        "description": "Suppression only. Max 3 applications per year. Toxic to bees."
+      },
+      {
+        "name": "Beleaf",
+        "rate": "49-81",
+        "unit": "g",
+        "phi": "14 days",
+        "pcp": "29796",
+        "stage": "husk fall",
+        "description": "Maximum of 3 applications per year."
+      },
+      {
+        "name": "Closer",
+        "rate": "40-80",
+        "unit": "mL",
+        "phi": "7 days",
+        "pcp": "30826",
+        "stage": "husk fall",
+        "description": "Do not apply more than 2 times/season."
+      },
+      {
+        "name": "Sivanto Prime",
+        "rate": "202-304",
+        "unit": "mL",
+        "phi": "14 days",
+        "pcp": "31452",
+        "stage": "husk fall",
+        "description": "Do not apply more than 2000 mL/ha per season."
+      }
+    ],
+    "Peach Tree Borer": [
+      {
+        "name": "Isomate-P",
+        "rate": "100-250 units",
+        "unit": "",
+        "phi": "0 days",
+        "pcp": "27141",
+        "stage": "petal fall to husk fall",
+        "description": "Mating disruption pheromone. Apply before moth emergence."
+      },
+      {
+        "name": "Rimon",
+        "rate": "1.4 L/1000 L water",
+        "unit": "",
+        "phi": "14 days",
+        "pcp": "28515",
+        "stage": "summer",
+        "description": "Spray trunk and scaffold limbs. Spray interval: 21 days."
+      },
+      {
+        "name": "Altacor",
+        "rate": "87-115",
+        "unit": "g",
+        "phi": "1 day",
+        "pcp": "28981",
+        "stage": "summer",
+        "description": "Do not exceed 261 g/ac per season."
+      },
+      {
+        "name": "Altacor MaX",
+        "rate": "44-58",
+        "unit": "g",
+        "phi": "1 day",
+        "pcp": "34654",
+        "stage": "summer",
+        "description": "Do not exceed 131 g/ac per season."
+      },
+      {
+        "name": "Delegate",
+        "rate": "170",
+        "unit": "g",
+        "phi": "1 day",
+        "pcp": "28778",
+        "stage": "summer",
+        "description": "For suppression. Cover trunk and scaffold limbs thoroughly."
       }
     ]
   }

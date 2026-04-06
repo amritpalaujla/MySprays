@@ -1,20 +1,10 @@
 import jug from "../assets/jug.png";
 import calculator from "../assets/calculator.png";
 import folder from "../assets/folder.png";
-import SprayFinder from "./SprayFinder";
-import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
-function LandingPage({ setTab }) {
-  const hasShownAlert = useRef(false);
-  /*notice to users
-  useEffect(() => {
-    if (!hasShownAlert.current) {
-      alert(
-        "This application is in testing phase. The accuracy of any information is not verified, and should not be trusted blindly. Feel free to test/explore the application, and kindly provide feedback to the author in areas you believe can be improved. Thank you!"
-      );
-      hasShownAlert.current = true;
-    }
-  }, []);*/
+function LandingPage() {
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-8">
@@ -38,7 +28,7 @@ function LandingPage({ setTab }) {
           {/* Step 1 */}
           <div
             className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
-            onClick={() => setTab("Spray Finder")}
+            onClick={() => navigate("/spray-finder")}
           >
             <div className="text-blue-600 font-bold text-xl mb-4">Step 1</div>
             <h3 className="text-xl font-bold text-gray-800 mb-4">
@@ -55,7 +45,7 @@ function LandingPage({ setTab }) {
           {/* Step 2 */}
           <div
             className="bg-green-50 border border-green-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
-            onClick={() => setTab("Spray Calculator")}
+            onClick={() => navigate("/calculator")}
           >
             <div className="text-green-600 font-bold text-xl mb-4">Step 2</div>
             <h3 className="text-xl font-bold text-gray-800 mb-4">
@@ -76,7 +66,7 @@ function LandingPage({ setTab }) {
           {/* Step 3 */}
           <div
             className="bg-purple-50 border border-purple-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow"
-            onClick={() => setTab("Tracking")}
+            onClick={() => navigate("/tracking")}
           >
             <div className="text-purple-600 font-bold text-xl mb-4">Step 3</div>
             <h3 className="text-xl font-bold text-gray-800 mb-4">
@@ -124,7 +114,7 @@ function LandingPage({ setTab }) {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors"
-              onClick={() => setTab("Spray Finder")}
+              onClick={() => navigate("/spray-finder")}
             >
               Find Sprays
             </button>

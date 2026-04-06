@@ -61,6 +61,37 @@
   transform: translateY(0);
 }
 
+#tabs a {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #64748b;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#tabs a:hover,
+#tabs a.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px -1px rgba(59, 130, 246, 0.3);
+}
+
+#tabs a:active {
+  transform: translateY(0);
+}
+
 /* Mobile tab adjustments */
 @media (max-width: 640px) {
   #tabs {
@@ -69,7 +100,8 @@
     padding: 1rem 0.5rem;
   }
 
-  #tabs button {
+  #tabs button,
+  #tabs a {
     min-width: unset;
     padding: 1rem;
     font-size: 1rem;

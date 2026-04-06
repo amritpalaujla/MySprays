@@ -1,9 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getSprayData } from "../assets/sprayData";
 import { useRegion } from "../context/RegionContext";
-import blankImage from "../assets/blank.jpg";
 import { getIssueImage } from "../assets/issuesList";
-import { getSprayImage } from "../assets/spraysList";
 
 // Image Carousel Component
 function ImageCarousel({ images, alt }) {
@@ -91,7 +90,8 @@ function ImageCarousel({ images, alt }) {
   );
 }
 
-function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
+function IssueDropDown({ crop, onBackToCrops }) {
+  const navigate = useNavigate();
   const { region } = useRegion();
   const sprayData = getSprayData(region);
 
@@ -113,16 +113,19 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
   };
 
   const handleCalculateClick = (spray) => {
-    setChosenSpray({
-      crop: crop,
-      issue: selectedIssue,
-      name: spray.name,
-      rate: spray.rate,
-      unit: spray.unit,
-      phi: spray.phi,
-      pcp: spray.pcp,
+    navigate("/calculator", {
+      state: {
+        chosenSpray: {
+          crop: crop,
+          issue: selectedIssue,
+          name: spray.name,
+          rate: spray.rate,
+          unit: spray.unit,
+          phi: spray.phi,
+          pcp: spray.pcp,
+        },
+      },
     });
-    setTab("Spray Calculator");
   };
 
   // ── Issue selection screen ──
@@ -182,6 +185,15 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
     );
   }
 
+  // Build a lookup: sprayName -> list of other issues it appears in for this crop
+  const alsoUsedFor = {};
+  for (const issue of Object.keys(sprayData[crop])) {
+    for (const s of sprayData[crop][issue]) {
+      if (!alsoUsedFor[s.name]) alsoUsedFor[s.name] = [];
+      if (issue !== selectedIssue) alsoUsedFor[s.name].push(issue);
+    }
+  }
+
   // ── Spray cards screen ──
   return (
     <div className="issue-container">
@@ -218,15 +230,9 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
 
       <div className="sprays-grid">
         {sprays.map((spray, index) => {
-          const sprayImage = getSprayImage(spray.name);
-
+          const otherIssues = alsoUsedFor[spray.name] || [];
           return (
             <div key={`${spray.name}-${index}`} className="spray-card">
-              {/* Fixed-height image container */}
-              <div className="spray-card-image">
-                <img src={sprayImage} alt={`${spray.name} spray`} />
-              </div>
-
               {/* Content area — flexbox pushes button to bottom */}
               <div className="spray-card-content">
                 <h4>{spray.name}</h4>
@@ -261,6 +267,20 @@ function IssueDropDown({ crop, setTab, setChosenSpray, onBackToCrops }) {
                   {spray.description && spray.description.trim() && (
                     <div className="spray-description">
                       <p>{spray.description.trim()}</p>
+                    </div>
+                  )}
+
+                  {/* Also used for — only shown if spray appears in other issues */}
+                  {otherIssues.length > 0 && (
+                    <div className="spray-also-used">
+                      <span className="spray-also-used-label">Also used for:</span>
+                      <div className="spray-also-used-tags">
+                        {otherIssues.map((issue) => (
+                          <span key={issue} className="spray-also-used-tag">
+                            {issue}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
