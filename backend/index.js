@@ -49,7 +49,7 @@ function getCookieOptions(maxAge) {
   const options = {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    sameSite: "lax",
     maxAge,
   };
   return options;
@@ -59,7 +59,7 @@ function getClearCookieOptions() {
   return {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    sameSite: "lax",
   };
 }
 
