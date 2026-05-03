@@ -189,6 +189,10 @@ export const issuesList = {
     name: "Coryneum blight",
     images: [CoryneumBlight],
   },
+  "Peaches-Weeds": {
+    name: "Weeds",
+    images: [Weeds],
+  },
 
   // Apricots
   "Apricots-Aphids": {

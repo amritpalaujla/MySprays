@@ -996,6 +996,17 @@
         "stage": "summer",
         "description": "For suppression. Cover trunk and scaffold limbs thoroughly."
       }
+    ],
+    "Weeds": [
+      {
+        "name": "Roundup Transorb",
+        "rate": "0.67-1.33",
+        "unit": "L",
+        "phi": "—",
+        "pcp": "24227",
+        "stage": "post-emergent",
+        "description": "Apply as a directed spray to avoid contact with foliage, green bark, or fruit. Do not spray during windy conditions."
+      }
     ]
   }
 }
