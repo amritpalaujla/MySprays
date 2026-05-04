@@ -10,6 +10,7 @@ const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
 const { sendVerificationEmail } = require("./services/emailService");
 const { sendPasswordResetEmail } = require("./services/emailService");
+const rateLimit = require("express-rate-limit");
 
 const mongoose = require("mongoose");
 
@@ -41,6 +42,19 @@ app.use(
 ); // cors lets us choose where loading resources are allowed to come from
 app.use(express.json()); // parses incoming json to a object in req body
 app.use(cookieParser());
+
+// ===== Rate Limiting =====
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  message: { message: "Too many attempts, please try again later." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use("/login", authLimiter);
+app.use("/register", authLimiter);
+app.use("/resend-verification", authLimiter);
+app.use("/forgot-password", authLimiter);
 
 // ===== Cookie Configuration (works for both localhost and production) =====
 const isProduction = process.env.NODE_ENV === "production";
@@ -78,21 +92,13 @@ function generateRefreshToken(user) {
 }
 
 function verifyToken(req, res, next) {
-  console.log("=== Token Verification Debug ===");
-  console.log("All cookies:", req.cookies);
-  console.log("Access token exists:", !!req.cookies.accessToken);
-  console.log("User agent:", req.get("User-Agent"));
-  console.log("Origin:", req.get("Origin"));
   const token = req.cookies.accessToken;
 
   if (!token) {
-    console.log("No access token found in cookies");
     return res.status(401).json({ error: "No valid token provided" });
   }
-  // here we verify and decode the jwt
   jwt.verify(token, process.env.JWT_SECRET, (err, decodedUser) => {
     if (err) {
-      console.log("Token verification error:", err.message);
       return res.status(401).json({ error: "Invalid or expired token" });
     }
     req.user = decodedUser;
@@ -114,7 +120,7 @@ app.post("/refresh-token", async (req, res) => {
       async (err, decodedUser) => {
         if (err) {
           console.log("Refresh token error: ", err.message);
-          res.clearCookie("refreshToken");
+          res.clearCookie("refreshToken", getClearCookieOptions());
           return res
             .status(401)
             .json({ error: "Invalid or expired refresh token" });
@@ -123,7 +129,7 @@ app.post("/refresh-token", async (req, res) => {
         try {
           const user = await User.findById(decodedUser.id);
           if (!user) {
-            res.clearCookie("refreshToken");
+            res.clearCookie("refreshToken", getClearCookieOptions());
             return res.status(401).json({ error: "User not found" });
           }
 
