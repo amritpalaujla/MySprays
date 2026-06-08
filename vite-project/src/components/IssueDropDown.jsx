@@ -90,13 +90,12 @@ function ImageCarousel({ images, alt }) {
   );
 }
 
-function IssueDropDown({ crop, onBackToCrops }) {
+function IssueDropDown({ crop, onBackToCrops, selectedIssue, setSelectedIssue }) {
   const navigate = useNavigate();
   const { region } = useRegion();
   const sprayData = getSprayData(region);
 
   const issues = Object.keys(sprayData[crop]);
-  const [selectedIssue, setSelectedIssue] = useState("");
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const sprays = selectedIssue ? sprayData[crop][selectedIssue] : [];

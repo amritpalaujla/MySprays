@@ -3,12 +3,12 @@ import { cropList } from "../assets/cropList";
 import "./SprayFinder.css";
 import IssueDropDown from "./IssueDropDown";
 
-function SprayFinder() {
-  const [selectedCrop, setSelectedCrop] = useState(null);
+function SprayFinder({ selectedCrop, setSelectedCrop, selectedIssue, setSelectedIssue }) {
   const [isSpinning, setIsSpinning] = useState(false);
 
   const handleBackToCrops = () => {
     setSelectedCrop(null);
+    setSelectedIssue("");
     setIsSpinning(false);
   };
 
@@ -22,6 +22,7 @@ function SprayFinder() {
               onClick={() => {
                 console.log("you just clicked", crop.name);
                 setSelectedCrop(crop.name);
+                setSelectedIssue("");
                 setIsSpinning(true);
                 setTimeout(() => setIsSpinning(false), 700);
               }}
@@ -42,6 +43,8 @@ function SprayFinder() {
     <IssueDropDown
       crop={selectedCrop}
       onBackToCrops={handleBackToCrops}
+      selectedIssue={selectedIssue}
+      setSelectedIssue={setSelectedIssue}
     />
   );
 }

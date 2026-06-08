@@ -30,6 +30,8 @@ function MainLayout() {
 function App() {
   const [isValidating, setIsValidating] = useState(true);
   const [user, setUser] = useState(null);
+  const [selectedCrop, setSelectedCrop] = useState(null);
+  const [selectedIssue, setSelectedIssue] = useState("");
   const location = useLocation();
 
   const isAuthPage = [
@@ -45,7 +47,6 @@ function App() {
         credentials: "include",
       });
       setUser(null);
-      localStorage.clear();
       sessionStorage.clear();
 
       if (!res.ok) {
@@ -54,7 +55,6 @@ function App() {
     } catch (error) {
       console.error("Logout failed:", error);
       setUser(null);
-      localStorage.clear();
       sessionStorage.clear();
     }
   };
@@ -177,7 +177,14 @@ function App() {
 
         <Route element={<MainLayout />}>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/spray-finder" element={<SprayFinder />} />
+          <Route path="/spray-finder" element={
+            <SprayFinder
+              selectedCrop={selectedCrop}
+              setSelectedCrop={setSelectedCrop}
+              selectedIssue={selectedIssue}
+              setSelectedIssue={setSelectedIssue}
+            />
+          } />
           <Route path="/calculator" element={<Calculator user={user} />} />
           <Route
             path="/tracking"
