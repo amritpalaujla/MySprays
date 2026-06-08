@@ -999,13 +999,256 @@
     ],
     "Weeds": [
       {
-        "name": "Roundup Transorb",
-        "rate": "0.67-1.33",
+        "name": "Bonanza 480",
+        "rate": "0.51-0.93",
         "unit": "L",
         "phi": "—",
-        "pcp": "24227",
+        "pcp": "28289",
+        "stage": "pre-plant",
+        "description": "Controls annual broadleaf weeds and grasses. Apply and incorporate into soil prior to transplanting. Can be tank mixed with Sencor for broader control."
+      },
+      {
+        "name": "Princep Nine-T",
+        "rate": "0.44-0.89",
+        "unit": "kg",
+        "phi": "—",
+        "pcp": "—",
+        "stage": "pre-emergent (non-bearing and established trees)",
+        "description": "Controls annual broadleaf weeds and grasses. Avoid contact with trunk and leaves. Do not use on sandy soils with less than 2% organic matter."
+      },
+      {
+        "name": "Sencor",
+        "rate": "200-400",
+        "unit": "gr",
+        "phi": "—",
+        "pcp": "20968",
+        "stage": "pre-plant incorporate (non-bearing trees)",
+        "description": "Controls annual broadleaf weeds and grasses. Rate depends on soil type. Do not use on coarse soils with less than 2% organic matter."
+      },
+      {
+        "name": "Sencor",
+        "rate": "400",
+        "unit": "gr",
+        "phi": "—",
+        "pcp": "20968",
+        "stage": "pre-emergent (established orchards)",
+        "description": "Controls annual broadleaf weeds and grasses. Do not use on coarse soils with less than 2% organic matter."
+      },
+      {
+        "name": "Prowl H20",
+        "rate": "1.5",
+        "unit": "L",
+        "phi": "—",
+        "pcp": "29542",
+        "stage": "pre-emergent (non-bearing and established trees)",
+        "description": "Controls annual broadleaf weeds and grasses. Will not control already emerged weeds."
+      },
+      {
+        "name": "Sinbar",
+        "rate": "0.51",
+        "unit": "kg",
+        "phi": "—",
+        "pcp": "30082",
+        "stage": "soil applied banded (trees established 3+ years, non-bearing)",
+        "description": "Controls annual broadleaf weeds and grasses. Do not use on soils with less than 1% organic matter."
+      },
+      {
+        "name": "Sinbar",
+        "rate": "0.91-1.8",
+        "unit": "kg",
+        "phi": "—",
+        "pcp": "30082",
+        "stage": "pre-emergent banded (established orchards, trees 3+ years)",
+        "description": "Controls annual broadleaf weeds and grasses. Soil applied residual. Do not use on soils with less than 1% organic matter."
+      },
+      {
+        "name": "Basagran",
+        "rate": "1.0",
+        "unit": "L",
+        "phi": "—",
+        "pcp": "12221",
+        "stage": "post-emergent (non-bearing trees)",
+        "description": "Controls young annual broadleaf weeds. Direct spray away from crop foliage. Apply using high water volume."
+      },
+      {
+        "name": "Casoron",
+        "rate": "44.5-71",
+        "unit": "kg",
+        "phi": "—",
+        "pcp": "12533",
+        "stage": "pre-emergent fall / post-harvest",
+        "description": "Controls annual broadleaf weeds and field horsetail. Granules sprinkled on soil. Do not apply within 3 months before or after planting new grafts."
+      },
+      {
+        "name": "Venture",
+        "rate": "0.81",
+        "unit": "L",
+        "phi": "—",
+        "pcp": "21209",
+        "stage": "2-5 leaf stage (non-bearing and established trees)",
+        "description": "Controls annual grasses. Apply at full 2-5 leaf stage."
+      },
+      {
+        "name": "Chateau EZ",
+        "rate": "121-181",
+        "unit": "ml",
+        "phi": "60 days",
+        "pcp": "34036",
+        "stage": "pre-emergent residual",
+        "description": "Controls annual broadleaf weeds and grasses. Requires moisture for activation. Avoid application within 100m of pears."
+      },
+      {
+        "name": "Dual II Magnum",
+        "rate": "0.5-0.71",
+        "unit": "L",
+        "phi": "—",
+        "pcp": "25729",
+        "stage": "pre-emergent",
+        "description": "Controls grasses and limited broadleaf weeds. Requires water to activate. Do not use on sandy soils with less than 2% organic matter."
+      },
+      {
+        "name": "Prism SG",
+        "rate": "25",
+        "unit": "g",
+        "phi": "14 days",
+        "pcp": "30057",
+        "stage": "early post-emergent",
+        "description": "Controls annual and perennial broadleaf weeds and grasses. Single directed application to actively growing weeds, once per season."
+      },
+      {
+        "name": "Alion",
+        "rate": "152",
+        "unit": "ml",
+        "phi": "14 days",
+        "pcp": "30451",
+        "stage": "pre-emergent bare ground (trees established 3+ years)",
+        "description": "Controls annual broadleaf weeds. Requires soil water to activate."
+      },
+      {
+        "name": "Beloukha",
+        "rate": "4.9-8.1",
+        "unit": "L",
+        "phi": "—",
+        "pcp": "33686",
+        "stage": "post-emergent, post-harvest",
+        "description": "Controls annual broadleaf weeds and grasses. Use shielded or directed spray. Apply on woody trees established 2+ years."
+      },
+      {
+        "name": "BioLink Herbicide EC",
+        "rate": "6-9",
+        "unit": "% solution",
+        "phi": "0 days",
+        "pcp": "33590",
+        "stage": "post-emergent, post-harvest",
+        "description": "Controls annual broadleaf weeds and grasses. Best on newly emerged weeds under 15 cm. Repeat every 14-21 days as needed."
+      },
+      {
+        "name": "Ignite 15 SN",
+        "rate": "1.1-2.0",
+        "unit": "L",
+        "phi": "14-40 days",
+        "pcp": "23180",
+        "stage": "post-emergent, post-harvest",
+        "description": "Non-residual, non-selective. Controls annual broadleaf weeds and grasses. Rate varies with weed species."
+      },
+      {
+        "name": "Serene",
+        "rate": "35-45",
+        "unit": "% solution",
+        "phi": "—",
+        "pcp": "30248",
         "stage": "post-emergent",
-        "description": "Apply as a directed spray to avoid contact with foliage, green bark, or fruit. Do not spray during windy conditions."
+        "description": "Controls annual broadleaf weeds. Apply on sunny days above 21°C. Do not apply after budbreak unless using hooded spray."
+      },
+      {
+        "name": "Aim EC",
+        "rate": "15-47",
+        "unit": "ml",
+        "phi": "3 days",
+        "pcp": "28573",
+        "stage": "pre-plant burndown",
+        "description": "Non-residual. Controls annual broadleaf weeds. Use adjuvant. Rate depends on weed size."
+      },
+      {
+        "name": "2,4-D Amine 600",
+        "rate": "0.675",
+        "unit": "L",
+        "phi": "80 days",
+        "pcp": "5931",
+        "stage": "early spring post-emergent",
+        "description": "Controls young annual broadleaf weeds. Risk of vapor drift — avoid spraying above 25°C."
+      },
+      {
+        "name": "Poast Ultra",
+        "rate": "0.45",
+        "unit": "L",
+        "phi": "30 days",
+        "pcp": "24835",
+        "stage": "post-emergent",
+        "description": "Controls annual and some perennial grasses. Use specified surfactant with Merge adjuvant at 1%."
+      },
+      {
+        "name": "Assure II",
+        "rate": "0.15-0.3",
+        "unit": "L",
+        "phi": "14 days",
+        "pcp": "25462",
+        "stage": "post-emergent",
+        "description": "Controls annual grasses. Use recommended surfactant at 0.5% v/v. Minimum 100L water per acre."
+      },
+      {
+        "name": "Roundup Transorb",
+        "rate": "0.61-3.24",
+        "unit": "L",
+        "phi": "30 days",
+        "pcp": "28198",
+        "stage": "year of establishment, post-emergent, post-harvest",
+        "description": "Non-selective, non-residual. Controls annual and perennial broadleaf weeds and grasses. Rates vary with weed size and species. Directed spray only — avoid contact with foliage, green bark, or fruit."
+      },
+      {
+        "name": "Roundup WeatherMAX",
+        "rate": "0.61-3.24",
+        "unit": "L",
+        "phi": "30 days",
+        "pcp": "27487",
+        "stage": "year of establishment, post-emergent, post-harvest",
+        "description": "Non-selective, non-residual. Controls annual and perennial broadleaf weeds and grasses. Rates vary with weed size and species. Directed spray only — avoid contact with foliage, green bark, or fruit."
+      },
+      {
+        "name": "R/T 540",
+        "rate": "0.61-3.24",
+        "unit": "L",
+        "phi": "30 days",
+        "pcp": "28487",
+        "stage": "year of establishment, post-emergent, post-harvest",
+        "description": "Non-selective, non-residual. Controls annual and perennial broadleaf weeds and grasses. Rates vary with weed size and species. Directed spray only — avoid contact with foliage, green bark, or fruit."
+      },
+      {
+        "name": "Credit Xtreme",
+        "rate": "0.61-3.24",
+        "unit": "L",
+        "phi": "30 days",
+        "pcp": "29888",
+        "stage": "year of establishment, post-emergent, post-harvest",
+        "description": "Non-selective, non-residual. Controls annual and perennial broadleaf weeds and grasses. Rates vary with weed size and species. Directed spray only — avoid contact with foliage, green bark, or fruit."
+      },
+      {
+        "name": "Weed-Master Glyphosate 540 Ultra",
+        "rate": "0.61-3.24",
+        "unit": "L",
+        "phi": "30 days",
+        "pcp": "34320",
+        "stage": "year of establishment, post-emergent, post-harvest",
+        "description": "Non-selective, non-residual. Controls annual and perennial broadleaf weeds and grasses. Rates vary with weed size and species. Directed spray only — avoid contact with foliage, green bark, or fruit."
+      },
+      {
+        "name": "Credit",
+        "rate": "0.91-4.86",
+        "unit": "L",
+        "phi": "30 days",
+        "pcp": "25866",
+        "stage": "year of establishment, post-emergent, post-harvest",
+        "description": "Non-selective, non-residual. Controls annual and perennial broadleaf weeds and grasses. Remove suckers before application."
       }
     ]
   }
