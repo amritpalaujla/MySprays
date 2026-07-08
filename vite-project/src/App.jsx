@@ -8,6 +8,8 @@ import Tracking from "./components/Tracking";
 import VerifyEmail from "./components/VerifyEmail";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
+import TermsOfService from "./components/TermsOfService";
+import PrivacyPolicy from "./components/PrivacyPolicy";
 import { RegionProvider } from "./context/RegionContext";
 import RegionSelector from "./components/RegionSelector";
 
@@ -174,6 +176,8 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
 
         <Route element={<MainLayout />}>
           <Route path="/" element={<LandingPage />} />
