@@ -194,13 +194,13 @@ function Register({ setNewAcc }) {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">
               By creating an account, you agree to our{" "}
-              <button className="text-green-600 hover:text-green-800 font-medium">
+              <Link to="/terms" className="text-green-600 hover:text-green-800 font-medium">
                 Terms of Service
-              </button>{" "}
+              </Link>{" "}
               and{" "}
-              <button className="text-green-600 hover:text-green-800 font-medium">
+              <Link to="/privacy" className="text-green-600 hover:text-green-800 font-medium">
                 Privacy Policy
-              </button>
+              </Link>
             </p>
           </div>
 
