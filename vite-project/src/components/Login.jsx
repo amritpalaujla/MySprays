@@ -228,9 +228,6 @@ function Login({ setNewAcc, onLogin }) {
         </div>
 
         {/* Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>© 2024 Spray Management. All rights reserved.</p>
-        </div>
       </div>
     </div>
   );

@@ -218,9 +218,6 @@ function Register({ setNewAcc }) {
         </div>
 
         {/* Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>© 2025 MySprays. All rights reserved.</p>
-        </div>
       </div>
     </div>
   );
