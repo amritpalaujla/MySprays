@@ -46,6 +46,83 @@ function Settings({ user, onLogout }) {
     fetchProfile();
   }, []);
 
+  // Saved locations state
+  const [locations, setLocations] = useState([]);
+  const [newLocation, setNewLocation] = useState("");
+  const [editingLocation, setEditingLocation] = useState(null);
+  const [editLocationName, setEditLocationName] = useState("");
+  const [locationError, setLocationError] = useState("");
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/user/locations`,
+          { credentials: "include" }
+        );
+        if (res.ok) setLocations(await res.json());
+      } catch (err) {
+        console.error("Error fetching locations:", err);
+      }
+    };
+    fetchLocations();
+  }, []);
+
+  // Sends a change to /user/locations and updates the list from the response
+  const updateLocations = async (method, body) => {
+    setLocationError("");
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/locations`, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(body),
+      });
+      if (res.status === 401) {
+        window.dispatchEvent(new CustomEvent("authFailure"));
+        return false;
+      }
+      const data = await res.json();
+      if (!res.ok) {
+        setLocationError(data.error || "Failed to update locations.");
+        return false;
+      }
+      setLocations(data);
+      return true;
+    } catch (err) {
+      console.error("Error updating locations:", err);
+      setLocationError("Network error. Please try again.");
+      return false;
+    }
+  };
+
+  const handleAddLocation = async (e) => {
+    e.preventDefault();
+    if (!newLocation.trim()) return;
+    if (await updateLocations("POST", { name: newLocation })) {
+      setNewLocation("");
+    }
+  };
+
+  const handleRenameLocation = async (oldName) => {
+    if (!editLocationName.trim()) return;
+    if (
+      await updateLocations("PUT", { oldName, newName: editLocationName })
+    ) {
+      setEditingLocation(null);
+    }
+  };
+
+  const handleDeleteLocation = async (name) => {
+    if (
+      window.confirm(
+        `Remove "${name}" from your saved locations? Existing spray logs won't be changed.`
+      )
+    ) {
+      await updateLocations("DELETE", { name });
+    }
+  };
+
   const handleProfileChange = (e) => {
     setProfileData({ ...profileData, [e.target.name]: e.target.value });
   };
@@ -495,6 +572,127 @@ function Settings({ user, onLogout }) {
                 </span>
               )}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Saved Locations Section */}
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+        <div className="flex items-start space-x-4">
+          <div className="flex-shrink-0">
+            <svg
+              className="w-10 h-10 text-green-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              My Locations
+            </h3>
+            <p className="text-gray-600 text-sm mb-4">
+              Blocks and varieties you can pick from when logging a spray. New
+              locations are saved automatically when you log a spray.
+            </p>
+
+            {locations.length === 0 ? (
+              <p className="text-sm text-gray-500 italic mb-4">
+                No saved locations yet.
+              </p>
+            ) : (
+              <ul className="divide-y divide-gray-100 border border-gray-200 rounded-lg mb-4">
+                {locations.map((loc) => (
+                  <li key={loc} className="flex items-center gap-2 p-2">
+                    {editingLocation === loc ? (
+                      <>
+                        <input
+                          value={editLocationName}
+                          onChange={(e) => setEditLocationName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleRenameLocation(loc);
+                            if (e.key === "Escape") setEditingLocation(null);
+                          }}
+                          autoFocus
+                          className="flex-1 min-w-0 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                        />
+                        <button
+                          onClick={() => handleRenameLocation(loc)}
+                          className="text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg px-3 py-1.5"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingLocation(null)}
+                          className="text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg px-3 py-1.5"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="flex-1 min-w-0 truncate text-sm text-gray-800">
+                          {loc}
+                        </span>
+                        <button
+                          onClick={() => {
+                            setEditingLocation(loc);
+                            setEditLocationName(loc);
+                            setLocationError("");
+                          }}
+                          className="text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg px-3 py-1.5"
+                        >
+                          Rename
+                        </button>
+                        <button
+                          onClick={() => handleDeleteLocation(loc)}
+                          className="text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg px-3 py-1.5"
+                        >
+                          Remove
+                        </button>
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <form
+              onSubmit={handleAddLocation}
+              className="flex flex-col sm:flex-row gap-2"
+            >
+              <input
+                value={newLocation}
+                onChange={(e) => setNewLocation(e.target.value)}
+                placeholder="e.g. Block A - Lapins"
+                className="flex-1 min-w-0 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+              />
+              <button
+                type="submit"
+                disabled={!newLocation.trim()}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                Add Location
+              </button>
+            </form>
+            {locationError && (
+              <p className="mt-2 text-sm font-medium text-red-600">
+                {locationError}
+              </p>
+            )}
           </div>
         </div>
       </div>

@@ -6,20 +6,17 @@ const User = require("./models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Sprays = require("./models/Sprays");
+const Crop = require("./models/Crop");
+const Issue = require("./models/Issue");
+const Spray = require("./models/Spray");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
 const { sendVerificationEmail } = require("./services/emailService");
 const { sendPasswordResetEmail } = require("./services/emailService");
 const rateLimit = require("express-rate-limit");
+const { upload } = require("./services/cloudinaryUpload");
 
 const mongoose = require("mongoose");
-
-// variables test to see if loading
-
-console.log("=== Environment Variables Check ===");
-console.log("EMAIL_USER:", process.env.EMAIL_USER);
-console.log("EMAIL_PASSWORD:", process.env.EMAIL_PASSWORD ? "SET" : "NOT SET");
-console.log("===================================");
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -38,7 +35,7 @@ app.use(
     ],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-  })
+  }),
 ); // cors lets us choose where loading resources are allowed to come from
 app.use(express.json()); // parses incoming json to a object in req body
 app.use(cookieParser());
@@ -87,7 +84,7 @@ function generateRefreshToken(user) {
   return jwt.sign(
     { id: user._id, email: user.email },
     process.env.JWT_REFRESH_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: "7d" },
   );
 }
 
@@ -103,6 +100,30 @@ function verifyToken(req, res, next) {
     }
     req.user = decodedUser;
     next();
+  });
+}
+
+async function verifyAdmin(req, res, next) {
+  const token = req.cookies.accessToken;
+
+  if (!token) {
+    return res.status(401).json({ error: "No valid token provided" });
+  }
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decodedUser) => {
+    if (err) {
+      return res.status(401).json({ error: "Invalid or expired token" });
+    }
+    try {
+      const user = await User.findById(decodedUser.id);
+      if (!user || !user.isAdmin) {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+      req.user = decodedUser;
+      next();
+    } catch (error) {
+      console.error("Admin verification error:", error);
+      res.status(500).json({ error: "Server error" });
+    }
   });
 }
 
@@ -139,13 +160,13 @@ app.post("/refresh-token", async (req, res) => {
           res.cookie(
             "accessToken",
             newAccessToken,
-            getCookieOptions(15 * 60 * 1000)
+            getCookieOptions(15 * 60 * 1000),
           );
 
           res.cookie(
             "refreshToken",
             newRefreshToken,
-            getCookieOptions(7 * 24 * 60 * 60 * 1000)
+            getCookieOptions(7 * 24 * 60 * 60 * 1000),
           );
 
           res.json({
@@ -154,15 +175,14 @@ app.post("/refresh-token", async (req, res) => {
               id: user._id,
               email: user.email,
               region: user.region || "CA",
+              isAdmin: user.isAdmin || false,
             },
           });
-
-          // REMOVED THE PROBLEMATIC CONSOLE.LOGS HERE
         } catch (error) {
           console.error("Error refreshing token: ", error);
           res.status(500).json({ error: "Internal server error" });
         }
-      }
+      },
     );
   } catch (error) {
     console.error("Refresh token route error:", error);
@@ -170,12 +190,56 @@ app.post("/refresh-token", async (req, res) => {
   }
 });
 
+// ===== Saved Locations =====
+const normalizeLocation = (name) =>
+  String(name || "")
+    .trim()
+    .replace(/\s+/g, " ");
+const sameLocation = (a, b) => a.toLowerCase() === b.toLowerCase();
+const sortLocations = (list) =>
+  [...list].sort((a, b) =>
+    a.localeCompare(b, undefined, { sensitivity: "base", numeric: true }),
+  );
+
+// Returns the user's saved locations (null if no user). The first time, it
+// copies over locations from their existing spray logs.
+async function getUserLocations(userId) {
+  const user = await User.findById(userId).select(
+    "locations locationsMigrated",
+  );
+  if (!user) return null;
+  if (user.locationsMigrated) return user.locations;
+
+  const locations = [...user.locations];
+  for (const loc of await Sprays.distinct("location", { userId })) {
+    const name = normalizeLocation(loc);
+    if (name && !locations.some((l) => sameLocation(l, name))) {
+      locations.push(name);
+    }
+  }
+  await User.updateOne(
+    { _id: userId },
+    { $set: { locations, locationsMigrated: true } },
+  );
+  return locations;
+}
+
+// Saves a location to the user's list if it isn't there already
+async function addUserLocation(userId, location) {
+  const name = normalizeLocation(location);
+  if (!name) return;
+  const locations = await getUserLocations(userId);
+  if (locations && !locations.some((l) => sameLocation(l, name))) {
+    await User.updateOne({ _id: userId }, { $push: { locations: name } });
+  }
+}
+
 // Clear all sprays for a user
 app.delete("/sprays/clear-all", verifyToken, async (req, res) => {
   try {
     const result = await Sprays.deleteMany({ userId: req.user.id });
     console.log(
-      `✅ Deleted ${result.deletedCount} spray logs for user ${req.user.id}`
+      `✅ Deleted ${result.deletedCount} spray logs for user ${req.user.id}`,
     );
     res.json({
       message: `Successfully deleted ${result.deletedCount} spray log(s)`,
@@ -270,6 +334,12 @@ app.post("/sprays", verifyToken, async (req, res) => {
     });
 
     const savedSpray = await newSpray.save();
+
+    try {
+      await addUserLocation(req.user.id, location);
+    } catch (locationErr) {
+      console.error("Failed to save location:", locationErr);
+    }
 
     // Update user defaults for next time
     try {
@@ -384,7 +454,7 @@ app.post("/login", async (req, res) => {
     res.cookie(
       "refreshToken",
       refreshToken,
-      getCookieOptions(7 * 24 * 60 * 60 * 1000)
+      getCookieOptions(7 * 24 * 60 * 60 * 1000),
     );
 
     res.json({
@@ -397,6 +467,7 @@ app.post("/login", async (req, res) => {
         defaultApplicationMethod: user.defaultApplicationMethod || "",
         defaultTankSize: user.defaultTankSize || "",
         defaultApplicatorInitials: user.defaultApplicatorInitials || "",
+        isAdmin: user.isAdmin || false,
       },
     });
   } catch (err) {
@@ -409,47 +480,39 @@ app.post("/login", async (req, res) => {
 app.get("/verify-email", async (req, res) => {
   const { token } = req.query;
 
-  console.log("=== Verification Request ===");
-  console.log("Token received:", token);
-
   if (!token) {
     return res.status(400).json({ message: "Verification token is required" });
   }
 
   try {
-    // First, try to find user with this token
-    let user = await User.findOne({
-      verificationToken: token,
-      verificationTokenExpires: { $gt: Date.now() },
-    });
+    const user = await User.findOne({ verificationToken: token });
 
-    // If not found with valid token, check if already verified
     if (!user) {
-      // Check if this token was used (user exists but token is cleared)
-      user = await User.findOne({
-        verificationToken: undefined,
-        isVerified: true,
-      });
-
-      // If we find a verified user, they might have already verified
-      if (user) {
-        console.log("⚠️ User already verified");
-        return res.json({
-          message: "Email already verified! You can log in.",
-          success: true,
-          alreadyVerified: true,
-        });
-      }
-
-      console.log("❌ Invalid or expired token");
       return res.status(400).json({
         message: "Invalid or expired verification token",
       });
     }
 
-    // User found with valid token - verify them
+    // Link already used (e.g. clicked twice) - the token is kept after
+    // verification so it still maps to this user
+    if (user.isVerified) {
+      return res.json({
+        message: "Email already verified! You can log in.",
+        success: true,
+        alreadyVerified: true,
+      });
+    }
+
+    if (
+      !user.verificationTokenExpires ||
+      user.verificationTokenExpires < Date.now()
+    ) {
+      return res.status(400).json({
+        message: "Invalid or expired verification token",
+      });
+    }
+
     user.isVerified = true;
-    user.verificationToken = undefined;
     user.verificationTokenExpires = undefined;
     await user.save();
 
@@ -509,9 +572,6 @@ app.post("/resend-verification", async (req, res) => {
 app.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
 
-  console.log("=== Forgot Password Request ===");
-  console.log("Email:", email);
-
   if (!email) {
     return res.status(400).json({ message: "Email is required" });
   }
@@ -520,7 +580,6 @@ app.post("/forgot-password", async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      console.log("❌ User not found");
       return res.json({
         message:
           "If an account exists with this email, a password reset link has been sent.",
@@ -528,35 +587,15 @@ app.post("/forgot-password", async (req, res) => {
       });
     }
 
-    console.log("✅ User found:", user.email);
-
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
     const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
-    console.log("Generated reset token:", resetToken);
-    console.log("Token expires:", resetTokenExpires);
-
-    // Save to user object
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpires = resetTokenExpires;
+    await user.save();
 
-    // Save to database
-    const savedUser = await user.save();
-
-    console.log("✅ Token saved to database");
-    console.log("Saved token:", savedUser.resetPasswordToken);
-    console.log("Saved expiry:", savedUser.resetPasswordExpires);
-
-    // Verify it was actually saved by querying again
-    const verifyUser = await User.findOne({ email });
-    console.log("Verification - Token in DB:", verifyUser.resetPasswordToken);
-
-    // Send email
-    const { sendPasswordResetEmail } = require("./services/emailService");
     await sendPasswordResetEmail(email, resetToken);
-
-    console.log("✅ Password reset email sent");
 
     res.json({
       message:
@@ -573,20 +612,13 @@ app.post("/forgot-password", async (req, res) => {
 app.post("/reset-password", async (req, res) => {
   const { token, newPassword } = req.body;
 
-  console.log("=== Reset Password Request ===");
-  console.log("Token received:", token);
-  console.log("New password received:", newPassword ? "YES" : "NO");
-  console.log("Password length:", newPassword?.length);
-
   if (!token || !newPassword) {
-    console.log("❌ Missing token or password");
     return res
       .status(400)
       .json({ message: "Token and new password are required" });
   }
 
   if (newPassword.length < 6) {
-    console.log("❌ Password too short");
     return res
       .status(400)
       .json({ message: "Password must be at least 6 characters long" });
@@ -598,23 +630,18 @@ app.post("/reset-password", async (req, res) => {
       resetPasswordExpires: { $gt: Date.now() },
     });
 
-    console.log("User found with token:", user ? "YES" : "NO");
 
     if (!user) {
       // Check if token exists but is expired
       const expiredUser = await User.findOne({ resetPasswordToken: token });
 
       if (expiredUser) {
-        console.log("❌ Token exists but is EXPIRED");
-        console.log("Token expired at:", expiredUser.resetPasswordExpires);
-        console.log("Current time:", new Date());
         return res.status(400).json({
           message:
             "Reset token has expired. Please request a new password reset.",
         });
       }
 
-      console.log("❌ Token not found in database at all");
       return res.status(400).json({
         message: "Invalid or expired reset token",
       });
@@ -649,14 +676,21 @@ app.post("/logout", (req, res) => {
 });
 
 // here we check if token is still valid and not expired
-app.get("/verify-token", verifyToken, (req, res) => {
-  res.json({
-    valid: true,
-    user: {
-      id: req.user.id,
-      email: req.user.email,
-    },
-  });
+app.get("/verify-token", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    res.json({
+      valid: true,
+      user: {
+        id: req.user.id,
+        email: req.user.email,
+        region: user?.region || "CA",
+        isAdmin: user?.isAdmin || false,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 //temporary for debugging
@@ -801,13 +835,20 @@ app.put("/sprays/:id", verifyToken, async (req, res) => {
         applicatorInitials,
         notes,
       },
-      { new: true }
+      { new: true },
     );
     if (!updatedSpray) {
       return res
         .status(404)
         .json({ error: "Spray not found or user not authorized" });
     }
+
+    try {
+      await addUserLocation(req.user.id, location);
+    } catch (locationErr) {
+      console.error("Failed to save location:", locationErr);
+    }
+
     res.json(updatedSpray);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -821,44 +862,6 @@ app.get("/dashboard", verifyToken, (req, res) => {
   });
 });
 
-app.get("/test-email-direct", async (req, res) => {
-  const nodemailer = require("nodemailer");
-
-  console.log("Creating transporter with:");
-  console.log("User:", process.env.EMAIL_USER);
-  console.log("Pass length:", process.env.EMAIL_PASSWORD?.length);
-
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
-
-  try {
-    // Test connection
-    await transporter.verify();
-    console.log("✅ SMTP connection successful!");
-
-    // Try sending
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER, // Send to yourself
-      subject: "Test Email",
-      text: "If you see this, email is working!",
-    });
-
-    res.json({ success: true, message: "Email sent successfully!" });
-  } catch (error) {
-    console.error("❌ Email test failed:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-      code: error.code,
-    });
-  }
-});
 // Get user profile (grower info + defaults)
 app.get("/user/profile", verifyToken, async (req, res) => {
   try {
@@ -924,15 +927,94 @@ app.put("/user/profile", verifyToken, async (req, res) => {
   }
 });
 
-// Get user's previously used locations (for dropdown)
+// Get user's saved locations (for the spray log dropdown)
 app.get("/user/locations", verifyToken, async (req, res) => {
   try {
-    const locations = await Sprays.distinct("location", {
-      userId: req.user.id,
-    });
-    res.json(locations.filter(Boolean).sort());
+    const locations = await getUserLocations(req.user.id);
+    if (!locations) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(sortLocations(locations));
   } catch (error) {
     console.error("Error fetching user locations:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Add a saved location
+app.post("/user/locations", verifyToken, async (req, res) => {
+  try {
+    const name = normalizeLocation(req.body.name);
+    if (!name) {
+      return res.status(400).json({ error: "Location name is required" });
+    }
+
+    const locations = await getUserLocations(req.user.id);
+    if (!locations) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    if (locations.some((l) => sameLocation(l, name))) {
+      return res.status(409).json({ error: "That location is already saved" });
+    }
+
+    locations.push(name);
+    await User.updateOne({ _id: req.user.id }, { $set: { locations } });
+    res.json(sortLocations(locations));
+  } catch (error) {
+    console.error("Error adding location:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Rename a saved location (existing spray logs keep their original name)
+app.put("/user/locations", verifyToken, async (req, res) => {
+  try {
+    const oldName = normalizeLocation(req.body.oldName);
+    const newName = normalizeLocation(req.body.newName);
+    if (!oldName || !newName) {
+      return res
+        .status(400)
+        .json({ error: "Current and new location names are required" });
+    }
+
+    const locations = await getUserLocations(req.user.id);
+    if (!locations) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const index = locations.findIndex((l) => sameLocation(l, oldName));
+    if (index === -1) {
+      return res.status(404).json({ error: "Location not found" });
+    }
+    if (locations.some((l, i) => i !== index && sameLocation(l, newName))) {
+      return res.status(409).json({ error: "That location is already saved" });
+    }
+
+    locations[index] = newName;
+    await User.updateOne({ _id: req.user.id }, { $set: { locations } });
+    res.json(sortLocations(locations));
+  } catch (error) {
+    console.error("Error renaming location:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Remove a saved location (existing spray logs are not changed)
+app.delete("/user/locations", verifyToken, async (req, res) => {
+  try {
+    const name = normalizeLocation(req.body.name);
+    const locations = await getUserLocations(req.user.id);
+    if (!locations) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const remaining = locations.filter((l) => !sameLocation(l, name));
+    await User.updateOne(
+      { _id: req.user.id },
+      { $set: { locations: remaining } },
+    );
+    res.json(sortLocations(remaining));
+  } catch (error) {
+    console.error("Error deleting location:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -965,7 +1047,7 @@ app.put("/user/region", verifyToken, async (req, res) => {
     const user = await User.findByIdAndUpdate(
       req.user.id,
       { region },
-      { new: true }
+      { new: true },
     );
 
     if (!user) {
@@ -983,8 +1065,221 @@ app.put("/user/region", verifyToken, async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  //this path will send a plain message back once visited
   res.send("Hello from the backend!");
+});
+
+// ===== Spray Catalog Routes =====
+app.get("/crops", async (req, res) => {
+  try {
+    const crops = await Crop.find({ active: true });
+    res.json(crops);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Full active catalog in one request: crops -> issues -> sprays
+app.get("/catalog", async (req, res) => {
+  try {
+    const crops = await Crop.find({ active: true }).sort({ _id: 1 }).lean();
+    const issues = await Issue.find({
+      cropId: { $in: crops.map((c) => c._id) },
+      active: true,
+    })
+      .sort({ _id: 1 })
+      .lean();
+    const sprays = await Spray.find({
+      issueId: { $in: issues.map((i) => i._id) },
+    })
+      .sort({ _id: 1 })
+      .lean();
+
+    const catalog = crops.map((crop) => ({
+      ...crop,
+      issues: issues
+        .filter((issue) => issue.cropId.equals(crop._id))
+        .map((issue) => ({
+          ...issue,
+          sprays: sprays.filter((spray) => spray.issueId.equals(issue._id)),
+        })),
+    }));
+
+    res.json(catalog);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/crops/:id/issues", async (req, res) => {
+  try {
+    const issues = await Issue.find({ cropId: req.params.id, active: true });
+    res.json(issues);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/issues/:id/sprays", async (req, res) => {
+  try {
+    const sprays = await Spray.find({ issueId: req.params.id });
+    res.json(sprays);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========Admin routes==========
+// For crops — single image
+app.post(
+  "/admin/upload/crop",
+  verifyAdmin,
+  upload.single("image"),
+  (req, res) => {
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    res.json({ url: req.file.path });
+  },
+);
+
+// For issues — multiple images
+app.post(
+  "/admin/upload/issue",
+  verifyAdmin,
+  upload.array("images", 5),
+  (req, res) => {
+    if (!req.files || req.files.length === 0)
+      return res.status(400).json({ error: "No files uploaded" });
+    res.json({ urls: req.files.map((f) => f.path) });
+  },
+);
+
+app.get("/admin/crops", verifyAdmin, async (req, res) => {
+  try {
+    const crops = await Crop.find();
+    res.json(crops);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/admin/crops/:id/issues", verifyAdmin, async (req, res) => {
+  try {
+    const issues = await Issue.find({ cropId: req.params.id });
+    res.json(issues);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/admin/issues/:id/sprays", verifyAdmin, async (req, res) => {
+  try {
+    const sprays = await Spray.find({ issueId: req.params.id });
+    res.json(sprays);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/admin/crops", verifyAdmin, async (req, res) => {
+  try {
+    const { name } = req.body;
+    const crop = await Crop.create({ name });
+    res.json(crop);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put("/admin/crops/:id", verifyAdmin, async (req, res) => {
+  try {
+    const updates = {};
+    if (req.body.name !== undefined) updates.name = req.body.name;
+    if (req.body.active !== undefined) updates.active = req.body.active;
+    if (req.body.image !== undefined) updates.image = req.body.image;
+
+    const crop = await Crop.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+    });
+    res.json(crop);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/admin/issues", verifyAdmin, async (req, res) => {
+  try {
+    const { name, cropId } = req.body;
+    const issue = await Issue.create({ name, cropId });
+    res.json(issue);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put("/admin/issues/:id", verifyAdmin, async (req, res) => {
+  try {
+    const updates = {};
+    if (req.body.name !== undefined) updates.name = req.body.name;
+    if (req.body.cropId !== undefined) updates.cropId = req.body.cropId;
+    if (req.body.active !== undefined) updates.active = req.body.active;
+    if (req.body.images !== undefined) updates.images = req.body.images;
+
+    const issue = await Issue.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+    });
+    res.json(issue);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/admin/sprays", verifyAdmin, async (req, res) => {
+  try {
+    const { name, issueId, phi, pcp, stage, description, ca, us } = req.body;
+    const spray = await Spray.create({
+      name,
+      issueId,
+      phi,
+      pcp,
+      stage,
+      description,
+      ca,
+      us,
+    });
+    res.json(spray);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put("/admin/sprays/:id", verifyAdmin, async (req, res) => {
+  try {
+    const updates = {};
+    if (req.body.name !== undefined) updates.name = req.body.name;
+    if (req.body.issueId !== undefined) updates.issueId = req.body.issueId;
+    if (req.body.phi !== undefined) updates.phi = req.body.phi;
+    if (req.body.pcp !== undefined) updates.pcp = req.body.pcp;
+    if (req.body.stage !== undefined) updates.stage = req.body.stage;
+    if (req.body.description !== undefined)
+      updates.description = req.body.description;
+    if (req.body.ca !== undefined) updates.ca = req.body.ca;
+    if (req.body.us !== undefined) updates.us = req.body.us;
+
+    const spray = await Spray.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+    });
+    res.json(spray);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete("/admin/sprays/:id", verifyAdmin, async (req, res) => {
+  try {
+    await Spray.findByIdAndDelete(req.params.id);
+    res.json({ message: "Spray deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 //error handling

@@ -24,6 +24,11 @@ const userSchema = new mongoose.Schema({
   defaultTankSize: { type: String, default: "" },
   defaultApplicatorInitials: { type: String, default: "" },
 
+  // === SAVED LOCATIONS (blocks/varieties for the spray log dropdown) ===
+  locations: { type: [String], default: [] },
+  // Set once locations from older spray logs have been copied over
+  locationsMigrated: { type: Boolean, default: false },
+
   // Email verification fields
   isVerified: {
     type: Boolean,
@@ -41,6 +46,10 @@ const userSchema = new mongoose.Schema({
   },
   resetPasswordExpires: {
     type: Date,
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false,
   },
   createdAt: {
     type: Date,

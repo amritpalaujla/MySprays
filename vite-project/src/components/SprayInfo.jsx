@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import Toast from "./Toast";
+import LocationPicker from "./LocationPicker";
 
 // Empty form template matching H1 fields
 const emptyForm = {
@@ -47,6 +49,7 @@ function SprayInfo({ user }) {
   const [formData, setFormData] = useState({ ...emptyForm });
   const [sprays, setSprays] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [toast, setToast] = useState(null);
   const [filterLocation, setFilterLocation] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -194,6 +197,12 @@ function SprayInfo({ user }) {
         setFormData({ ...emptyForm });
         setIsModalOpen(false);
         setEditingSprayId(null);
+        setToast({
+          id: Date.now(),
+          message: isEditing
+            ? "Spray log successfully updated"
+            : "Spray successfully logged",
+        });
         fetchSprays();
         // Refresh locations in case a new one was added
         try {
@@ -205,9 +214,20 @@ function SprayInfo({ user }) {
           );
           if (locRes.ok) setUserLocations(await locRes.json());
         } catch (_) {}
+      } else {
+        setToast({
+          id: Date.now(),
+          type: "error",
+          message: "Failed to save spray log. Please try again.",
+        });
       }
     } catch (err) {
       console.error("Error saving spray:", err);
+      setToast({
+        id: Date.now(),
+        type: "error",
+        message: "Network error. Spray log was not saved.",
+      });
     }
   };
 
@@ -264,6 +284,14 @@ function SprayInfo({ user }) {
 
   return (
     <div className="relative w-full h-full">
+      {toast && (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       {/* Top-right button */}
       <div className="flex justify-end mb-4">
         <button
@@ -606,20 +634,11 @@ function SprayInfo({ user }) {
                       <label className="form-label">
                         Location (Block/Variety) *
                       </label>
-                      <input
-                        name="location"
+                      <LocationPicker
                         value={formData.location}
                         onChange={handleChange}
-                        placeholder="e.g. Block A - Lapins"
-                        className="form-input"
-                        list="location-list"
-                        required
+                        locations={userLocations}
                       />
-                      <datalist id="location-list">
-                        {userLocations.map((loc) => (
-                          <option key={loc} value={loc} />
-                        ))}
-                      </datalist>
                     </div>
                     <div>
                       <label className="form-label">Growth Stage</label>

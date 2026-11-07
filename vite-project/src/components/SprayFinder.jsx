@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { cropList } from "../assets/cropList";
+import { useCatalog } from "../context/CatalogContext";
 import "./SprayFinder.css";
 import IssueDropDown from "./IssueDropDown";
 
 function SprayFinder({ selectedCrop, setSelectedCrop, selectedIssue, setSelectedIssue }) {
   const [isSpinning, setIsSpinning] = useState(false);
+  const { crops, loading } = useCatalog();
 
   const handleBackToCrops = () => {
     setSelectedCrop(null);
@@ -12,10 +13,14 @@ function SprayFinder({ selectedCrop, setSelectedCrop, selectedIssue, setSelected
     setIsSpinning(false);
   };
 
+  if (loading) {
+    return <p className="text-center text-gray-600 mt-8">Loading crops...</p>;
+  }
+
   if (!selectedCrop || isSpinning) {
     return (
       <div className="crop-grid">
-        {cropList.map((crop) => {
+        {crops.map((crop) => {
           return (
             <div
               key={crop.name}
