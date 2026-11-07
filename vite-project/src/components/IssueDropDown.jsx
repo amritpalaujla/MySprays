@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getSprayData } from "../assets/sprayData";
 import { useRegion } from "../context/RegionContext";
-import { getIssueImage } from "../assets/issuesList";
+import { useCatalog } from "../context/CatalogContext";
 
 // Image Carousel Component
 function ImageCarousel({ images, alt }) {
@@ -93,12 +92,21 @@ function ImageCarousel({ images, alt }) {
 function IssueDropDown({ crop, onBackToCrops, selectedIssue, setSelectedIssue }) {
   const navigate = useNavigate();
   const { region } = useRegion();
+  const { getSprayData, getIssueImages } = useCatalog();
   const sprayData = getSprayData(region);
+  const cropData = sprayData[crop] || {};
 
-  const issues = Object.keys(sprayData[crop]);
+  const issues = Object.keys(cropData);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const sprays = selectedIssue ? sprayData[crop][selectedIssue] : [];
+  const sprays = selectedIssue ? cropData[selectedIssue] || [] : [];
+
+  // The issue grid and spray list share one page, so jump back to the top
+  // whenever the view switches (otherwise mobile keeps the old scroll spot)
+  const showingSprays = !!selectedIssue && !isTransitioning;
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [showingSprays]);
 
   const handleIssueClick = (issue) => {
     setSelectedIssue(issue);
@@ -164,7 +172,7 @@ function IssueDropDown({ crop, onBackToCrops, selectedIssue, setSelectedIssue })
 
         <div className="crop-grid">
           {issues.map((issue) => {
-            const issueImages = getIssueImage(crop, issue);
+            const issueImages = getIssueImages(crop, issue);
             return (
               <div
                 key={issue}
@@ -186,8 +194,8 @@ function IssueDropDown({ crop, onBackToCrops, selectedIssue, setSelectedIssue })
 
   // Build a lookup: sprayName -> list of other issues it appears in for this crop
   const alsoUsedFor = {};
-  for (const issue of Object.keys(sprayData[crop])) {
-    for (const s of sprayData[crop][issue]) {
+  for (const issue of Object.keys(cropData)) {
+    for (const s of cropData[issue]) {
       if (!alsoUsedFor[s.name]) alsoUsedFor[s.name] = [];
       if (issue !== selectedIssue) alsoUsedFor[s.name].push(issue);
     }

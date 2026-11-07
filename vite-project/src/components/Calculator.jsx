@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { createPortal } from "react-dom";
-import { getSprayData } from "../assets/sprayData";
+import { useCatalog } from "../context/CatalogContext";
+import Toast from "./Toast";
+import LocationPicker from "./LocationPicker";
 import { useRegion } from "../context/RegionContext";
 import sprayTank from "../assets/tanker.png";
 import partialSprayTank from "../assets/partialTanker.png";
@@ -50,6 +52,7 @@ function Calculator({ user }) {
   const chosenSpray = location.state?.chosenSpray ?? null;
   const { region, getUnitLabels } = useRegion();
   const units = getUnitLabels();
+  const { getSprayData } = useCatalog();
   const sprayData = getSprayData(region);
 
   const [allSprays, setAllSprays] = useState([]);
@@ -62,6 +65,7 @@ function Calculator({ user }) {
   const [formData, setFormData] = useState({ ...emptyForm });
   const [userDefaults, setUserDefaults] = useState({});
   const [userLocations, setUserLocations] = useState([]);
+  const [toast, setToast] = useState(null);
 
   const selectedSpray = allSprays.find(
     (spray) => `${spray.crop}-${spray.issue}-${spray.name}` === selectedSprayKey
@@ -124,6 +128,14 @@ function Calculator({ user }) {
       if (res.ok) {
         setFormData({ ...emptyForm });
         setIsModalOpen(false);
+        setToast({ id: Date.now(), message: "Spray successfully logged" });
+        // Refresh saved locations in case a new one was added
+        fetch(`${import.meta.env.VITE_API_URL}/user/locations`, {
+          credentials: "include",
+        })
+          .then((locRes) => (locRes.ok ? locRes.json() : null))
+          .then((data) => data && setUserLocations(data))
+          .catch((locErr) => console.error("Error fetching locations:", locErr));
       } else {
         const data = await res.json();
         alert(`Failed to save spray: ${data.error || "Unknown error"}`);
@@ -194,6 +206,14 @@ function Calculator({ user }) {
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
+      {toast && (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
           Spray Calculator
@@ -329,20 +349,11 @@ function Calculator({ user }) {
                       <label className="form-label">
                         Location (Block/Variety) *
                       </label>
-                      <input
-                        name="location"
+                      <LocationPicker
                         value={formData.location}
                         onChange={handleChange}
-                        placeholder="e.g. Block A - Lapins"
-                        className="form-input"
-                        list="calc-location-list"
-                        required
+                        locations={userLocations}
                       />
-                      <datalist id="calc-location-list">
-                        {userLocations.map((loc) => (
-                          <option key={loc} value={loc} />
-                        ))}
-                      </datalist>
                     </div>
                     <div>
                       <label className="form-label">Growth Stage</label>
@@ -689,11 +700,16 @@ function Calculator({ user }) {
           const waterVolumeNum = parseFloat(waterVolume);
           const tankSizeNum = parseFloat(tankSize);
           const sprayRateNum = parseFloat(sprayRate);
-          const totalWater = waterVolumeNum * areaNum;
+          // Round away floating-point noise (e.g. 0.7 * 3 = 2.0999999999999996)
+          // so tank counts and the partial tank aren't thrown off
+          const round = (n) => Math.round(n * 10000) / 10000;
+          const totalWater = round(waterVolumeNum * areaNum);
           const totalProduct = sprayRateNum * areaNum;
           const productPerLitre = totalProduct / totalWater;
-          const fullTankCount = Math.floor(totalWater / tankSizeNum);
-          const remainingLitres = totalWater % tankSizeNum;
+          const fullTankCount = Math.floor(round(totalWater / tankSizeNum));
+          const remainingLitres = round(
+            totalWater - fullTankCount * tankSizeNum,
+          );
           const productPerFullTank = productPerLitre * tankSizeNum;
           const productForPartialTank = productPerLitre * remainingLitres;
 

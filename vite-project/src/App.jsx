@@ -11,7 +11,22 @@ import ResetPassword from "./components/ResetPassword";
 import TermsOfService from "./components/TermsOfService";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import { RegionProvider } from "./context/RegionContext";
+import { CatalogProvider } from "./context/CatalogContext";
 import RegionSelector from "./components/RegionSelector";
+import AdminPortal from "./components/AdminPortal";
+import BetaTermsGate from "./components/BetaTermsGate";
+
+// Bump the version if the beta agreement changes so everyone re-accepts it
+const BETA_TERMS_KEY = "betaTermsAccepted";
+const BETA_TERMS_VERSION = "2026-11-v2";
+
+const hasAcceptedBetaTerms = () => {
+  try {
+    return localStorage.getItem(BETA_TERMS_KEY) === BETA_TERMS_VERSION;
+  } catch {
+    return false;
+  }
+};
 
 function MainLayout() {
   return (
@@ -20,6 +35,23 @@ function MainLayout() {
         <NavLink to="/spray-finder">Spray Finder</NavLink>
         <NavLink to="/calculator">Spray Calculator</NavLink>
         <NavLink to="/tracking">Tracking</NavLink>
+        <NavLink to="/" end className="home-tab" aria-label="Home" title="Home">
+          <svg
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"
+            />
+          </svg>
+          <span className="home-tab-label">Home</span>
+        </NavLink>
         <RegionSelector />
       </div>
       <div className="content-container">
@@ -34,7 +66,19 @@ function App() {
   const [user, setUser] = useState(null);
   const [selectedCrop, setSelectedCrop] = useState(null);
   const [selectedIssue, setSelectedIssue] = useState("");
+  const [betaTermsAccepted, setBetaTermsAccepted] =
+    useState(hasAcceptedBetaTerms);
   const location = useLocation();
+
+  const handleAcceptBetaTerms = () => {
+    try {
+      localStorage.setItem(BETA_TERMS_KEY, BETA_TERMS_VERSION);
+    } catch {
+      // Storage blocked (e.g. private mode) - accepted for this visit only
+    }
+    setBetaTermsAccepted(true);
+    window.scrollTo(0, 0);
+  };
 
   const isAuthPage = [
     "/verify-email",
@@ -84,7 +128,7 @@ function App() {
         window.dispatchEvent(
           new CustomEvent("tokenRefreshed", {
             detail: { user: data.user },
-          })
+          }),
         );
         return true;
       } else {
@@ -109,7 +153,7 @@ function App() {
           `${import.meta.env.VITE_API_URL}/verify-token`,
           {
             credentials: "include",
-          }
+          },
         );
 
         if (res.ok) {
@@ -122,7 +166,7 @@ function App() {
               `${import.meta.env.VITE_API_URL}/verify-token`,
               {
                 credentials: "include",
-              }
+              },
             );
             if (retryRes.ok) {
               const retryData = await retryRes.json();
@@ -170,46 +214,68 @@ function App() {
     };
   }, [user, isAuthPage]);
 
+  // Terms and Privacy stay readable before accepting since they're linked
+  if (!betaTermsAccepted && !["/terms", "/privacy"].includes(location.pathname)) {
+    return <BetaTermsGate onAccept={handleAcceptBetaTerms} />;
+  }
+
   return (
     <RegionProvider user={user}>
-      <Routes>
-        <Route path="/verify-email" element={<VerifyEmail />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/terms" element={<TermsOfService />} />
-        <Route path="/privacy" element={<PrivacyPolicy />} />
-
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/spray-finder" element={
-            <SprayFinder
-              selectedCrop={selectedCrop}
-              setSelectedCrop={setSelectedCrop}
-              selectedIssue={selectedIssue}
-              setSelectedIssue={setSelectedIssue}
-            />
-          } />
-          <Route path="/calculator" element={<Calculator user={user} />} />
+      <CatalogProvider>
+        <Routes>
+          <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route
-            path="/tracking"
+            path="/admin"
             element={
               isValidating ? (
                 <div className="flex justify-center items-center min-h-screen">
                   <p>Validating session...</p>
                 </div>
               ) : (
-                <div className="tracking-full-width">
-                  <Tracking
-                    user={user}
-                    onLogin={handleLogin}
-                    onLogout={handleLogout}
-                  />
-                </div>
+                <AdminPortal user={user} />
               )
             }
           />
-        </Route>
-      </Routes>
+
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<LandingPage />} />
+            <Route
+              path="/spray-finder"
+              element={
+                <SprayFinder
+                  selectedCrop={selectedCrop}
+                  setSelectedCrop={setSelectedCrop}
+                  selectedIssue={selectedIssue}
+                  setSelectedIssue={setSelectedIssue}
+                />
+              }
+            />
+            <Route path="/calculator" element={<Calculator user={user} />} />
+            <Route
+              path="/tracking"
+              element={
+                isValidating ? (
+                  <div className="flex justify-center items-center min-h-screen">
+                    <p>Validating session...</p>
+                  </div>
+                ) : (
+                  <div className="tracking-full-width">
+                    <Tracking
+                      user={user}
+                      onLogin={handleLogin}
+                      onLogout={handleLogout}
+                    />
+                  </div>
+                )
+              }
+            />
+          </Route>
+        </Routes>
+      </CatalogProvider>
     </RegionProvider>
   );
 }

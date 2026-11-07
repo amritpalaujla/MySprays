@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import SprayInfo from "./SprayInfo";
 import Settings from "./Settings";
 
@@ -119,6 +120,17 @@ function Dashboard({ user, onLogout }) {
                     </button>
                   </li>
                 ))}
+                {user?.isAdmin && (
+                  <li>
+                    <Link
+                      to="/admin"
+                      className="w-full flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 text-left text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+                    >
+                      <span className="text-lg">🛠️</span>
+                      <span className="font-medium text-sm">Admin Portal</span>
+                    </Link>
+                  </li>
+                )}
               </ul>
             </nav>
 
@@ -213,6 +225,19 @@ function Dashboard({ user, onLogout }) {
                         </button>
                       </li>
                     ))}
+                    {user?.isAdmin && (
+                      <li>
+                        <Link
+                          to="/admin"
+                          className="w-full flex items-center space-x-3 p-2.5 rounded-lg transition-all duration-200 text-left text-gray-600 hover:bg-gray-50"
+                        >
+                          <span className="text-base">🛠️</span>
+                          <span className="font-medium text-sm">
+                            Admin Portal
+                          </span>
+                        </Link>
+                      </li>
+                    )}
                   </ul>
                 </div>
                 <div className="p-3 bg-gray-50 border-t border-gray-100">
