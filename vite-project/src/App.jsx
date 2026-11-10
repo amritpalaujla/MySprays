@@ -15,6 +15,7 @@ import { CatalogProvider } from "./context/CatalogContext";
 import RegionSelector from "./components/RegionSelector";
 import AdminPortal from "./components/AdminPortal";
 import BetaTermsGate from "./components/BetaTermsGate";
+import NavMenu from "./components/NavMenu";
 
 // Bump the version if the beta agreement changes so everyone re-accepts it
 const BETA_TERMS_KEY = "betaTermsAccepted";
@@ -28,30 +29,14 @@ const hasAcceptedBetaTerms = () => {
   }
 };
 
-function MainLayout() {
+function MainLayout({ user, onLogout }) {
   return (
     <>
       <div id="tabs">
         <NavLink to="/spray-finder">Spray Finder</NavLink>
         <NavLink to="/calculator">Spray Calculator</NavLink>
         <NavLink to="/tracking">Tracking</NavLink>
-        <NavLink to="/" end className="home-tab" aria-label="Home" title="Home">
-          <svg
-            width="20"
-            height="20"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"
-            />
-          </svg>
-          <span className="home-tab-label">Home</span>
-        </NavLink>
+        <NavMenu user={user} onLogout={onLogout} />
         <RegionSelector />
       </div>
       <div className="content-container">
@@ -241,7 +226,9 @@ function App() {
             }
           />
 
-          <Route element={<MainLayout />}>
+          <Route
+            element={<MainLayout user={user} onLogout={handleLogout} />}
+          >
             <Route path="/" element={<LandingPage />} />
             <Route
               path="/spray-finder"

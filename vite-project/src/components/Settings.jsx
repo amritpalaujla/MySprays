@@ -355,7 +355,7 @@ function Settings({ user, onLogout }) {
             19: { cellWidth: 10 }, // Applicator
             20: { cellWidth: 18, halign: "left" }, // Notes
           },
-          didDrawPage: (data) => {
+          didDrawPage: () => {
             // Footer on every page
             const pageH = doc.internal.pageSize.getHeight();
             doc.setFontSize(7);

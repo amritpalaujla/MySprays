@@ -5,8 +5,15 @@ const NEW_OPTION = "__new__";
 // Dropdown of the user's saved locations, with a "+ New location" option
 // that switches to a text box. onChange gets an input-like event so it plugs
 // straight into the log forms' handleChange.
-function LocationPicker({ value, onChange, locations, name = "location" }) {
+function LocationPicker({
+  value,
+  onChange,
+  locations,
+  name = "location",
+  invalid = false,
+}) {
   const [addingNew, setAddingNew] = useState(false);
+  const inputClass = `form-input${invalid ? " input-error" : ""}`;
 
   const current = (value || "").trim().toLowerCase();
   const savedMatch = locations.find((l) => l.toLowerCase() === current);
@@ -28,7 +35,7 @@ function LocationPicker({ value, onChange, locations, name = "location" }) {
             onChange(e);
           }}
           placeholder="e.g. Block A - Lapins"
-          className="form-input"
+          className={inputClass}
           autoFocus={addingNew}
           required
         />
@@ -61,7 +68,7 @@ function LocationPicker({ value, onChange, locations, name = "location" }) {
           emit(e.target.value);
         }
       }}
-      className="form-input"
+      className={inputClass}
       required
     >
       <option value="">Select a location...</option>

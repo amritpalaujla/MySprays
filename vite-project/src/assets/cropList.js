@@ -1,17 +1,4 @@
-import cherries from "../assets/cherries.jpg";
-import grapes from "./grapes.jpg";
 import peaches from "./peaches.jpg";
-import apricots from "./apricots.jpg";
-import plums from "./plums.jpg";
-import nectarines from "./nectarines.jpg";
-import apples from "./apples.jpg";
 
-export const cropList = [
-  //{ name: "Cherries", image: cherries },
-  //{ name: "Grapes", image: grapes },
-  { name: "Peaches", image: peaches },
-  //{ name: "Apricots", image: apricots },
-  // { name: "Plums", image: plums },
-  //{ name: "Nectarines", image: nectarines },
-  //{ name: "Apples", image: apples },
-];
+// Offline fallback, only used if the catalog API can't be reached
+export const cropList = [{ name: "Peaches", image: peaches }];

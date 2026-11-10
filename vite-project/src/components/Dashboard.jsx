@@ -4,7 +4,6 @@ import SprayInfo from "./SprayInfo";
 import Settings from "./Settings";
 
 function Dashboard({ user, onLogout }) {
-  const [message, setMessage] = useState("Loading...");
   const [error, setError] = useState("");
   const [sideBarOpen, setSideBarOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("sprays");
@@ -29,7 +28,6 @@ function Dashboard({ user, onLogout }) {
         const data = await res.json();
 
         if (res.ok) {
-          setMessage(data.message);
           setError("");
         } else {
           if (res.status === 401) {

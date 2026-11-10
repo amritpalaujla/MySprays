@@ -32,7 +32,7 @@ function ForgotPassword() {
       } else {
         setError(data.message || "Failed to send reset email");
       }
-    } catch (error) {
+    } catch {
       setError("Network error. Please try again.");
     } finally {
       setIsLoading(false);

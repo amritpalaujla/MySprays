@@ -34,7 +34,7 @@ function VerifyEmail() {
           setStatus("error");
           setMessage(data.message);
         }
-      } catch (error) {
+      } catch {
         setStatus("error");
         setMessage("Network error. Please try again.");
       }

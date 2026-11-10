@@ -15,6 +15,7 @@ const { sendVerificationEmail } = require("./services/emailService");
 const { sendPasswordResetEmail } = require("./services/emailService");
 const rateLimit = require("express-rate-limit");
 const { upload } = require("./services/cloudinaryUpload");
+const { parseSprayLog } = require("./validation/sprayLog");
 
 const mongoose = require("mongoose");
 
@@ -280,58 +281,11 @@ app.delete("/user/delete-account", verifyToken, async (req, res) => {
 
 app.post("/sprays", verifyToken, async (req, res) => {
   try {
-    const {
-      sprayName,
-      date,
-      crop,
-      rate,
-      amount,
-      unit,
-      location,
-      PHI,
-      PCP,
-      growthStage,
-      reasonForApplication,
-      areaTreated,
-      earliestHarvestDate,
-      applicationMethod,
-      tankSize,
-      equipmentInspected,
-      equipmentCleaned,
-      temperature,
-      windDirection,
-      windCondition,
-      labelInstructionsFollowed,
-      applicatorInitials,
-      notes,
-    } = req.body;
+    const data = parseSprayLog(req, res);
+    if (!data) return;
+    const { location, applicationMethod, tankSize, applicatorInitials } = data;
 
-    const newSpray = new Sprays({
-      userId: req.user.id,
-      sprayName,
-      date,
-      crop,
-      rate,
-      amount,
-      unit,
-      location,
-      PHI,
-      PCP,
-      growthStage,
-      reasonForApplication,
-      areaTreated,
-      earliestHarvestDate,
-      applicationMethod,
-      tankSize,
-      equipmentInspected,
-      equipmentCleaned,
-      temperature,
-      windDirection,
-      windCondition,
-      labelInstructionsFollowed,
-      applicatorInitials,
-      notes,
-    });
+    const newSpray = new Sprays({ ...data, userId: req.user.id });
 
     const savedSpray = await newSpray.save();
 
@@ -779,63 +733,17 @@ app.get("/sprays", verifyToken, async (req, res) => {
 app.put("/sprays/:id", verifyToken, async (req, res) => {
   try {
     const sprayId = req.params.id;
-    const {
-      sprayName,
-      date,
-      crop,
-      rate,
-      amount,
-      unit,
-      location,
-      PHI,
-      PCP,
-      growthStage,
-      reasonForApplication,
-      areaTreated,
-      earliestHarvestDate,
-      applicationMethod,
-      tankSize,
-      equipmentInspected,
-      equipmentCleaned,
-      temperature,
-      windDirection,
-      windCondition,
-      labelInstructionsFollowed,
-      applicatorInitials,
-      notes,
-    } = req.body;
+    const data = parseSprayLog(req, res);
+    if (!data) return;
+    const { location } = data;
 
     const updatedSpray = await Sprays.findOneAndUpdate(
       {
         _id: sprayId,
         userId: req.user.id,
       },
-      {
-        sprayName,
-        date,
-        crop,
-        rate,
-        amount,
-        unit,
-        location,
-        PHI,
-        PCP,
-        growthStage,
-        reasonForApplication,
-        areaTreated,
-        earliestHarvestDate,
-        applicationMethod,
-        tankSize,
-        equipmentInspected,
-        equipmentCleaned,
-        temperature,
-        windDirection,
-        windCondition,
-        labelInstructionsFollowed,
-        applicatorInitials,
-        notes,
-      },
-      { new: true },
+      data,
+      { new: true, runValidators: true },
     );
     if (!updatedSpray) {
       return res

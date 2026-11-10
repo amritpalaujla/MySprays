@@ -14,6 +14,8 @@ import blankImage from "../assets/blank.jpg";
 
 const CatalogContext = createContext();
 
+// The hook lives next to its provider on purpose; this only affects hot reload
+// eslint-disable-next-line react-refresh/only-export-components
 export const useCatalog = () => {
   const context = useContext(CatalogContext);
   if (!context) {

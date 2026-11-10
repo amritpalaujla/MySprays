@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 const RegionContext = createContext();
 
+// The hook lives next to its provider on purpose; this only affects hot reload
+// eslint-disable-next-line react-refresh/only-export-components
 export const useRegion = () => {
   const context = useContext(RegionContext);
   if (!context) {
@@ -19,12 +21,15 @@ export const RegionProvider = ({ children, user }) => {
     return localStorage.getItem("region") || "CA";
   });
 
-  // Sync with user profile when user logs in
+  // Sync with user profile when user logs in. Only runs when `user` changes:
+  // adding `region` would undo the selector, since user.region can be stale
+  // right after the grower picks a new region.
   useEffect(() => {
     if (user?.region && user.region !== region) {
       setRegionState(user.region);
       localStorage.setItem("region", user.region);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const setRegion = async (newRegion) => {
