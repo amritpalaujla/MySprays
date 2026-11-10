@@ -1,51 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { useCatalog } from "../context/CatalogContext";
 import Toast from "./Toast";
 import LocationPicker from "./LocationPicker";
+import FieldError from "./FieldError";
+import {
+  emptyForm,
+  calcEarliestHarvest,
+  todayStr,
+  normalizeUnit,
+  normalizePhi,
+  validateSprayLog,
+} from "../utils/sprayLog";
 import { useRegion } from "../context/RegionContext";
+import {
+  blockNegativeKeys,
+  isNonNegativeDecimal,
+  rejectsLogInput,
+} from "../utils/numberInput";
 import sprayTank from "../assets/tanker.png";
 import partialSprayTank from "../assets/partialTanker.png";
-
-function calcEarliestHarvest(dateStr, phiStr) {
-  if (!dateStr || !phiStr) return "";
-  const phiDays = parseInt(phiStr);
-  if (isNaN(phiDays)) return "";
-  const d = new Date(dateStr);
-  d.setDate(d.getDate() + phiDays);
-  return d.toISOString().split("T")[0];
-}
-
-function todayStr() {
-  return new Date().toISOString().split("T")[0];
-}
-
-const emptyForm = {
-  sprayName: "",
-  date: "",
-  crop: "",
-  rate: "",
-  amount: "",
-  unit: "",
-  location: "",
-  PHI: "",
-  PCP: "",
-  growthStage: "",
-  reasonForApplication: "",
-  areaTreated: "",
-  earliestHarvestDate: "",
-  applicationMethod: "",
-  tankSize: "",
-  equipmentInspected: false,
-  equipmentCleaned: false,
-  temperature: "",
-  windDirection: "",
-  windCondition: "",
-  labelInstructionsFollowed: true,
-  applicatorInitials: "",
-  notes: "",
-};
 
 function Calculator({ user }) {
   const location = useLocation();
@@ -66,6 +41,8 @@ function Calculator({ user }) {
   const [userDefaults, setUserDefaults] = useState({});
   const [userLocations, setUserLocations] = useState([]);
   const [toast, setToast] = useState(null);
+  const [errors, setErrors] = useState({});
+  const formRef = useRef(null);
 
   const selectedSpray = allSprays.find(
     (spray) => `${spray.crop}-${spray.issue}-${spray.name}` === selectedSprayKey
@@ -99,9 +76,41 @@ function Calculator({ user }) {
     fetchLocations();
   }, [user]);
 
+  const clearError = (name) =>
+    setErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+
+  // Show field errors and bring the first one into view
+  const showErrors = (fieldErrors) => {
+    setErrors(fieldErrors);
+    requestAnimationFrame(() => {
+      const first = formRef.current?.querySelector(".input-error, .field-error");
+      first?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (first?.matches("input, select, textarea")) {
+        first.focus({ preventScroll: true });
+      }
+    });
+  };
+
+  const fieldClass = (name, extra = "") =>
+    ["form-input", extra, errors[name] && "input-error"]
+      .filter(Boolean)
+      .join(" ");
+
+  // Calculator boxes only accept non-negative numbers (blocks pasted "-5")
+  const onNumberChange = (setter) => (e) => {
+    if (isNonNegativeDecimal(e.target.value)) setter(e.target.value);
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    if (rejectsLogInput(name, value)) return;
     const newVal = type === "checkbox" ? checked : value;
+    clearError(name);
     const updated = { ...formData, [name]: newVal };
     if (name === "date" || name === "PHI") {
       updated.earliestHarvestDate = calcEarliestHarvest(
@@ -114,12 +123,20 @@ function Calculator({ user }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const { data, errors: fieldErrors } = validateSprayLog(formData);
+    if (!data) {
+      showErrors(fieldErrors);
+      return;
+    }
+    setErrors({});
+
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/sprays`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(formData),
+        body: JSON.stringify(data),
       });
       if (res.status === 401) {
         window.dispatchEvent(new CustomEvent("authFailure"));
@@ -137,40 +154,69 @@ function Calculator({ user }) {
           .then((data) => data && setUserLocations(data))
           .catch((locErr) => console.error("Error fetching locations:", locErr));
       } else {
-        const data = await res.json();
-        alert(`Failed to save spray: ${data.error || "Unknown error"}`);
+        const body = await res.json().catch(() => ({}));
+        if (res.status === 400 && body.fieldErrors) {
+          showErrors(body.fieldErrors);
+          return;
+        }
+        setToast({
+          id: Date.now(),
+          type: "error",
+          message: body.error || "Failed to save spray log. Please try again.",
+        });
       }
     } catch (err) {
       console.error("Error saving spray:", err);
-      alert(`Network error: ${err.message}`);
+      setToast({
+        id: Date.now(),
+        type: "error",
+        message: "Network error. Spray log was not saved.",
+      });
     }
   };
 
+  // The log form is filled from the calculator, so make sure it has what it needs
   const openModal = () => {
-    if (selectedSpray) {
-      const totalProduct = parseFloat(sprayRate) * parseFloat(area);
-      const today = todayStr();
-      const phi = selectedSpray.phi || "";
-      setFormData({
-        ...emptyForm,
-        sprayName: selectedSpray.name,
-        crop: selectedSpray.crop,
-        rate: selectedSpray.rate,
-        amount: isNaN(totalProduct) ? "" : totalProduct.toFixed(2),
-        unit: selectedSpray.unit,
-        PHI: phi,
-        PCP: selectedSpray.pcp,
-        date: today,
-        earliestHarvestDate: calcEarliestHarvest(today, phi),
-        areaTreated: area || "",
-        tankSize: tankSize || userDefaults.defaultTankSize || "",
-        growthStage: selectedSpray.stage || "",
-        reasonForApplication: selectedSpray.issue || "",
-        applicationMethod: userDefaults.defaultApplicationMethod || "",
-        applicatorInitials: userDefaults.defaultApplicatorInitials || "",
-        labelInstructionsFollowed: true,
+    const totalProduct = parseFloat(sprayRate) * parseFloat(area);
+    if (!selectedSpray) {
+      setToast({
+        id: Date.now(),
+        type: "error",
+        message: "Choose a spray first.",
       });
+      return;
     }
+    if (!(totalProduct > 0)) {
+      setToast({
+        id: Date.now(),
+        type: "error",
+        message: "Enter the total area and spray rate first.",
+      });
+      return;
+    }
+
+    const today = todayStr();
+    const phi = normalizePhi(selectedSpray.phi);
+    setErrors({});
+    setFormData({
+      ...emptyForm,
+      sprayName: selectedSpray.name,
+      crop: selectedSpray.crop,
+      rate: selectedSpray.rate,
+      amount: totalProduct.toFixed(2),
+      unit: normalizeUnit(selectedSpray.unit),
+      PHI: phi,
+      PCP: selectedSpray.pcp,
+      date: today,
+      earliestHarvestDate: calcEarliestHarvest(today, phi),
+      areaTreated: area || "",
+      tankSize: tankSize || userDefaults.defaultTankSize || "",
+      growthStage: selectedSpray.stage || "",
+      reasonForApplication: selectedSpray.issue || "",
+      applicationMethod: userDefaults.defaultApplicationMethod || "",
+      applicatorInitials: userDefaults.defaultApplicatorInitials || "",
+      labelInstructionsFollowed: true,
+    });
     setIsModalOpen(true);
   };
 
@@ -248,9 +294,11 @@ function Calculator({ user }) {
               className="form-input"
               type="number"
               step="any"
+              min="0"
+              onKeyDown={blockNegativeKeys}
               value={waterVolume}
               placeholder={region === "US" ? "e.g. 50" : "e.g. 200"}
-              onChange={(e) => setWaterVolume(e.target.value)}
+              onChange={onNumberChange(setWaterVolume)}
             />
           </div>
           <div>
@@ -259,9 +307,11 @@ function Calculator({ user }) {
               className="form-input"
               type="number"
               step="any"
+              min="0"
+              onKeyDown={blockNegativeKeys}
               value={area}
               placeholder="e.g. 25"
-              onChange={(e) => setArea(e.target.value)}
+              onChange={onNumberChange(setArea)}
             />
           </div>
           <div className="md:col-span-2 lg:col-span-1">
@@ -270,9 +320,11 @@ function Calculator({ user }) {
               className="form-input"
               type="number"
               step="any"
+              min="0"
+              onKeyDown={blockNegativeKeys}
               value={tankSize}
               placeholder={region === "US" ? "e.g. 100" : "e.g. 400"}
-              onChange={(e) => setTankSize(e.target.value)}
+              onChange={onNumberChange(setTankSize)}
             />
           </div>
           <div className="md:col-span-2 lg:col-span-1">
@@ -281,9 +333,11 @@ function Calculator({ user }) {
               className="form-input"
               type="number"
               step="any"
+              min="0"
+              onKeyDown={blockNegativeKeys}
               value={sprayRate}
               placeholder="e.g. 10"
-              onChange={(e) => setSprayRate(e.target.value)}
+              onChange={onNumberChange(setSprayRate)}
             />
           </div>
           {user && (
@@ -318,7 +372,17 @@ function Calculator({ user }) {
                 Canada GAP Form H1 — Agricultural Chemicals Application
               </p>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form
+                ref={formRef}
+                onSubmit={handleSubmit}
+                noValidate
+                className="space-y-5"
+              >
+                {Object.keys(errors).length > 0 && (
+                  <div className="form-error-banner" role="alert">
+                    Please fix the highlighted fields below.
+                  </div>
+                )}
                 {/* ── Application Info ── */}
                 <div className="border-b border-gray-200 pb-4">
                   <h3 className="text-sm font-semibold text-blue-700 uppercase tracking-wide mb-3">
@@ -332,18 +396,20 @@ function Calculator({ user }) {
                         name="date"
                         value={formData.date}
                         onChange={handleChange}
-                        className="form-input"
+                        className={fieldClass("date")}
                         required
                       />
+                      <FieldError message={errors.date} />
                     </div>
                     <div>
                       <label className="form-label">Crop</label>
                       <input
                         name="crop"
                         value={formData.crop}
-                        className="form-input bg-gray-50"
+                        className={fieldClass("crop", "bg-gray-50")}
                         readOnly
                       />
+                      <FieldError message={errors.crop} />
                     </div>
                     <div>
                       <label className="form-label">
@@ -353,7 +419,9 @@ function Calculator({ user }) {
                         value={formData.location}
                         onChange={handleChange}
                         locations={userLocations}
+                        invalid={!!errors.location}
                       />
+                    <FieldError message={errors.location} />
                     </div>
                     <div>
                       <label className="form-label">Growth Stage</label>
@@ -362,8 +430,9 @@ function Calculator({ user }) {
                         value={formData.growthStage}
                         onChange={handleChange}
                         placeholder="e.g. Petal fall"
-                        className="form-input"
+                        className={fieldClass("growthStage")}
                       />
+                      <FieldError message={errors.growthStage} />
                     </div>
                     <div className="sm:col-span-2">
                       <label className="form-label">
@@ -372,9 +441,10 @@ function Calculator({ user }) {
                       <input
                         name="reasonForApplication"
                         value={formData.reasonForApplication}
-                        className="form-input bg-gray-50"
+                        className={fieldClass("reasonForApplication", "bg-gray-50")}
                         readOnly
                       />
+                      <FieldError message={errors.reasonForApplication} />
                     </div>
                   </div>
                 </div>
@@ -388,28 +458,34 @@ function Calculator({ user }) {
                     <div>
                       <label className="form-label">Product Trade Name</label>
                       <input
+                        name="sprayName"
                         value={formData.sprayName}
-                        className="form-input bg-gray-50"
+                        className={fieldClass("sprayName", "bg-gray-50")}
                         readOnly
                       />
+                      <FieldError message={errors.sprayName} />
                     </div>
                     <div>
                       <label className="form-label">PCP #</label>
                       <input
+                        name="PCP"
                         value={formData.PCP}
-                        className="form-input bg-gray-50"
+                        className={fieldClass("PCP", "bg-gray-50")}
                         readOnly
                       />
+                      <FieldError message={errors.PCP} />
                     </div>
                     <div>
                       <label className="form-label">Rate per Acre</label>
                       <input
+                        name="rate"
                         value={`${formData.rate} ${
                           formData.unit || ""
                         } per acre`}
-                        className="form-input bg-gray-50"
+                        className={fieldClass("rate", "bg-gray-50")}
                         readOnly
                       />
+                      <FieldError message={errors.rate} />
                     </div>
                     <div>
                       <label className="form-label">Area Treated (acres)</label>
@@ -419,22 +495,27 @@ function Calculator({ user }) {
                         onChange={handleChange}
                         type="number"
                         step="any"
-                        className="form-input"
+                        min="0"
+                        onKeyDown={blockNegativeKeys}
+                        className={fieldClass("areaTreated")}
                       />
+                      <FieldError message={errors.areaTreated} />
                     </div>
                     <div>
                       <label className="form-label">
                         Actual Quantity in Tank
                       </label>
                       <input
+                        name="amount"
                         value={
                           formData.amount && formData.unit
                             ? `${formData.amount} ${formData.unit}`
                             : formData.amount || ""
                         }
-                        className="form-input bg-gray-50"
+                        className={fieldClass("amount", "bg-gray-50")}
                         readOnly
                       />
+                      <FieldError message={errors.amount} />
                     </div>
                   </div>
                 </div>
@@ -446,12 +527,17 @@ function Calculator({ user }) {
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="form-label">PHI (Days)</label>
+                      <label className="form-label">PHI (Days) *</label>
                       <input
+                        name="PHI"
                         value={formData.PHI}
-                        className="form-input bg-gray-50"
-                        readOnly
+                        onChange={handleChange}
+                        placeholder="e.g. 14"
+                        inputMode="numeric"
+                        onKeyDown={blockNegativeKeys}
+                        className={fieldClass("PHI")}
                       />
+                      <FieldError message={errors.PHI} />
                     </div>
                     <div>
                       <label className="form-label">
@@ -482,7 +568,7 @@ function Calculator({ user }) {
                         name="applicationMethod"
                         value={formData.applicationMethod}
                         onChange={handleChange}
-                        className="form-input"
+                        className={fieldClass("applicationMethod")}
                       >
                         <option value="">Select...</option>
                         <option value="Air Blast">Air Blast</option>
@@ -490,6 +576,7 @@ function Calculator({ user }) {
                         <option value="Backpack">Backpack</option>
                         <option value="Other">Other</option>
                       </select>
+                      <FieldError message={errors.applicationMethod} />
                     </div>
                     <div>
                       <label className="form-label">Tank Size</label>
@@ -498,8 +585,9 @@ function Calculator({ user }) {
                         value={formData.tankSize}
                         onChange={handleChange}
                         placeholder="e.g. 400 L"
-                        className="form-input"
+                        className={fieldClass("tankSize")}
                       />
+                      <FieldError message={errors.tankSize} />
                     </div>
                     <div className="flex items-center gap-6 sm:col-span-2">
                       <label className="flex items-center gap-2 cursor-pointer">
@@ -543,8 +631,9 @@ function Calculator({ user }) {
                         value={formData.temperature}
                         onChange={handleChange}
                         placeholder="e.g. 22°C"
-                        className="form-input"
+                        className={fieldClass("temperature")}
                       />
+                      <FieldError message={errors.temperature} />
                     </div>
                     <div>
                       <label className="form-label">Wind Direction</label>
@@ -553,9 +642,10 @@ function Calculator({ user }) {
                           <button
                             key={dir}
                             type="button"
-                            onClick={() =>
-                              setFormData({ ...formData, windDirection: dir })
-                            }
+                            onClick={() => {
+                              clearError("windDirection");
+                              setFormData({ ...formData, windDirection: dir });
+                            }}
                             className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
                               formData.windDirection === dir
                                 ? "bg-blue-600 text-white border-blue-600"
@@ -566,6 +656,7 @@ function Calculator({ user }) {
                           </button>
                         ))}
                       </div>
+                      <FieldError message={errors.windDirection} />
                     </div>
                     <div>
                       <label className="form-label">Wind Condition</label>
@@ -574,9 +665,10 @@ function Calculator({ user }) {
                           <button
                             key={cond}
                             type="button"
-                            onClick={() =>
-                              setFormData({ ...formData, windCondition: cond })
-                            }
+                            onClick={() => {
+                              clearError("windCondition");
+                              setFormData({ ...formData, windCondition: cond });
+                            }}
                             className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors flex-1 ${
                               formData.windCondition === cond
                                 ? "bg-blue-600 text-white border-blue-600"
@@ -587,6 +679,7 @@ function Calculator({ user }) {
                           </button>
                         ))}
                       </div>
+                      <FieldError message={errors.windCondition} />
                     </div>
                   </div>
                 </div>
@@ -604,9 +697,10 @@ function Calculator({ user }) {
                         value={formData.applicatorInitials}
                         onChange={handleChange}
                         placeholder="e.g. AA"
-                        className="form-input"
+                        className={fieldClass("applicatorInitials")}
                         maxLength={5}
                       />
+                      <FieldError message={errors.applicatorInitials} />
                     </div>
                     <div className="flex items-center">
                       <label className="flex items-center gap-2 cursor-pointer mt-6">
@@ -637,8 +731,9 @@ function Calculator({ user }) {
                     placeholder="Any additional notes (optional)"
                     maxLength={500}
                     rows={3}
-                    className="form-input resize-none"
+                    className={fieldClass("notes", "resize-none")}
                   />
+                  <FieldError message={errors.notes} />
                   <p className="text-xs text-gray-400 mt-1 text-right">
                     {formData.notes?.length || 0}/500
                   </p>
@@ -690,11 +785,16 @@ function Calculator({ user }) {
         </div>
       )}
 
+      {[area, waterVolume, tankSize, sprayRate].some(
+        (v) => v !== "" && !v.endsWith(".") && !(parseFloat(v) > 0)
+      ) && (
+        <p className="text-center text-sm font-medium text-red-600">
+          Water volume, area, tank size and spray rate must be greater than 0.
+        </p>
+      )}
+
       {selectedSpray &&
-        area &&
-        waterVolume &&
-        tankSize &&
-        sprayRate &&
+        [area, waterVolume, tankSize, sprayRate].every((v) => parseFloat(v) > 0) &&
         (() => {
           const areaNum = parseFloat(area);
           const waterVolumeNum = parseFloat(waterVolume);

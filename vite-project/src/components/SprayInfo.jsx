@@ -1,55 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Toast from "./Toast";
 import LocationPicker from "./LocationPicker";
-
-// Empty form template matching H1 fields
-const emptyForm = {
-  sprayName: "",
-  date: "",
-  crop: "",
-  rate: "",
-  amount: "",
-  unit: "",
-  location: "",
-  PHI: "",
-  PCP: "",
-  growthStage: "",
-  reasonForApplication: "",
-  areaTreated: "",
-  earliestHarvestDate: "",
-  applicationMethod: "",
-  tankSize: "",
-  equipmentInspected: false,
-  equipmentCleaned: false,
-  temperature: "",
-  windDirection: "",
-  windCondition: "",
-  labelInstructionsFollowed: true,
-  applicatorInitials: "",
-  notes: "",
-};
-
-// Helper: calculate earliest harvest date from application date + PHI
-function calcEarliestHarvest(dateStr, phiStr) {
-  if (!dateStr || !phiStr) return "";
-  const phiDays = parseInt(phiStr);
-  if (isNaN(phiDays)) return "";
-  const d = new Date(dateStr);
-  d.setDate(d.getDate() + phiDays);
-  return d.toISOString().split("T")[0];
-}
-
-// Helper: today's date as YYYY-MM-DD
-function todayStr() {
-  return new Date().toISOString().split("T")[0];
-}
+import ProductSearch from "./ProductSearch";
+import FieldError from "./FieldError";
+import { useCatalog } from "../context/CatalogContext";
+import { useRegion } from "../context/RegionContext";
+import { blockNegativeKeys, rejectsLogInput } from "../utils/numberInput";
+import {
+  emptyForm,
+  calcEarliestHarvest,
+  todayStr,
+  normalizeUnit,
+  normalizePhi,
+  validateSprayLog,
+  UNIT_OPTIONS,
+} from "../utils/sprayLog";
 
 function SprayInfo({ user }) {
   const [formData, setFormData] = useState({ ...emptyForm });
   const [sprays, setSprays] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toast, setToast] = useState(null);
+  const [errors, setErrors] = useState({});
+  const formRef = useRef(null);
   const [filterLocation, setFilterLocation] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -59,6 +33,30 @@ function SprayInfo({ user }) {
   const [userLocations, setUserLocations] = useState([]);
   const [userDefaults, setUserDefaults] = useState({});
   const [expandedId, setExpandedId] = useState(null);
+
+  // Every catalog spray for the current region, for the product search
+  const { region } = useRegion();
+  const { getSprayData } = useCatalog();
+  const sprayData = getSprayData(region);
+  const catalogSprays = useMemo(() => {
+    const list = [];
+    for (const crop in sprayData) {
+      for (const issue in sprayData[crop]) {
+        for (const spray of sprayData[crop][issue]) {
+          list.push({ ...spray, crop, issue });
+        }
+      }
+    }
+    return list;
+  }, [sprayData]);
+
+  // Catalog crops for the dropdown. An older log's crop that's no longer in
+  // the catalog is kept as an option so editing it doesn't lose the value.
+  const cropOptions = useMemo(() => {
+    const names = Object.keys(sprayData);
+    const current = formData.crop;
+    return current && !names.includes(current) ? [...names, current] : names;
+  }, [sprayData, formData.crop]);
 
   // Close dropdown menus on outside click
   useEffect(() => {
@@ -120,9 +118,36 @@ function SprayInfo({ user }) {
     fetchLocations();
   }, [user]);
 
+  const clearError = (name) =>
+    setErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+
+  // Show field errors and bring the first one into view
+  const showErrors = (fieldErrors) => {
+    setErrors(fieldErrors);
+    requestAnimationFrame(() => {
+      const first = formRef.current?.querySelector(".input-error, .field-error");
+      first?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (first?.matches("input, select, textarea")) {
+        first.focus({ preventScroll: true });
+      }
+    });
+  };
+
+  const fieldClass = (name, extra = "") =>
+    ["form-input", extra, errors[name] && "input-error"]
+      .filter(Boolean)
+      .join(" ");
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    if (rejectsLogInput(name, value)) return;
     const newVal = type === "checkbox" ? checked : value;
+    clearError(name);
     const updated = { ...formData, [name]: newVal };
 
     // Auto-calculate earliest harvest date when date or PHI changes
@@ -133,6 +158,25 @@ function SprayInfo({ user }) {
     }
 
     setFormData(updated);
+  };
+
+  // Fill the product details from a catalog spray. Crop, reason and growth
+  // stage are only filled if the grower hasn't entered them already.
+  const handleProductSelect = (spray) => {
+    const phi = normalizePhi(spray.phi);
+    ["sprayName", "PCP", "rate", "unit", "PHI", "crop"].forEach(clearError);
+    setFormData((prev) => ({
+      ...prev,
+      sprayName: spray.name,
+      PCP: spray.pcp || "",
+      rate: spray.rate || "",
+      unit: normalizeUnit(spray.unit),
+      PHI: phi,
+      earliestHarvestDate: calcEarliestHarvest(prev.date, phi),
+      crop: prev.crop || spray.crop,
+      reasonForApplication: prev.reasonForApplication || spray.issue,
+      growthStage: prev.growthStage || spray.stage || "",
+    }));
   };
 
   const clearFilters = () => {
@@ -168,8 +212,11 @@ function SprayInfo({ user }) {
     }
   };
 
+  // fetchSprays reads these same filters, so listing them is enough to refetch
+  // whenever they change (fetchSprays itself is recreated on every render)
   useEffect(() => {
     fetchSprays();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, filterLocation, startDate, endDate, sortOrder]);
 
   const handleSubmit = async (e) => {
@@ -180,12 +227,19 @@ function SprayInfo({ user }) {
       : `${import.meta.env.VITE_API_URL}/sprays`;
     const method = isEditing ? "PUT" : "POST";
 
+    const { data, errors: fieldErrors } = validateSprayLog(formData);
+    if (!data) {
+      showErrors(fieldErrors);
+      return;
+    }
+    setErrors({});
+
     try {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(formData),
+        body: JSON.stringify(data),
       });
 
       if (res.status === 401) {
@@ -213,12 +267,20 @@ function SprayInfo({ user }) {
             }
           );
           if (locRes.ok) setUserLocations(await locRes.json());
-        } catch (_) {}
+        } catch (locErr) {
+          // The spray is already saved; the dropdown just won't show it yet
+          console.error("Error refreshing locations:", locErr);
+        }
       } else {
+        const body = await res.json().catch(() => ({}));
+        if (res.status === 400 && body.fieldErrors) {
+          showErrors(body.fieldErrors);
+          return;
+        }
         setToast({
           id: Date.now(),
           type: "error",
-          message: "Failed to save spray log. Please try again.",
+          message: body.error || "Failed to save spray log. Please try again.",
         });
       }
     } catch (err) {
@@ -256,9 +318,12 @@ function SprayInfo({ user }) {
 
   const handleEditClick = (spray) => {
     setEditingSprayId(spray._id);
+    setErrors({});
     setFormData({
       ...emptyForm,
       ...spray,
+      unit: normalizeUnit(spray.unit),
+      PHI: normalizePhi(spray.PHI),
       date: spray.date ? spray.date.split("T")[0] : "",
       earliestHarvestDate: spray.earliestHarvestDate
         ? spray.earliestHarvestDate.split("T")[0]
@@ -269,6 +334,7 @@ function SprayInfo({ user }) {
 
   const openNewModal = () => {
     setEditingSprayId(null);
+    setErrors({});
     setFormData({
       ...emptyForm,
       date: todayStr(),
@@ -601,7 +667,17 @@ function SprayInfo({ user }) {
                 Canada GAP Form H1 — Agricultural Chemicals Application
               </p>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form
+                ref={formRef}
+                onSubmit={handleSubmit}
+                noValidate
+                className="space-y-5"
+              >
+                {Object.keys(errors).length > 0 && (
+                  <div className="form-error-banner" role="alert">
+                    Please fix the highlighted fields below.
+                  </div>
+                )}
                 {/* ── Section: Application Info ── */}
                 <div className="border-b border-gray-200 pb-4">
                   <h3 className="text-sm font-semibold text-blue-700 uppercase tracking-wide mb-3">
@@ -615,20 +691,28 @@ function SprayInfo({ user }) {
                         name="date"
                         value={formData.date}
                         onChange={handleChange}
-                        className="form-input"
+                        className={fieldClass("date")}
                         required
                       />
+                      <FieldError message={errors.date} />
                     </div>
                     <div>
                       <label className="form-label">Crop *</label>
-                      <input
+                      <select
                         name="crop"
                         value={formData.crop}
                         onChange={handleChange}
-                        placeholder="e.g. Cherries"
-                        className="form-input"
+                        className={fieldClass("crop")}
                         required
-                      />
+                      >
+                        <option value="">Select a crop...</option>
+                        {cropOptions.map((crop) => (
+                          <option key={crop} value={crop}>
+                            {crop}
+                          </option>
+                        ))}
+                      </select>
+                      <FieldError message={errors.crop} />
                     </div>
                     <div>
                       <label className="form-label">
@@ -638,7 +722,9 @@ function SprayInfo({ user }) {
                         value={formData.location}
                         onChange={handleChange}
                         locations={userLocations}
+                        invalid={!!errors.location}
                       />
+                    <FieldError message={errors.location} />
                     </div>
                     <div>
                       <label className="form-label">Growth Stage</label>
@@ -647,8 +733,9 @@ function SprayInfo({ user }) {
                         value={formData.growthStage}
                         onChange={handleChange}
                         placeholder="e.g. Petal fall"
-                        className="form-input"
+                        className={fieldClass("growthStage")}
                       />
+                      <FieldError message={errors.growthStage} />
                     </div>
                     <div className="sm:col-span-2">
                       <label className="form-label">
@@ -659,8 +746,9 @@ function SprayInfo({ user }) {
                         value={formData.reasonForApplication}
                         onChange={handleChange}
                         placeholder="e.g. Brown Rot prevention"
-                        className="form-input"
+                        className={fieldClass("reasonForApplication")}
                       />
+                      <FieldError message={errors.reasonForApplication} />
                     </div>
                   </div>
                 </div>
@@ -673,14 +761,15 @@ function SprayInfo({ user }) {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="form-label">Product Trade Name *</label>
-                      <input
-                        name="sprayName"
+                      <ProductSearch
                         value={formData.sprayName}
                         onChange={handleChange}
-                        placeholder="e.g. Pristine WG"
-                        className="form-input"
-                        required
+                        onSelect={handleProductSelect}
+                        sprays={catalogSprays}
+                        preferredCrop={formData.crop}
+                        invalid={!!errors.sprayName}
                       />
+                      <FieldError message={errors.sprayName} />
                     </div>
                     <div>
                       <label className="form-label">PCP # *</label>
@@ -689,9 +778,10 @@ function SprayInfo({ user }) {
                         value={formData.PCP}
                         onChange={handleChange}
                         placeholder="e.g. 27985"
-                        className="form-input"
+                        className={fieldClass("PCP")}
                         required
                       />
+                      <FieldError message={errors.PCP} />
                     </div>
                     <div>
                       <label className="form-label">Rate per Acre *</label>
@@ -700,9 +790,10 @@ function SprayInfo({ user }) {
                         value={formData.rate}
                         onChange={handleChange}
                         placeholder="e.g. 300"
-                        className="form-input"
+                        className={fieldClass("rate")}
                         required
                       />
+                      <FieldError message={errors.rate} />
                     </div>
                     <div>
                       <label className="form-label">Unit</label>
@@ -710,18 +801,16 @@ function SprayInfo({ user }) {
                         name="unit"
                         value={formData.unit}
                         onChange={handleChange}
-                        className="form-input"
+                        className={fieldClass("unit")}
                       >
                         <option value="">Select...</option>
-                        <option value="mL">mL</option>
-                        <option value="L">L</option>
-                        <option value="g">g</option>
-                        <option value="kg">kg</option>
-                        <option value="fl oz">fl oz</option>
-                        <option value="gal">gal</option>
-                        <option value="oz">oz</option>
-                        <option value="lb">lb</option>
+                        {UNIT_OPTIONS.map((u) => (
+                          <option key={u} value={u}>
+                            {u}
+                          </option>
+                        ))}
                       </select>
+                      <FieldError message={errors.unit} />
                     </div>
                     <div>
                       <label className="form-label">Area Treated (acres)</label>
@@ -732,8 +821,11 @@ function SprayInfo({ user }) {
                         placeholder="e.g. 25"
                         type="number"
                         step="any"
-                        className="form-input"
+                        min="0"
+                        onKeyDown={blockNegativeKeys}
+                        className={fieldClass("areaTreated")}
                       />
+                      <FieldError message={errors.areaTreated} />
                     </div>
                     <div>
                       <label className="form-label">
@@ -744,9 +836,12 @@ function SprayInfo({ user }) {
                         value={formData.amount}
                         onChange={handleChange}
                         placeholder="Total product used"
-                        className="form-input"
+                        inputMode="decimal"
+                        onKeyDown={blockNegativeKeys}
+                        className={fieldClass("amount")}
                         required
                       />
+                      <FieldError message={errors.amount} />
                     </div>
                   </div>
                 </div>
@@ -764,9 +859,12 @@ function SprayInfo({ user }) {
                         value={formData.PHI}
                         onChange={handleChange}
                         placeholder="e.g. 14"
-                        className="form-input"
+                        inputMode="numeric"
+                        onKeyDown={blockNegativeKeys}
+                        className={fieldClass("PHI")}
                         required
                       />
+                      <FieldError message={errors.PHI} />
                     </div>
                     <div>
                       <label className="form-label">
@@ -798,7 +896,7 @@ function SprayInfo({ user }) {
                         name="applicationMethod"
                         value={formData.applicationMethod}
                         onChange={handleChange}
-                        className="form-input"
+                        className={fieldClass("applicationMethod")}
                       >
                         <option value="">Select...</option>
                         <option value="Air Blast">Air Blast</option>
@@ -806,6 +904,7 @@ function SprayInfo({ user }) {
                         <option value="Backpack">Backpack</option>
                         <option value="Other">Other</option>
                       </select>
+                      <FieldError message={errors.applicationMethod} />
                     </div>
                     <div>
                       <label className="form-label">Tank Size</label>
@@ -814,8 +913,9 @@ function SprayInfo({ user }) {
                         value={formData.tankSize}
                         onChange={handleChange}
                         placeholder="e.g. 400 L"
-                        className="form-input"
+                        className={fieldClass("tankSize")}
                       />
+                      <FieldError message={errors.tankSize} />
                     </div>
                     <div className="flex items-center gap-6 sm:col-span-2">
                       <label className="flex items-center gap-2 cursor-pointer">
@@ -859,8 +959,9 @@ function SprayInfo({ user }) {
                         value={formData.temperature}
                         onChange={handleChange}
                         placeholder="e.g. 22°C"
-                        className="form-input"
+                        className={fieldClass("temperature")}
                       />
+                      <FieldError message={errors.temperature} />
                     </div>
                     <div>
                       <label className="form-label">Wind Direction</label>
@@ -869,9 +970,10 @@ function SprayInfo({ user }) {
                           <button
                             key={dir}
                             type="button"
-                            onClick={() =>
-                              setFormData({ ...formData, windDirection: dir })
-                            }
+                            onClick={() => {
+                              clearError("windDirection");
+                              setFormData({ ...formData, windDirection: dir });
+                            }}
                             className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
                               formData.windDirection === dir
                                 ? "bg-blue-600 text-white border-blue-600"
@@ -882,6 +984,7 @@ function SprayInfo({ user }) {
                           </button>
                         ))}
                       </div>
+                      <FieldError message={errors.windDirection} />
                     </div>
                     <div>
                       <label className="form-label">Wind Condition</label>
@@ -890,9 +993,10 @@ function SprayInfo({ user }) {
                           <button
                             key={cond}
                             type="button"
-                            onClick={() =>
-                              setFormData({ ...formData, windCondition: cond })
-                            }
+                            onClick={() => {
+                              clearError("windCondition");
+                              setFormData({ ...formData, windCondition: cond });
+                            }}
                             className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors flex-1 ${
                               formData.windCondition === cond
                                 ? "bg-blue-600 text-white border-blue-600"
@@ -903,6 +1007,7 @@ function SprayInfo({ user }) {
                           </button>
                         ))}
                       </div>
+                      <FieldError message={errors.windCondition} />
                     </div>
                   </div>
                 </div>
@@ -920,9 +1025,10 @@ function SprayInfo({ user }) {
                         value={formData.applicatorInitials}
                         onChange={handleChange}
                         placeholder="e.g. AA"
-                        className="form-input"
+                        className={fieldClass("applicatorInitials")}
                         maxLength={5}
                       />
+                      <FieldError message={errors.applicatorInitials} />
                     </div>
                     <div className="flex items-center">
                       <label className="flex items-center gap-2 cursor-pointer mt-6">
@@ -953,8 +1059,9 @@ function SprayInfo({ user }) {
                     placeholder="Any additional notes (optional)"
                     maxLength={500}
                     rows={3}
-                    className="form-input resize-none"
+                    className={fieldClass("notes", "resize-none")}
                   />
+                  <FieldError message={errors.notes} />
                   <p className="text-xs text-gray-400 mt-1 text-right">
                     {formData.notes?.length || 0}/500
                   </p>

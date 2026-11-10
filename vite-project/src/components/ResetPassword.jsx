@@ -63,7 +63,7 @@ function ResetPassword() {
       } else {
         setError(data.message || "Failed to reset password");
       }
-    } catch (error) {
+    } catch {
       setError("Network error. Please try again.");
     } finally {
       setIsLoading(false);

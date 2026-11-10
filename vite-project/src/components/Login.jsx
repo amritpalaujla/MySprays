@@ -71,7 +71,7 @@ function Login({ setNewAcc, onLogin }) {
       } else {
         setResendMessage(data.message || "Failed to resend email");
       }
-    } catch (error) {
+    } catch {
       setResendMessage("Network error. Please try again.");
     } finally {
       setResendLoading(false);
