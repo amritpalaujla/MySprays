@@ -75,7 +75,10 @@ const sprayLogSchema = z.object({
       error: "Choose an application method from the list",
     })
     .default(""),
-  tankSize: optionalText("Tank size", 50),
+  tankSize: optionalText("Tank size", 50).refine(
+    (v) => !v.includes("-"),
+    "Tank size can't be negative"
+  ),
   equipmentInspected: z.boolean().default(false),
   equipmentCleaned: z.boolean().default(false),
 

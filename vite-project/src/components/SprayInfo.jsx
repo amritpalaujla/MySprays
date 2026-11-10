@@ -6,6 +6,7 @@ import ProductSearch from "./ProductSearch";
 import FieldError from "./FieldError";
 import { useCatalog } from "../context/CatalogContext";
 import { useRegion } from "../context/RegionContext";
+import { blockNegativeKeys, rejectsLogInput } from "../utils/numberInput";
 import {
   emptyForm,
   calcEarliestHarvest,
@@ -144,6 +145,7 @@ function SprayInfo({ user }) {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    if (rejectsLogInput(name, value)) return;
     const newVal = type === "checkbox" ? checked : value;
     clearError(name);
     const updated = { ...formData, [name]: newVal };
@@ -819,6 +821,8 @@ function SprayInfo({ user }) {
                         placeholder="e.g. 25"
                         type="number"
                         step="any"
+                        min="0"
+                        onKeyDown={blockNegativeKeys}
                         className={fieldClass("areaTreated")}
                       />
                       <FieldError message={errors.areaTreated} />
@@ -833,6 +837,7 @@ function SprayInfo({ user }) {
                         onChange={handleChange}
                         placeholder="Total product used"
                         inputMode="decimal"
+                        onKeyDown={blockNegativeKeys}
                         className={fieldClass("amount")}
                         required
                       />
@@ -855,6 +860,7 @@ function SprayInfo({ user }) {
                         onChange={handleChange}
                         placeholder="e.g. 14"
                         inputMode="numeric"
+                        onKeyDown={blockNegativeKeys}
                         className={fieldClass("PHI")}
                         required
                       />

@@ -14,6 +14,11 @@ import {
   validateSprayLog,
 } from "../utils/sprayLog";
 import { useRegion } from "../context/RegionContext";
+import {
+  blockNegativeKeys,
+  isNonNegativeDecimal,
+  rejectsLogInput,
+} from "../utils/numberInput";
 import sprayTank from "../assets/tanker.png";
 import partialSprayTank from "../assets/partialTanker.png";
 
@@ -96,8 +101,14 @@ function Calculator({ user }) {
       .filter(Boolean)
       .join(" ");
 
+  // Calculator boxes only accept non-negative numbers (blocks pasted "-5")
+  const onNumberChange = (setter) => (e) => {
+    if (isNonNegativeDecimal(e.target.value)) setter(e.target.value);
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    if (rejectsLogInput(name, value)) return;
     const newVal = type === "checkbox" ? checked : value;
     clearError(name);
     const updated = { ...formData, [name]: newVal };
@@ -283,9 +294,11 @@ function Calculator({ user }) {
               className="form-input"
               type="number"
               step="any"
+              min="0"
+              onKeyDown={blockNegativeKeys}
               value={waterVolume}
               placeholder={region === "US" ? "e.g. 50" : "e.g. 200"}
-              onChange={(e) => setWaterVolume(e.target.value)}
+              onChange={onNumberChange(setWaterVolume)}
             />
           </div>
           <div>
@@ -294,9 +307,11 @@ function Calculator({ user }) {
               className="form-input"
               type="number"
               step="any"
+              min="0"
+              onKeyDown={blockNegativeKeys}
               value={area}
               placeholder="e.g. 25"
-              onChange={(e) => setArea(e.target.value)}
+              onChange={onNumberChange(setArea)}
             />
           </div>
           <div className="md:col-span-2 lg:col-span-1">
@@ -305,9 +320,11 @@ function Calculator({ user }) {
               className="form-input"
               type="number"
               step="any"
+              min="0"
+              onKeyDown={blockNegativeKeys}
               value={tankSize}
               placeholder={region === "US" ? "e.g. 100" : "e.g. 400"}
-              onChange={(e) => setTankSize(e.target.value)}
+              onChange={onNumberChange(setTankSize)}
             />
           </div>
           <div className="md:col-span-2 lg:col-span-1">
@@ -316,9 +333,11 @@ function Calculator({ user }) {
               className="form-input"
               type="number"
               step="any"
+              min="0"
+              onKeyDown={blockNegativeKeys}
               value={sprayRate}
               placeholder="e.g. 10"
-              onChange={(e) => setSprayRate(e.target.value)}
+              onChange={onNumberChange(setSprayRate)}
             />
           </div>
           {user && (
@@ -476,6 +495,8 @@ function Calculator({ user }) {
                         onChange={handleChange}
                         type="number"
                         step="any"
+                        min="0"
+                        onKeyDown={blockNegativeKeys}
                         className={fieldClass("areaTreated")}
                       />
                       <FieldError message={errors.areaTreated} />
@@ -513,6 +534,7 @@ function Calculator({ user }) {
                         onChange={handleChange}
                         placeholder="e.g. 14"
                         inputMode="numeric"
+                        onKeyDown={blockNegativeKeys}
                         className={fieldClass("PHI")}
                       />
                       <FieldError message={errors.PHI} />
@@ -763,11 +785,16 @@ function Calculator({ user }) {
         </div>
       )}
 
+      {[area, waterVolume, tankSize, sprayRate].some(
+        (v) => v !== "" && !v.endsWith(".") && !(parseFloat(v) > 0)
+      ) && (
+        <p className="text-center text-sm font-medium text-red-600">
+          Water volume, area, tank size and spray rate must be greater than 0.
+        </p>
+      )}
+
       {selectedSpray &&
-        area &&
-        waterVolume &&
-        tankSize &&
-        sprayRate &&
+        [area, waterVolume, tankSize, sprayRate].every((v) => parseFloat(v) > 0) &&
         (() => {
           const areaNum = parseFloat(area);
           const waterVolumeNum = parseFloat(waterVolume);
